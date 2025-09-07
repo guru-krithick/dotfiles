@@ -1,0 +1,18 @@
+/* Configuration */
+configuration {
+    modi: "drun,run,window";
+    icon-theme: "Papirus";
+    show-icons: true;
+    terminal: "foot";
+    drun-display-format: "{icon} {name}";
+    location: 0;
+    disable-history: false;
+    hide-scrollbar: true;
+    display-drun: "   Apps";
+    display-run: "   Run";
+    display-window: " 﩯  Window";
+    sidebar-mode: true;
+}
+
+/* Import theme */
+@theme "theme.rasi"

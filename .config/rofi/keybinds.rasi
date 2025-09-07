@@ -1,0 +1,167 @@
+/*
+ * Rofi Keybinds Cheat Sheet Theme
+ * Save this as ~/.config/rofi/keybinds.rasi
+ */
+
+* {
+    bg-col: #1a1b26;
+    bg-col-light: #24283b;
+    border-col: #7aa2f7;
+    selected-col: #7aa2f7;
+    blue: #7aa2f7;
+    fg-col: #c0caf5;
+    fg-col2: #bb9af7;
+    grey: #565f89;
+    width: 900;
+    height: 700;
+    font: "JetBrainsMono Nerd Font 12";
+}
+
+window {
+    height: @height;
+    width: @width;
+    border: 3px;
+    border-color: @border-col;
+    background-color: @bg-col;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+mainbox {
+    background-color: @bg-col;
+    children: [inputbar, listview];
+    spacing: 15px;
+}
+
+inputbar {
+    children: [prompt, entry];
+    background-color: @bg-col-light;
+    border-radius: 8px;
+    padding: 12px;
+    border: 2px;
+    border-color: @border-col;
+}
+
+prompt {
+    background-color: @blue;
+    color: @bg-col;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 0px 10px 0px 0px;
+    font: "JetBrainsMono Nerd Font Bold 13";
+}
+
+textbox-prompt-colon {
+    expand: false;
+    str: ":";
+}
+
+entry {
+    padding: 8px;
+    background-color: transparent;
+    color: @fg-col;
+    placeholder: "Search keybinds...";
+    placeholder-color: @grey;
+    border-radius: 4px;
+}
+
+listview {
+    border: 0px 0px 0px;
+    padding: 6px 0px 0px;
+    columns: 1;
+    lines: 20;
+    background-color: @bg-col;
+    scrollbar: true;
+}
+
+scrollbar {
+    width: 4px;
+    border: 0;
+    handle-color: @border-col;
+    handle-width: 8px;
+    padding: 0;
+    border-radius: 4px;
+}
+
+element {
+    padding: 10px 15px;
+    background-color: @bg-col;
+    color: @fg-col;
+    border-radius: 6px;
+    margin: 2px 0px;
+}
+
+element-icon {
+    size: 20px;
+    margin: 0px 10px 0px 0px;
+}
+
+element-text {
+    background-color: inherit;
+    color: inherit;
+    vertical-align: 0.5;
+}
+
+element normal.normal {
+    background-color: @bg-col;
+    color: @fg-col;
+}
+
+element normal.urgent {
+    background-color: @bg-col;
+    color: @fg-col;
+}
+
+element normal.active {
+    background-color: @bg-col;
+    color: @blue;
+}
+
+element selected.normal {
+    background-color: @selected-col;
+    color: @bg-col;
+    border-radius: 8px;
+    font: "JetBrainsMono Nerd Font Bold 12";
+}
+
+element selected.urgent {
+    background-color: @bg-col;
+    color: @fg-col;
+}
+
+element selected.active {
+    background-color: @bg-col-light;
+    color: @fg-col2;
+}
+
+element alternate.normal {
+    background-color: @bg-col;
+    color: @fg-col;
+}
+
+element alternate.urgent {
+    background-color: @bg-col;
+    color: @fg-col;
+}
+
+element alternate.active {
+    background-color: @bg-col;
+    color: @blue;
+}
+
+mode-switcher {
+    spacing: 0;
+}
+
+button {
+    padding: 10px;
+    background-color: @bg-col-light;
+    color: @grey;
+    vertical-align: 0.5;
+    horizontal-align: 0.5;
+}
+
+button selected {
+    background-color: @bg-col;
+    color: @blue;
+}

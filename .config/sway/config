@@ -1,0 +1,213 @@
+# Core Variables
+set $mod Mod4
+set $left h
+set $down j
+set $up k
+set $right l
+
+# Applications
+set $term ghostty
+set $rofi_cmd rofi
+set $menu $rofi_cmd -show drun -display-drun "Apps"
+set $browser vivaldi
+set $editor code
+
+# Directories
+set $pics ${XDG_PICTURES_DIR:-$HOME/Pictures}
+set $vids ${XDG_VIDEOS_DIR:-$HOME/recordings}
+set $conf ${XDG_CONFIG_HOME:-$HOME/.config}/sway
+set $scripts $conf/scripts
+
+# Visual Settings
+font pango:JetBrainsMono Nerd Font 14
+default_border pixel 2
+default_floating_border pixel 2
+hide_edge_borders smart
+smart_borders on
+smart_gaps on
+
+# Gaps (hidden only when one window)
+gaps inner 8
+gaps outer 4
+
+# Colors (Tokyo Night)
+set $bg #1a1b26
+set $fg #c0caf5
+set $ac #7aa2f7
+set $in #414868
+set $ur #f7768e
+
+client.focused $ac $ac $bg $ac $ac
+client.focused_inactive $in $in $fg $in $in
+client.unfocused $in $in $fg $in $in
+client.urgent $ur $ur $bg $ur $ur
+
+# Window Rules - Productivity Boosters
+for_window [app_id="ghostty"] opacity 0.95
+for_window [app_id="firefox" title="Picture-in-Picture"] floating enable, sticky enable, resize set 400 225
+for_window [app_id="pavucontrol"] floating enable, resize set 800 600
+for_window [app_id="blueman-manager"] floating enable, resize set 700 500
+for_window [class="^.*"] inhibit_idle fullscreen
+for_window [app_id="^.*"] inhibit_idle fullscreen
+for_window [title="^(.*- )?nvim$"] border pixel 1
+for_window [class="ghostty"] move to workspace 10
+for_window [title="^File Transfer.*"] floating enable
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="dialog"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [app_id="org.kde.polkit-kde-authentication-agent-1"] floating enable
+for_window [app_id="gcr-prompter"] floating enable
+for_window [title=" - Sharing Indicator$"] floating enable, sticky enable
+
+# Smart focus follows mouse with delay
+focus_follows_mouse yes
+mouse_warping container
+
+# Startup Programs
+exec_always {
+    pkill waybar; sleep 0.5; waybar
+    pkill swaybg; swaybg -c "#222222"
+    pkill -f xdg-desktop-portal; sleep 1
+    systemctl --user set-environment XDG_CURRENT_DESKTOP=sway
+    systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+    /usr/libexec/xdg-desktop-portal-wlr &
+    /usr/libexec/xdg-desktop-portal &
+}
+
+exec {
+    dunst
+    wl-paste --type text --watch cliphist store
+    wl-paste --type image --watch cliphist store
+}
+
+# Input Configuration
+input type:touchpad {
+    tap enabled
+    natural_scroll enabled
+    scroll_method two_finger
+    dwt enabled
+    accel_profile adaptive
+    pointer_accel 0.3
+}
+
+input type:keyboard {
+    repeat_delay 300
+    repeat_rate 30
+}
+
+# Key Bindings
+bindsym $mod+t exec $term
+bindsym $mod+q kill
+bindsym $mod+d exec $menu
+bindsym $mod+Shift+d exec $rofi_cmd -show run
+bindsym $mod+Tab exec $rofi_cmd -show window
+bindsym $mod+slash exec $scripts/keybinds-cheat.sh
+
+# Applications
+bindsym $mod+Shift+w exec $editor
+bindsym $mod+Shift+b exec $browser
+bindsym $mod+Shift+f exec firefox
+bindsym $mod+Shift+e exec dolphin
+
+# Focus Movement
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Window Movement
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+
+# Layout Controls
+bindsym $mod+b splith
+bindsym $mod+v splitv
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+f fullscreen
+bindsym $mod+Shift+space floating toggle
+
+# Workspaces
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
+
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
+
+# Scratchpad
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+
+# Media Controls
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym XF86MonBrightnessUp exec brightnessctl set +5%
+
+# Screenshots
+bindsym Print exec grim "$pics/screenshot-$(date +%s).png" && grim - | wl-copy && notify-send "Screenshot saved & copied"
+bindsym $mod+Shift+s exec grim -g "$(slurp)" - | wl-copy && notify-send "Area copied to clipboard"
+bindsym $mod+Shift+Print exec wf-recorder -f "$vids/recording-$(date +%Y-%m-%d-%H-%M-%S).mp4"
+
+# System Controls
+bindsym $mod+c exec $scripts/caffeine-toggle.sh
+bindsym $mod+Escape exec $scripts/power-menu.sh
+bindsym $mod+Ctrl+l exec swaylock -f && systemctl suspend
+bindsym $mod+Shift+c reload
+bindsym $mod+Ctrl+u exec shutdown now
+
+# Clipboard Management
+bindsym $mod+Shift+v exec $scripts/clipboard-manager.sh copy
+bindsym $mod+Shift+Delete exec $scripts/clipboard-manager.sh delete
+bindsym $mod+Ctrl+Delete exec cliphist wipe && notify-send "Clipboard cleared"
+
+# Mark System (Hidden Gem)
+bindsym $mod+m exec swaymsg mark $(echo -e "editor\nbrowser\nterminal\nchat" | $rofi_cmd -dmenu -p "Mark:")
+bindsym $mod+apostrophe exec swaymsg '[con_mark=".*"] focus' || $rofi_cmd -show window
+
+# Advanced Features
+bindsym $mod+Shift+t sticky toggle
+
+# Resize Mode
+mode "resize" {
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+floating_modifier $mod normal
+
+include $conf/config.d/*.conf

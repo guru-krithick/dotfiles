@@ -1,0 +1,49 @@
+#!/bin/bash
+# Script to reset and test various swaylock configurations
+
+# Make backup if it doesn't exist
+if [ ! -f ~/.config/swaylock/config.backup ]; then
+    cp ~/.config/swaylock/config ~/.config/swaylock/config.backup
+    echo "Backup created at ~/.config/swaylock/config.backup"
+fi
+
+# Basic configuration with minimal settings
+cat > ~/.config/swaylock/config.basic << EOF
+# Minimal configuration
+color=000000
+show-failed-attempts
+ignore-empty-password
+EOF
+
+# Try a configuration with image
+cat > ~/.config/swaylock/config.image << EOF
+# Image-based configuration
+image=~/Pictures/screenshot-1751271513.png
+scaling=fill
+show-failed-attempts
+ignore-empty-password
+EOF
+
+# Try no effects configuration
+cat > ~/.config/swaylock/config.noeffects << EOF
+# No effects configuration
+color=000000
+inside-color=000000
+ring-color=4c566a
+line-color=4c566a
+text-color=eceff4
+show-failed-attempts
+ignore-empty-password
+EOF
+
+echo "Three test configurations created!"
+echo "To test them, run:"
+echo "cp ~/.config/swaylock/config.basic ~/.config/swaylock/config && swaylock"
+echo "cp ~/.config/swaylock/config.image ~/.config/swaylock/config && swaylock"
+echo "cp ~/.config/swaylock/config.noeffects ~/.config/swaylock/config && swaylock"
+echo ""
+echo "To restore your original configuration:"
+echo "cp ~/.config/swaylock/config.backup ~/.config/swaylock/config"
+
+# Make the script executable
+chmod +x ~/.config/swaylock/reset_config

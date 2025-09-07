@@ -1,0 +1,138 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 34,
+    "spacing": 4,
+    "modules-left": ["custom/caffeine", "sway/workspaces", "sway/mode"],
+    "modules-center": ["clock"],
+    "modules-right": ["pulseaudio", "network", "backlight", "cpu", "memory", "custom/dev-ports", "battery", "tray"],
+
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": true,
+        "format": "{name}",
+        "format-icons": {
+            "1": "󰖟",
+            "2": "󰈹",
+            "3": "󰘔",
+            "4": "󰎄",
+            "5": "󰋩",
+            "urgent": "",
+            "focused": "",
+            "default": ""
+        }
+    },
+
+    "sway/mode": {
+        "format": " {}",
+        "max-length": 50
+    },
+
+    "clock": {
+        "format": " {:%H:%M}",
+        "format-alt": " {:%A, %B %d, %Y}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "calendar": {
+            "mode": "year",
+            "mode-mon-col": 3,
+            "weeks-pos": "right",
+            "on-scroll": 1,
+            "format": {
+                "months": "<span color='#ffead3'><b>{}</b></span>",
+                "days": "<span color='#ecc6d9'><b>{}</b></span>",
+                "weeks": "<span color='#99ffdd'><b>W{}</b></span>",
+                "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+                "today": "<span color='#ff6699'><b><u>{}</u></b></span>"
+            }
+        }
+    },
+
+    "cpu": {
+        "format": "󰻠 {usage}%",
+        "interval": 3,
+        "states": {
+            "warning": 70,
+            "critical": 90
+        },
+        "tooltip": true
+    },
+
+    "memory": {
+        "format": "󰍛 {percentage}%",
+        "interval": 5,
+        "states": {
+            "warning": 70,
+            "critical": 90
+        },
+        "tooltip-format": "RAM: {used:0.1f}GB / {total:0.1f}GB\nSwap: {swapUsed:0.1f}GB / {swapTotal:0.1f}GB"
+    },
+
+    "custom/dev-ports": {
+        "exec": "~/.config/waybar/scripts/dev-ports.sh",
+        "interval": 5,
+        "format": "{}",
+        "tooltip": "Active development servers",
+        "on-click": "~/.config/waybar/scripts/dev-ports.sh click",
+        "return-type": "json"
+    },
+
+    "battery": {
+        "states": {
+            "good": 95,
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-plugged": "󰚥 {capacity}%",
+        "format-full": "󰁹 {capacity}%",
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "tooltip-format": "Battery: {capacity}%\nTime: {time}\nPower: {power}W"
+    },
+
+    "network": {
+        "format-wifi": "󰖩 {signalStrength}%",
+        "format-ethernet": "󰈀",
+        "format-linked": "󰈁",
+        "format-disconnected": "󰖪",
+        "format-alt": "󰩟 {ipaddr}",
+        "tooltip-format": "Network: {ifname}\nIP: {ipaddr}\nGateway: {gwaddr}",
+        "tooltip-format-wifi": "WiFi: {essid} ({signalStrength}%)\nIP: {ipaddr}\nFrequency: {frequency}MHz"
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-bluetooth": "󰂯 {volume}%",
+        "format-bluetooth-muted": "󰂲",
+        "format-muted": "󰖁",
+        "format-source": "󰍬 {volume}%",
+        "format-source-muted": "󰍭",
+        "format-icons": {
+            "headphone": "󰋋",
+            "hands-free": "󱡏",
+            "headset": "󰋎",
+            "phone": "󰏲",
+            "portable": "󰦧",
+            "car": "󰄋",
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "on-click": "pavucontrol",
+        "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "tooltip-format": "Volume: {volume}%\nDevice: {desc}"
+    },
+
+    "tray": {
+        "icon-size": 16,
+        "spacing": 8,
+        "show-passive-items": true
+    },
+
+    "custom/caffeine": {
+        "format": "{}",
+        "exec": "~/.config/waybar/scripts/caffeine-status.sh",
+        "interval": 5,
+        "tooltip": "Toggle Caffeine Mode",
+        "on-click": "~/.config/sway/scripts/caffeine-toggle.sh",
+        "return-type": "json"
+    }
+}

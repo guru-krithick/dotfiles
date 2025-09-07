@@ -1,0 +1,116 @@
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║                         SWAYLOCK CONFIGURATION                              ║
+# ║                    Save as ~/.config/swaylock/config                        ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# ┌──────────────────────────────────────────────────────────────────────────────┐
+# │                              VISUAL EFFECTS                                 │
+# └──────────────────────────────────────────────────────────────────────────────┘
+
+# DISABLE ALL EFFECTS - troubleshooting white background issue
+
+
+# Force using a solid black background color (no effects)
+color=222222
+
+# Try using a dark wallpaper instead of effects
+#image=~/Pictures/screenshot-1751271513.png
+scaling=fill
+
+# Additional background colors (to ensure there's no white)
+inside-ver-color=222222
+separator-color=000000
+indicator-caps-lock-color=000000
+
+# Fade in effect
+fade-in=0.5
+
+# ┌──────────────────────────────────────────────────────────────────────────────┐
+# │                               RING SETTINGS                                  │
+# └──────────────────────────────────────────────────────────────────────────────┘
+
+# Ring colors (Nord theme)
+ring-color=4c566a
+ring-clear-color=88c0d0
+ring-caps-lock-color=d08770
+ring-ver-color=5e81ac
+ring-wrong-color=bf616a
+
+# Inside colors - removed transparency to prevent white background showing through
+inside-color=000000
+inside-clear-color=000000
+inside-caps-lock-color=000000
+inside-ver-color=000000
+inside-wrong-color=000000
+
+# Line between inside and ring
+line-color=4c566a
+line-clear-color=88c0d0
+line-caps-lock-color=d08770
+line-ver-color=5e81ac
+line-wrong-color=bf616a
+
+# ┌──────────────────────────────────────────────────────────────────────────────┐
+# │                                TEXT SETTINGS                                │
+# └──────────────────────────────────────────────────────────────────────────────┘
+
+# Text colors
+text-color=eceff4
+text-clear-color=eceff4
+text-caps-lock-color=eceff4
+text-ver-color=eceff4
+text-wrong-color=eceff4
+
+# Key highlight
+key-hl-color=88c0d0
+bs-hl-color=bf616a
+
+# Font settings
+font=JetBrains Mono
+font-size=24
+
+# ┌──────────────────────────────────────────────────────────────────────────────┐
+# │                              BEHAVIOR SETTINGS                              │
+# └──────────────────────────────────────────────────────────────────────────────┘
+
+# Don't show failed attempts
+hide-keyboard-layout
+disable-caps-lock-text
+
+# Show clock
+clock
+timestr=%H:%M:%S
+datestr=%A, %B %d
+
+# Position and size
+indicator-radius=120
+indicator-thickness=10
+indicator-idle-visible
+indicator-y-position=750
+
+# ┌──────────────────────────────────────────────────────────────────────────────┐
+# │                              SECURITY SETTINGS                              │
+# └──────────────────────────────────────────────────────────────────────────────┘
+
+# Clear password after wrong attempt
+ignore-empty-password
+show-failed-attempts
+
+# Grace period (in seconds) - won't require password for this many seconds
+grace=2
+
+# Disable compositor while locked (better security)
+# daemonize
+
+# ┌──────────────────────────────────────────────────────────────────────────────┐
+# │                              SIMPLE ALTERNATIVE                             │
+# └──────────────────────────────────────────────────────────────────────────────┘
+
+# If swaylock-effects is not available, use these simple settings:
+# color=000000
+# font-size=24
+# indicator-radius=100
+# indicator-thickness=7
+# ring-color=ffffff
+# inside-color=000000
+# text-color=ffffff

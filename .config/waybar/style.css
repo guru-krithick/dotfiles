@@ -1,0 +1,92 @@
+/* Global styles */
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "Monospace", "Font Awesome 5 Free";
+  font-size: 16px;
+  min-height: 0;
+  color: white;
+}
+
+/* Waybar window styling */
+window#waybar {
+  background: rgba(10, 10, 10, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Workspace button styling */
+#workspaces button {
+  padding: 0 5px;
+  background: transparent;
+  color: white;
+  border-bottom: 3px solid transparent;
+}
+
+#workspaces button.focused {
+  border-bottom: 3px solid white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+#workspaces button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+#workspaces button.urgent {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Status indicators (clock, battery, CPU, etc.) */
+#clock {
+  padding: 0 10px;
+  margin: 3px 3px;
+  background: transparent;
+}
+#battery,
+#cpu,
+#memory,
+#backlight,
+#network,
+#pulseaudio,
+#tray,
+#mode,
+#custom-dev-ports {
+  padding: 0 10px;
+  margin: 3px 3px;
+  background: transparent;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Battery status */
+#battery.critical {
+  color: #ff5555;
+}
+
+#battery.charging,
+#battery.plugged {
+  color: #d8dee9;
+}
+
+/* Tooltip styling */
+tooltip {
+  background: rgba(10, 10, 10, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+tooltip label {
+  color: white;
+}
+
+/* Custom dev-ports styling */
+#custom-dev-ports {
+  color: #88c0d0;
+}
+
+#custom-dev-ports.idle {
+  color: #4c566a;
+}
+
+#custom-dev-ports.active {
+  color: #a3be8c;
+  font-weight: bold;
+}

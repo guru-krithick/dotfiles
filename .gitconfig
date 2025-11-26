@@ -1,0 +1,12 @@
+[user]
+	email = gurukrithickm.ece2023@citchennai.net
+	name = guru-krithick
+[credential]
+	helper = store
+[http]
+	timeout = 300
+	postBuffer = 524288000
+[init]
+	defaultBranch = master
+[safe]
+	directory = *

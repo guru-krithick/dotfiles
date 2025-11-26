@@ -1,0 +1,113 @@
+@import url("./tokyonight.css");
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+    font-size: 15px;
+    min-height: 0;
+}
+
+window#waybar {
+    color: @foreground;
+    background: transparent;
+}
+
+#workspaces,
+#workspaces button,
+#workspaces button.focused,
+#workspaces button:hover {
+    border-radius: 1.5rem;
+}
+
+#workspaces {
+    margin: 5px 0 5px 1rem;
+    background-color: rgba(49, 50, 68, 0.85);
+}
+
+#workspaces button {
+    padding: 0.5rem;
+    color: @foreground;
+}
+
+#workspaces button.focused {
+    color: @purple;
+    background-color: @surface0;
+    border: 2px solid @purple;
+    font-weight: bolder;
+}
+
+#workspaces button:hover {
+    color: @blue;
+    background: @surface0;
+    border-color: @surface1;
+}
+
+#workspaces button.urgent {
+    color: @red;
+}
+
+#clock,
+#pulseaudio,
+#battery,
+#network,
+#cpu,
+#memory,
+#disk,
+#idle_inhibitor {
+    margin: 5px 0;
+    padding: 0.5rem 1rem;
+    background-color: rgba(49, 50, 68, 0.85);
+}
+
+#window {
+    margin: 5px 0;
+    padding: 0.5rem 1rem;
+    color: @blue;
+}
+
+window#waybar.empty #window {
+    background-color: transparent;
+}
+
+#clock {
+    color: @purple;
+    border-radius: 1.5rem;
+}
+
+#battery,
+#battery.charging {
+    color: @green;
+}
+
+#battery.warning:not(.charging) {
+    color: @red;
+}
+
+#pulseaudio {
+    margin-left: 1rem;
+    color: @pink;
+    border-radius: 1.5rem 0 0 1.5rem;
+}
+
+#network {
+	color: @cyan;
+}
+
+#cpu {
+	color: @yellow;
+}
+
+#memory {
+	color: @green;
+}
+
+#disk {
+	color: @blue;
+}
+
+#idle_inhibitor {
+	margin-right: 1rem;
+	padding-right: 1rem;
+	color: @red;
+	border-radius: 0 1.5rem 1.5rem 0;
+}

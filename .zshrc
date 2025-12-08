@@ -11,6 +11,7 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 # This is oh-my-zsh
 export ZSH="$HOME/.oh-my-zsh"
 export TZ="Asia/Kolkata"
+ZSH_THEME=robbyrussell
 
 # Plugins
 plugins=(
@@ -175,35 +176,6 @@ alias swayconfig='nvim ~/.config/sway/config'
 alias dotfiles='nvim ~/.config'
 alias reload='source ~/.zshrc'
 
-# Package manager abstraction
-pkg() {
-  distro=$(source /etc/os-release && echo "$ID")
-  case $distro in
-    *arch*|*manjaro*)
-      case $1 in 
-        update) yay -Syu --noconfirm ;; 
-        autoremove) yay -Yc ;;
-        clean) yay -Sc ;;
-        *) echo "Usage: pkg [update|autoremove|clean]"; return 1 ;;
-      esac
-      ;;
-    *debian*|*ubuntu*)
-      case $1 in 
-        update) sudo apt update && sudo apt upgrade -y ;;
-        autoremove) sudo apt autoremove -y ;;
-        clean) sudo apt autoclean ;;
-        *) echo "Usage: pkg [update|autoremove|clean]"; return 1 ;;
-      esac
-      ;;
-    *) echo "Unsupported distro"; return 1 ;;
-  esac
-}
-
-# Package Aliases
-alias update='pkg update'
-alias autoremove='pkg autoremove'
-alias clean='pkg clean'
-
 # HTTP Server Function
 serve(){
   port=${1:-8000}
@@ -266,8 +238,8 @@ setopt NO_FLOW_CONTROL
 [[ -r ~/.zsh_local ]] && source ~/.zsh_local
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 
 # pnpm
 export PNPM_HOME="/home/guru/.local/share/pnpm"
@@ -281,3 +253,4 @@ export PATH="/usr/lib/jvm/java-17-openjdk/bin:$PATH"
 
 export ANDROID_HOME=$HOME/Android/Sdk
 export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
+

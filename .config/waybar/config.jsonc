@@ -13,7 +13,7 @@
         "network",
         "cpu",
         "memory",
-        "disk",
+        "backlight",
         "idle_inhibitor"
     ],
     "sway/workspaces": {
@@ -89,5 +89,16 @@
             "activated": "",
             "deactivated": ""
         }
+    },
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "{icon} {percent}%",
+        "on-scroll-up": "brightnessctl set +5%",
+        "on-scroll-down": "brightnessctl set 5%-",
+        "on-click": "brightnessctl set 20%",
+        "format-icons": [
+            "󰃞",
+            "󰃠"
+        ]
     }
 }

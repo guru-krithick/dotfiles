@@ -136,7 +136,7 @@ if command -v eza > /dev/null 2>&1; then
   alias la='eza -la --icons --group-directories-first --git'
   alias l='eza -l --icons --group-directories-first'
   alias tree='eza --tree --icons'
-  alias ltree='eza --tree --long --icons'
+  alias ltree='eza -a --tree --long --icons'
 else
   alias ls='ls --color=auto --group-directories-first'
   alias la='ls -la --color=auto'

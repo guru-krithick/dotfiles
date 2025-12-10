@@ -1,14 +1,18 @@
 return {
-    "vague-theme/vague.nvim",
-    lazy = false,                -- make sure we load this during startup if it is your main colorscheme
-    priority = 1000,             -- make sure to load this before all the other plugins
-    config = function()
-        require("vague").setup({ -- optional configuration here
-            opts = {
-                transparent = true,
-                terminal_colors = true,
-            },
-        })
-        vim.cmd("colorscheme vague")
-    end
+    {
+        "vague-theme/vague.nvim",
+        lazy = false,
+        priority = 1000,
+
+        opts = {
+            transparent = true,
+            bold = true,
+            italic = true,
+        },
+
+        config = function(_, opts)
+            require("vague").setup(opts)
+            vim.cmd.colorscheme("vague")
+        end,
+    },
 }

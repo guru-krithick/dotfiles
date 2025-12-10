@@ -254,3 +254,10 @@ export PATH="/usr/lib/jvm/java-17-openjdk/bin:$PATH"
 export ANDROID_HOME=$HOME/Android/Sdk
 export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
 
+
+# bun completions
+[ -s "/home/guru/.bun/_bun" ] && source "/home/guru/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

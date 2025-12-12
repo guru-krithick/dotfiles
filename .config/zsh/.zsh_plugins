@@ -39,3 +39,10 @@ source "$ZSH/oh-my-zsh.sh"
 
 # bun completions
 [ -s "/home/guru/.bun/_bun" ] && source "/home/guru/.bun/_bun"
+
+# Conda initialize
+if [ -f "/home/guru/miniconda3/etc/profile.d/conda.sh" ]; then
+    . "/home/guru/miniconda3/etc/profile.d/conda.sh"
+else
+    export PATH="/home/guru/miniconda3/bin:$PATH"
+fi

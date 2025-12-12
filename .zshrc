@@ -15,3 +15,9 @@ ZSH_THEME=robbyrussell
 [[ -r "$ZDOTDIR/.zsh_functions" ]] && source "$ZDOTDIR/.zsh_functions"
 [[ -r "$ZDOTDIR/.zsh_aliases" ]]   && source "$ZDOTDIR/.zsh_aliases"
 
+# Load local configurations if they exist
+[[ -r ~/.zsh_local ]] && source ~/.zsh_local
+
+# Ensure clean exit
+true
+

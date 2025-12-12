@@ -1,12 +1,46 @@
 [user]
 	email = gurukrithickm.ece2023@citchennai.net
 	name = guru-krithick
+
+[init]
+    defaultBranch = master
+
+[core]
+    editor = nvim
+    pager = delta
+
+[interactive]
+    diffFilter = detla --color-only
+
+[delta]
+	navigate = true
+    line-numbers = true
+    dark = true
+
+[pull]
+	rebase = true
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+    required = true
+
+[merge]
+	conflictstyle = zdiff3
+	tool = nvimdiff
+
+[diff]
+	algorithm = histogram
+	colorMoved = default
+	tool = nvimdiff
+
 [credential]
-	helper = store
+    helper = store
+
 [http]
 	timeout = 300
 	postBuffer = 524288000
-[init]
-	defaultBranch = master
+
 [safe]
 	directory = *

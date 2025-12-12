@@ -1,0 +1,46 @@
+# Python virtual environment auto-activation
+_venv_auto_activate() {
+  if [[ -z "$VIRTUAL_ENV" ]]; then
+    for candidate in .venv venv .env; do
+      if [[ -d "./$candidate" ]]; then
+        source "./$candidate/bin/activate"
+        break 
+      fi
+    done
+  else
+    parentdir="$(dirname "$VIRTUAL_ENV")"
+    if [[ "$PWD"/ != "$parentdir"/* ]]; then
+      deactivate
+    fi
+  fi
+}
+
+# Hook into cd command
+function cd(){
+  builtin cd "$@"
+  _venv_auto_activate
+}
+
+# Hook into zoxide (z command)
+if command -v zoxide >/dev/null 2>&1; then
+  function z() {
+    __zoxide_z "$@"
+    _venv_auto_activate
+  }
+fi
+
+# Also hook into chpwd for any directory changes
+autoload -U add-zsh-hook
+add-zsh-hook chpwd _venv_auto_activate
+
+# HTTP Server Function
+serve(){
+  port=${1:-8000}
+  python3 -m http.server "$port" && echo "HTTP server is running on http://localhost:$port" || {
+    echo "Failed to start HTTP server on port $port"
+    return 1
+  }
+}
+
+# Tmux Sessionizer (Ctrl+f to trigger)
+bindkey -s '^f' '^u~/.config/zsh/scripts/tmux-sessionizer.sh\n'

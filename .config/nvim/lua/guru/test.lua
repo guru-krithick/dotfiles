@@ -14,7 +14,3 @@ local res = add(10, 20)
 
 -- Completion test: type "stri" and trigger completion (no snippets should appear)
 local x = "hello"
-
-print(res)
-
-print(x)

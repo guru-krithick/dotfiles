@@ -1,0 +1,25 @@
+# Color Theme (Ultra Dark - muted palette)
+set $black   #0a0a0a
+set $red     #b06a6e
+set $green   #8aaa6a
+set $yellow  #b09a5a
+set $blue    #6a8ac0
+set $magenta #9a7aba
+set $cyan    #6aaaba
+set $white   #b0b0b0
+
+set $bright_black   #333333
+set $bright_red     #c07a7e
+set $bright_green   #9aba7a
+set $bright_yellow  #c0aa6a
+set $bright_blue    #7a9ad0
+set $bright_magenta #aa8aca
+set $bright_cyan    #7abaca
+set $bright_white   #d0d0d0
+
+# UI Colors
+set $bg #0a0a0a
+set $fg #b0b0b0
+set $ac #6a8ac0
+set $in #333333
+set $ur #b06a6e

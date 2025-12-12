@@ -1,0 +1,41 @@
+# Oh-My-Zsh Plugins
+plugins=(
+  aliases
+  alias-finder
+  command-not-found
+  copybuffer
+  dirhistory
+  docker
+  docker-compose
+  extract
+  fzf
+  gh
+  git
+  history
+  jsontools
+  npm
+  nvm
+  pip
+  postgres
+  python
+  react-native
+  systemd
+  tmux
+  vscode
+  web-search
+  yarn
+  z
+  zoxide
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  zsh-completions
+)
+
+# Load completions
+fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
+
+# Load Oh My Zsh
+source "$ZSH/oh-my-zsh.sh"
+
+# bun completions
+[ -s "/home/guru/.bun/_bun" ] && source "/home/guru/.bun/_bun"

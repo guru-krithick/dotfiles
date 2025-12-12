@@ -4,27 +4,27 @@ clock
 screenshot
 effect-blur=7x5
 effect-vignette=0.5:0.5
-color=1a1b26
+color=0a0a0a
 
 indicator
 indicator-radius=120
 indicator-thickness=12
 indicator-caps-lock
 
-ring-color=414868
-key-hl-color=7aa2f7
+ring-color=333333
+key-hl-color=6a8ac0
 separator-color=00000000
 
-inside-color=1a1b2688
-inside-clear-color=1a1b2688
-inside-caps-lock-color=1a1b2688
-inside-ver-color=1a1b2688
-inside-wrong-color=1a1b2688
+inside-color=0a0a0a88
+inside-clear-color=0a0a0a88
+inside-caps-lock-color=0a0a0a88
+inside-ver-color=0a0a0a88
+inside-wrong-color=0a0a0a88
 
-ring-clear-color=bb9af7
-ring-caps-lock-color=e0af68
-ring-ver-color=7aa2f7
-ring-wrong-color=f7768e
+ring-clear-color=9a7aba
+ring-caps-lock-color=b09a5a
+ring-ver-color=6a8ac0
+ring-wrong-color=b06a6e
 
 line-color=00000000
 line-clear-color=00000000
@@ -32,21 +32,22 @@ line-caps-lock-color=00000000
 line-ver-color=00000000
 line-wrong-color=00000000
 
-text-color=c0caf5
-text-clear-color=c0caf5
-text-ver-color=c0caf5
-text-wrong-color=c0caf5
-text-caps-lock-color=c0caf5
+text-color=b0b0b0
+text-clear-color=b0b0b0
+text-ver-color=b0b0b0
+text-wrong-color=b0b0b0
+text-caps-lock-color=b0b0b0
 
-bs-hl-color=f7768e
-caps-lock-key-hl-color=e0af68
-caps-lock-bs-hl-color=f7768e
+bs-hl-color=b06a6e
+caps-lock-key-hl-color=b09a5a
+caps-lock-bs-hl-color=b06a6e
 
 font=JetBrainsMono Nerd Font
 font-size=24
 
 datestr=%a, %B %d
 timestr=%I:%M %p
+
 
 fade-in=0.2
 grace=2

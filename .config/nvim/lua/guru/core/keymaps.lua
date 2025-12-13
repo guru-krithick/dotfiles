@@ -34,7 +34,7 @@ keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left
     { desc = "Global search and replace the word" })
 keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true }, { desc = "Make a file executable" })
 
--- Tmux Sessionizer
-keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>", { desc = "Open tmux sessionizer" })
-keymap.set("n", "<M-h>", "<cmd>silent !tmux-sessionizer -s 0 --vsplit<CR>", { desc = "Sessionizer vsplit" })
-keymap.set("n", "<M-H>", "<cmd>silent !tmux neww tmux-sessionizer -s 0<CR>", { desc = "Sessionizer new window" })
+-- Tmux Sessionizer (only works inside tmux)
+keymap.set("n", "<C-f>", "<cmd>silent !tmux neww ~/.config/zsh/scripts/tmux-sessionizer.sh<CR>", { desc = "Open tmux sessionizer" })
+keymap.set("n", "<M-h>", "<cmd>silent !tmux neww ~/.config/zsh/scripts/tmux-sessionizer.sh -s 0 --vsplit<CR>", { desc = "Sessionizer vsplit" })
+keymap.set("n", "<M-H>", "<cmd>silent !tmux neww ~/.config/zsh/scripts/tmux-sessionizer.sh -s 0<CR>", { desc = "Sessionizer new window" })

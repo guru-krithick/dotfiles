@@ -246,7 +246,20 @@ find_dirs() {
             path="$entry"
         fi
 
-        [[ -d "$path" ]] && find "$path" -mindepth 1 -maxdepth "${depth:-${TS_MAX_DEPTH:-1}}" -path '*/.git' -prune -o -type d -print
+        [[ -d "$path" ]] && find "$path" -mindepth 1 -maxdepth "${depth:-${TS_MAX_DEPTH:-1}}" \
+            -path '*/.git' -prune -o \
+            -path '*/node_modules' -prune -o \
+            -path '*/venv' -prune -o \
+            -path '*/.venv' -prune -o \
+            -path '*/__pycache__' -prune -o \
+            -path '*/.pytest_cache' -prune -o \
+            -path '*/dist' -prune -o \
+            -path '*/build' -prune -o \
+            -path '*/.cache' -prune -o \
+            -path '*/.idea' -prune -o \
+            -path '*/.vscode' -prune -o \
+            -path '*/target' -prune -o \
+            -type d -print | sed "s|^$HOME|~|"
     done
 }
 

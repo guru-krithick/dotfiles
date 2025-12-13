@@ -1,9 +1,6 @@
 # Auto-start Sway on tty1
 [[ -z "$NO_SWAY" && "$(tty)" = "/dev/tty1" ]] && exec sway --unsupported-gpu && exec sway reload
 
-# ZSH Config Directory
-ZDOTDIR="${HOME}/.config/zsh"
-
 # Load modular configuration files
 [[ -r "$ZDOTDIR/.zsh_exports" ]]   && source "$ZDOTDIR/.zsh_exports"
 

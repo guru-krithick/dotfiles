@@ -47,9 +47,9 @@ alias mountde='~/Scripts/mount-scripts/mount_drives.sh'
 alias unmountde='~/Scripts/mount-scripts/unmount_drives.sh'
 
 # CONFIG FILES
-alias zshconfig='nvim ~/.zshrc'
+alias zshconfig='nvim ~/.config/zsh'
 alias ghosttyconfig='nvim ~/.config/ghostty/config'
 alias nvimconfig='nvim ~/.config/nvim/'
 alias swayconfig='nvim ~/.config/sway/config'
 alias dotfiles='nvim ~/.config'
-alias reload='source ~/.zshrc'
+alias reload='source ~/.zshenv'

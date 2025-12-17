@@ -1,6 +1,5 @@
 # Oh-My-Zsh Plugins
 plugins=(
-  aliases
   alias-finder
   command-not-found
   copybuffer
@@ -10,7 +9,6 @@ plugins=(
   extract
   fzf
   gh
-  git
   history
   jsontools
   npm

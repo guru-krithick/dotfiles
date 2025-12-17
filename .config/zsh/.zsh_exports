@@ -40,12 +40,17 @@ export PATH="$CONDA_HOME/bin:$PATH"
 
 # FZF Ultra Dark Theme
 export FZF_DEFAULT_OPTS="
-    --color=bg+:#1c1c1c,bg:#0a0a0a,spinner:#6a8ac0,hl:#b06a6e
-    --color=fg:#b0b0b0,header:#6a8ac0,info:#8a8a8a,pointer:#6a8ac0
-    --color=marker:#8aaa6a,fg+:#d0d0d0,prompt:#6a8ac0,hl+:#b06a6e
-    --border rounded
-    --prompt '❯ '
-    --pointer '▶'
-    --marker '✓'
+  --height 85%
+  --bind ctrl-u:preview-up,ctrl-d:preview-down
+  --bind ctrl-/:toggle-preview
+  --border rounded
+  --color=bg:#0a0a0a,bg+:#1c1c1c,fg:#b0b0b0,fg+:#d0d0d0
+  --color=spinner:#6a8ac0,hl:#b06a6e,hl+:#b06a6e
+  --color=header:#6a8ac0,info:#8a8a8a,prompt:#6a8ac0
+  --color=pointer:#6a8ac0,marker:#8aaa6a
+  --prompt '❯ '
+  --pointer '▶'
+  --marker '✓'
 "
 
+export BAT_THEME="base16-256"

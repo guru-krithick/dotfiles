@@ -13,8 +13,8 @@ export BROWSER="zen-browser"
 # pnpm
 export PNPM_HOME="/home/guru/.local/share/pnpm"
 case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
+*":$PNPM_HOME:"*) ;;
+*) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
 # Java
@@ -66,33 +66,33 @@ export BAT_THEME="base16-256"
 ZSH_THEME=robbyrussell
 
 plugins=(
-  alias-finder
-  command-not-found
-  copybuffer
-  dirhistory
-  docker
-  docker-compose
-  extract
-  fzf
-  gh
-  history
-  jsontools
-  npm
-  nvm
-  pip
-  postgres
-  python
-  react-native
-  systemd
-  tmux
-  vscode
-  web-search
-  yarn
-  z
-  zoxide
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-  zsh-completions
+    alias-finder
+    command-not-found
+    copybuffer
+    dirhistory
+    docker
+    docker-compose
+    extract
+    fzf
+    gh
+    history
+    jsontools
+    npm
+    nvm
+    pip
+    postgres
+    python
+    react-native
+    systemd
+    tmux
+    vscode
+    web-search
+    yarn
+    z
+    zoxide
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+    zsh-completions
 )
 
 # Load completions
@@ -115,7 +115,7 @@ fi
 # ZSH OPTIONS
 # ============================================================================
 HISTFILE=~/.zsh_history
-HISTSIZE=$(( $(free -m | awk '/Mem:/ {print $2}') > 4096 ? 100000 : 50000 ))
+HISTSIZE=$(($(free -m | awk '/Mem:/ {print $2}') > 4096 ? 100000 : 50000))
 SAVEHIST=$HISTSIZE
 
 # History options
@@ -166,33 +166,33 @@ setopt NO_FLOW_CONTROL
 # ============================================================================
 # Python virtual environment auto-activation
 _venv_auto_activate() {
-  if [[ -z "$VIRTUAL_ENV" ]]; then
-    for candidate in .venv venv .env; do
-      if [[ -d "./$candidate" ]]; then
-        source "./$candidate/bin/activate"
-        break 
-      fi
-    done
-  else
-    parentdir="$(dirname "$VIRTUAL_ENV")"
-    if [[ "$PWD"/ != "$parentdir"/* ]]; then
-      deactivate
+    if [[ -z "$VIRTUAL_ENV" ]]; then
+        for candidate in .venv venv .env; do
+            if [[ -d "./$candidate" ]]; then
+                source "./$candidate/bin/activate"
+                break
+            fi
+        done
+    else
+        parentdir="$(dirname "$VIRTUAL_ENV")"
+        if [[ "$PWD"/ != "$parentdir"/* ]]; then
+            deactivate
+        fi
     fi
-  fi
 }
 
 # Hook into cd command
-function cd(){
-  builtin cd "$@"
-  _venv_auto_activate
+function cd() {
+    builtin cd "$@"
+    _venv_auto_activate
 }
 
 # Hook into zoxide (z command)
 if command -v zoxide >/dev/null 2>&1; then
-  function z() {
-    __zoxide_z "$@"
-    _venv_auto_activate
-  }
+    function z() {
+        __zoxide_z "$@"
+        _venv_auto_activate
+    }
 fi
 
 # Also hook into chpwd for any directory changes
@@ -200,41 +200,42 @@ autoload -U add-zsh-hook
 add-zsh-hook chpwd _venv_auto_activate
 
 # HTTP Server Function
-serve(){
-  port=${1:-8000}
-  python3 -m http.server "$port" && echo "HTTP server is running on http://localhost:$port" || {
-    echo "Failed to start HTTP server on port $port"
-    return 1
-  }
+serve() {
+    port=${1:-8000}
+    python3 -m http.server "$port" && echo "HTTP server is running on http://localhost:$port" || {
+        echo "Failed to start HTTP server on port $port"
+        return 1
+    }
 }
 
 vf() {
-  local file
-  file=$(
+    local file
+    file=$(
         git ls-files 2>/dev/null |
-        fzf --preview 'bat --color=always --style=numbers {}' --preview-window=right:60%) &&
+            fzf --preview 'bat --color=always --style=numbers {}' --preview-window=right:60%
+    ) &&
         nvim "$file"
 }
 
 gl() {
     git log --oneline --color=always |
-    fzf --ansi --preview 'git show --color {1}' --preview-window=right:60%
+        fzf --ansi --preview 'git show --color {1}' --preview-window=right:60%
 }
 
 extract() {
-  if [ -f "$1" ]; then
-    case "$1" in
-      *.tar.bz2) tar xjf "$1" ;;
-      *.tar.gz) tar xzf "$1" ;;
-      *.bz2) bunzip2 "$1" ;;
-      *.gz) gunzip "$1" ;;
-      *.tar) tar xf "$1" ;;
-      *.zip) unzip "$1" ;;
-      *.Z) uncompress "$1" ;;
-      *.7z) 7z x "$1" ;;
-      *) echo "'$1' cannot be extracted" ;;
-    esac
-  fi
+    if [ -f "$1" ]; then
+        case "$1" in
+        *.tar.bz2) tar xjf "$1" ;;
+        *.tar.gz) tar xzf "$1" ;;
+        *.bz2) bunzip2 "$1" ;;
+        *.gz) gunzip "$1" ;;
+        *.tar) tar xf "$1" ;;
+        *.zip) unzip "$1" ;;
+        *.Z) uncompress "$1" ;;
+        *.7z) 7z x "$1" ;;
+        *) echo "'$1' cannot be extracted" ;;
+        esac
+    fi
 }
 
 # Tmux Sessionizer (Ctrl+f to trigger)
@@ -245,6 +246,7 @@ bindkey -s '^f' '^u~/.config/tmux/scripts/tmux-sessionizer.sh\n'
 # ============================================================================
 alias c='clear'
 alias e='nvim'
+alias n='nvim'
 alias y='yazi'
 
 alias python='python3'
@@ -255,32 +257,32 @@ alias speedtest='speedtest-cli'
 alias btop='btop --force-utf'
 alias tmux='tmux -u'
 
-if command -v eza > /dev/null 2>&1; then
-  alias ls='eza --icons --group-directories-first'
-  alias la='eza -la --icons --group-directories-first --git'
-  alias l='eza -l --icons --group-directories-first'
-  alias ltree='eza --tree --icons -a'
+if command -v eza >/dev/null 2>&1; then
+    alias ls='eza --icons --group-directories-first'
+    alias la='eza -la --icons --group-directories-first --git'
+    alias l='eza -l --icons --group-directories-first'
+    alias ltree='eza --tree --icons -a'
 else
-  alias ls='ls --color=auto --group-directories-first'
-  alias la='ls -la --color=auto'
-  alias l='ls -l --color=auto'
+    alias ls='ls --color=auto --group-directories-first'
+    alias la='ls -la --color=auto'
+    alias l='ls -l --color=auto'
 fi
 
 if command -v rg >/dev/null 2>&1; then
-  alias grep='rg'
-  alias fgrep='rg -F'
-  alias egrep='rg'
+    alias grep='rg'
+    alias fgrep='rg -F'
+    alias egrep='rg'
 else
-  alias grep='grep --color=auto'
-  alias fgrep='fgrep --color=auto'
-  alias egrep='egrep --color=auto'
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
 fi
 
 if command -v bat >/dev/null 2>&1; then
-  alias cat='bat --paging=never'
-  alias catp='bat'
-else 
-  alias bat='cat'
+    alias cat='bat --paging=never'
+    alias catp='bat'
+else
+    alias bat='cat'
 fi
 
 alias myip="ip -4 addr show | awk '/inet/ {print \$2}' | cut -d/ -f1"

@@ -19,7 +19,7 @@ return {
 		vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Telescope find files" })
 		vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope live grep" })
 		vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
-        vim.keymap.set("n", "<C-p>", function()
+		vim.keymap.set("n", "<C-p>", function()
 			local ok = pcall(builtin.git_files)
 			if not ok then
 				builtin.find_files()
@@ -27,4 +27,3 @@ return {
 		end, { desc = "Git files or find files" })
 	end,
 }
-

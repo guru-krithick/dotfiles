@@ -9,22 +9,12 @@ return {
 				vim.keymap.set(mode, l, r, { buffer = bufnr, desc = desc })
 			end
 
-			-- Navigation
-			map("n", "]h", gs.next_hunk, "Next Hunk")
-			map("n", "[h", gs.prev_hunk, "Prev Hunk")
-
-			map("n", "<leader>hb", function()
+			map("n", "<leader>gb", function()
 				gs.blame_line({ full = true })
 			end, "Blame line")
-			map("n", "<leader>hB", gs.toggle_current_line_blame, "Toggle line blame")
-
-			map("n", "<leader>hd", gs.diffthis, "Diff this")
-			map("n", "<leader>hD", function()
-				gs.diffthis("~")
-			end, "Diff this ~")
-
-			-- Text object
-			map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "Gitsigns select hunk")
+			map("n", "<leader>gB", gs.toggle_current_line_blame, "Toggle line blame")
+			map("n", "<leader>gd", gs.diffthis, "Diff this")
+			map("n", "<leader>gp", gs.preview_hunk, "Preview hunk")
 		end,
 	},
 }

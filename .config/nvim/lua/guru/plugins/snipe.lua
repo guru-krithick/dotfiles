@@ -4,13 +4,27 @@ return {
 		{
 			"<leader>'",
 			function()
-				local buffers = require("snipe.buffer").get_buffers()
-				if #buffers > 0 then
-					require("snipe").open_buffer_menu()
-				end
+				require("snipe").open_buffer_menu()
 			end,
-			desc = "Open Snipe buffer menu",
+			desc = "Snipe buffer menu",
 		},
 	},
-	opts = {},
+	opts = {
+		ui = {
+			open_win_override = {
+				border = "rounded",
+			},
+			text_align = "file-first",
+		},
+		hints = {
+			dictionary = "asfghjklqwertyuiopzxcvbnm",
+		},
+		navigate = {
+			cancel_snipe = "<esc>",
+			close_buffer = "D",
+			open_vsplit = "V",
+			open_split = "H",
+		},
+		sort = "last",
+	},
 }

@@ -8,6 +8,7 @@ opt.tabstop = 4
 opt.shiftwidth = 4
 opt.expandtab = true
 opt.autoindent = true
+opt.smartindent = true
 
 opt.wrap = false
 
@@ -28,6 +29,7 @@ opt.signcolumn = "yes"
 api.nvim_set_hl(0, "WinSeparator", { fg = "#5C5C5C", bg = "NONE" })
 
 opt.scrolloff = 8
+opt.sidescrolloff = 8
 opt.isfname:append("@-@")
 opt.iskeyword:append("-")
 opt.updatetime = 50
@@ -37,3 +39,8 @@ opt.clipboard:append("unnamedplus")
 
 opt.splitright = true
 opt.splitbelow = true
+
+opt.showmode = false
+opt.pumheight = 10
+opt.inccommand = "split"
+opt.confirm = true

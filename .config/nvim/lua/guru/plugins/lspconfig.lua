@@ -37,16 +37,22 @@ return {
 		capabilities.textDocument.completion.completionItem.snippetSupport = false
 
 		local function on_attach(_, bufnr)
-			local opts = { buffer = bufnr, silent = true }
-			vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-			vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-			vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-			vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-			vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-			vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-			vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+			local opts = function(desc)
+				return { buffer = bufnr, silent = true, desc = desc }
+			end
+			vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("Go to definition"))
+			vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("Go to declaration"))
+			vim.keymap.set("n", "gr", vim.lsp.buf.references, opts("Go to references"))
+			vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts("Go to implementation"))
+			vim.keymap.set("n", "K", vim.lsp.buf.hover, opts("Hover documentation"))
+			vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts("Signature help"))
+			vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, opts("Type definition"))
+			vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts("Code action"))
+			vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("Rename symbol"))
+			vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts("Previous diagnostic"))
+			vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts("Next diagnostic"))
+			vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts("Show diagnostic"))
 		end
-
 
 		vim.lsp.config("lua_ls", {
 			cmd = { "lua-language-server" },

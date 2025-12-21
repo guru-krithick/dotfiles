@@ -26,15 +26,36 @@ keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move the selected line above"
 
 keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Move half page down and keep the cursor centered" })
 keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Move half page up and keep the cursor centered" })
+keymap.set("n", "n", "nzzzv", { desc = "Next search result centered" })
+keymap.set("n", "N", "Nzzzv", { desc = "Previous search result centered" })
 
 keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste without copying the contents to the clipboard" })
 keymap.set({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to system's clipboard" })
 
-keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-    { desc = "Global search and replace the word" })
-keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true }, { desc = "Make a file executable" })
+keymap.set(
+	"n",
+	"<leader>s",
+	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+	{ desc = "Global search and replace the word" }
+)
+keymap.set("n", "<leader>X", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make a file executable" })
 
 -- Tmux Sessionizer (only works inside tmux)
-keymap.set("n", "<C-f>", "<cmd>silent !tmux neww ~/.config/tmux/scripts/tmux-sessionizer.sh<CR>", { desc = "Open tmux sessionizer" })
-keymap.set("n", "<M-h>", "<cmd>silent !tmux neww ~/.config/tmux/scripts/tmux-sessionizer.sh -s 0 --vsplit<CR>", { desc = "Sessionizer vsplit" })
-keymap.set("n", "<M-H>", "<cmd>silent !tmux neww ~/.config/tmux/scripts/tmux-sessionizer.sh -s 0<CR>", { desc = "Sessionizer new window" })
+keymap.set(
+	"n",
+	"<C-f>",
+	"<cmd>silent !tmux neww ~/.config/tmux/scripts/tmux-sessionizer.sh<CR>",
+	{ desc = "Open tmux sessionizer" }
+)
+keymap.set(
+	"n",
+	"<M-h>",
+	"<cmd>silent !tmux neww ~/.config/tmux/scripts/tmux-sessionizer.sh -s 0 --vsplit<CR>",
+	{ desc = "Sessionizer vsplit" }
+)
+keymap.set(
+	"n",
+	"<M-H>",
+	"<cmd>silent !tmux neww ~/.config/tmux/scripts/tmux-sessionizer.sh -s 0<CR>",
+	{ desc = "Sessionizer new window" }
+)

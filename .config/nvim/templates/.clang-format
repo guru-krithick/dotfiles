@@ -1,0 +1,16 @@
+# Clang-format config for competitive programming
+# Copy this to your CP directory as .clang-format
+
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+AccessModifierOffset: -4
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: true
+BreakBeforeBraces: Attach
+IndentCaseLabels: false
+SortIncludes: false
+SpaceAfterTemplateKeyword: false

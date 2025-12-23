@@ -162,6 +162,11 @@ return {
 				"--background-index",
 				"--clang-tidy",
 				"--header-insertion=iwyu",
+				"--completion-style=detailed",
+				"--function-arg-placeholders",
+				"--fallback-style=llvm",
+				"--all-scopes-completion",
+				"--pch-storage=memory",
 			},
 			filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
 			root_markers = {
@@ -174,7 +179,12 @@ return {
 				".git",
 			},
 			capabilities = capabilities,
-			on_attach = on_attach,
+			on_attach = function(client, bufnr)
+				on_attach(client, bufnr)
+				-- Switch between header/source
+				vim.keymap.set("n", "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>",
+					{ buffer = bufnr, desc = "Switch header/source" })
+			end,
 		})
 
 		vim.lsp.config("jdtls", {

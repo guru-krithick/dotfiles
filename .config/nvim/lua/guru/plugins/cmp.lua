@@ -5,15 +5,19 @@ return {
 		"hrsh7th/cmp-nvim-lsp",
 		"hrsh7th/cmp-buffer",
 		"hrsh7th/cmp-path",
+		"L3MON4D3/LuaSnip",
+		"saadparwaiz1/cmp_luasnip",
 	},
 
 	config = function()
 		local cmp = require("cmp")
+		local luasnip = require("luasnip")
 
 		cmp.setup({
 			snippet = {
-				-- Disable snippets completely
-				expand = function() end,
+				expand = function(args)
+					luasnip.lsp_expand(args.body)
+				end,
 			},
 
 			window = {
@@ -48,6 +52,7 @@ return {
 			}),
 
 			sources = cmp.config.sources({
+				{ name = "luasnip" },
 				{ name = "nvim_lsp" },
 				{ name = "path" },
 			}, {
@@ -58,6 +63,7 @@ return {
 				fields = { "kind", "abbr", "menu" },
 				format = function(entry, vim_item)
 					vim_item.menu = ({
+						luasnip = "[Snip]",
 						nvim_lsp = "[LSP]",
 						buffer = "[Buffer]",
 						path = "[Path]",

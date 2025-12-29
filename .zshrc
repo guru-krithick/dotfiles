@@ -248,6 +248,7 @@ alias c='clear'
 alias e='nvim'
 alias n='nvim'
 alias y='yazi'
+alias t='tmux'
 
 alias python='python3'
 alias pip='pip3'

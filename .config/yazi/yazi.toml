@@ -3,12 +3,9 @@
 
 [mgr]
 linemode = "size"
-show_hidden = true
 
 [opener]
 edit = [
-    { run = 'nvim "$@"', desc = "Edit with Neovim", block = true, for = "unix" },
+  { run = 'nvim "$@"', desc = "Edit with Neovim", block = true, for = "unix" },
 ]
-play = [
-    { run = 'mpv --force-window "$@"', orphan = true, for = "unix" },
-]
+play = [{ run = 'mpv --force-window "$@"', orphan = true, for = "unix" }]

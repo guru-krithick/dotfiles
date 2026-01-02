@@ -63,5 +63,10 @@ keymap.set(
 -- C++ Learning Keymaps (works with single files or Makefile projects)
 keymap.set("n", "<leader>cb", "<cmd>!g++ -std=c++17 -Wall -Wextra -g -o %:r %<CR>", { desc = "C++ Build current file" })
 keymap.set("n", "<leader>cr", "<cmd>!./%:r<CR>", { desc = "C++ Run compiled binary" })
-keymap.set("n", "<leader>cx", "<cmd>!g++ -std=c++17 -Wall -Wextra -g -o %:r % && ./%:r<CR>", { desc = "C++ Build and Run" })
+keymap.set(
+	"n",
+	"<leader>cx",
+	"<cmd>!g++ -std=c++17 -Wall -Wextra -g -o %:r % && .%:r<CR>",
+	{ desc = "C++ Build and Run" }
+)
 keymap.set("n", "<leader>cm", "<cmd>!make && make run<CR>", { desc = "C++ Make and Run (Makefile)" })

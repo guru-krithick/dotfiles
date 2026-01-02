@@ -1,10 +1,8 @@
 # Auto-start Sway on tty1
-[[ -z "$NO_SWAY" && "$(tty)" = "/dev/tty1" ]] && exec sway --unsupported-gpu && exec sway reload
+[[ -z "$NO_SWAY" && "$(tty)" = "/dev/tty1" ]] && exec sway --unsupported-gpu
 
-# ============================================================================
-# ENVIRONMENT VARIABLES
-# ============================================================================
 export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME=robbyrussell
 export ZSH_COMPDUMP="$HOME/.zcompdump"
 export TZ="Asia/Kolkata"
 export EDITOR="code"
@@ -33,7 +31,6 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.npm-global/bin:$PATH"
-export PATH="$HOME/.yarn/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.pyenv/bin:$PATH"
 export PATH="/opt/apache-maven-3.9.6/bin:$PATH"
@@ -43,7 +40,8 @@ export PATH="/opt/docker/bin:$PATH"
 export CONDA_HOME="$HOME/miniconda3"
 export PATH="$CONDA_HOME/bin:$PATH"
 
-# FZF Ultra Dark Theme
+# FZF Configuration
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git --exclude node_modules --exclude .cache --exclude .npm --exclude dist --exclude build'
 export FZF_DEFAULT_OPTS="
   --height 85%
   --bind ctrl-u:preview-up,ctrl-d:preview-down
@@ -57,48 +55,22 @@ export FZF_DEFAULT_OPTS="
   --pointer '▶'
   --marker '✓'
 "
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git --exclude node_modules'
 
 export BAT_THEME="base16-256"
 
-# ============================================================================
-# OH-MY-ZSH CONFIGURATION
-# ============================================================================
-ZSH_THEME=robbyrussell
-
 plugins=(
-    alias-finder
     command-not-found
-    copybuffer
-    dirhistory
-    docker
-    docker-compose
     extract
     fzf
-    gh
-    history
-    jsontools
-    npm
-    nvm
-    pip
-    postgres
-    python
-    react-native
-    systemd
-    tmux
-    vscode
-    web-search
-    yarn
-    z
-    zoxide
+    zsh-completions
     zsh-autosuggestions
     zsh-syntax-highlighting
-    zsh-completions
 )
 
-# Load completions
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 
-# Load Oh My Zsh
 source "$ZSH/oh-my-zsh.sh"
 
 # bun completions
@@ -111,14 +83,12 @@ else
     export PATH="/home/guru/miniconda3/bin:$PATH"
 fi
 
-# ============================================================================
 # ZSH OPTIONS
-# ============================================================================
-HISTFILE=~/.zsh_history
-HISTSIZE=$(($(free -m | awk '/Mem:/ {print $2}') > 4096 ? 100000 : 50000))
-SAVEHIST=$HISTSIZE
 
-# History options
+HISTFILE=~/.zsh_history
+HISTSIZE=100000
+SAVEHIST=100000
+
 setopt EXTENDED_HISTORY
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
@@ -131,14 +101,12 @@ setopt HIST_SAVE_NO_DUPS
 setopt HIST_REDUCE_BLANKS
 setopt HIST_VERIFY
 
-# Directory options
 setopt AUTO_CD
 setopt AUTO_PUSHD
 setopt PUSHD_IGNORE_DUPS
 setopt PUSHD_SILENT
 setopt CDABLE_VARS
 
-# Completion options
 setopt COMPLETE_IN_WORD
 setopt ALWAYS_TO_END
 setopt PATH_DIRS
@@ -147,12 +115,10 @@ setopt AUTO_LIST
 setopt AUTO_PARAM_SLASH
 setopt COMPLETE_ALIASES
 
-# Globbing options
 setopt EXTENDED_GLOB
 setopt GLOB_DOTS
 setopt NUMERIC_GLOB_SORT
 
-# General options
 setopt CORRECT
 setopt INTERACTIVE_COMMENTS
 setopt LONG_LIST_JOBS
@@ -161,17 +127,33 @@ setopt NOTIFY
 setopt NO_BEEP
 setopt NO_FLOW_CONTROL
 
-# ============================================================================
+# ZOXIDE
+
+eval "$(zoxide init zsh)"
+
+function cd() {
+    if [[ $# -eq 0 ]]; then
+        builtin cd ~
+        _venv_auto_activate
+    else
+        __zoxide_z "$@"
+        _venv_auto_activate
+    fi
+}
+
 # FUNCTIONS
-# ============================================================================
-# Python virtual environment auto-activation
+
 _venv_auto_activate() {
     if [[ -z "$VIRTUAL_ENV" ]]; then
-        for candidate in .venv venv .env; do
-            if [[ -d "./$candidate" ]]; then
-                source "./$candidate/bin/activate"
-                break
-            fi
+        local current_dir="$PWD"
+        while [[ "$current_dir" != "/" ]]; do
+            for candidate in .venv venv .env; do
+                if [[ -d "$current_dir/$candidate" ]]; then
+                    source "$current_dir/$candidate/bin/activate"
+                    return
+                fi
+            done
+            current_dir="$(dirname "$current_dir")"
         done
     else
         parentdir="$(dirname "$VIRTUAL_ENV")"
@@ -181,29 +163,13 @@ _venv_auto_activate() {
     fi
 }
 
-# Hook into cd command
-function cd() {
-    builtin cd "$@"
-    _venv_auto_activate
-}
-
-# Hook into zoxide (z command)
-if command -v zoxide >/dev/null 2>&1; then
-    function z() {
-        __zoxide_z "$@"
-        _venv_auto_activate
-    }
-fi
-
-# Also hook into chpwd for any directory changes
 autoload -U add-zsh-hook
 add-zsh-hook chpwd _venv_auto_activate
 
-# HTTP Server Function
 serve() {
     port=${1:-8000}
-    python3 -m http.server "$port" && echo "HTTP server is running on http://localhost:$port" || {
-        echo "Failed to start HTTP server on port $port"
+    python3 -m http.server "$port" && echo "HTTP server on http://localhost:$port" || {
+        echo "Failed to start server on port $port"
         return 1
     }
 }
@@ -213,8 +179,7 @@ vf() {
     file=$(
         git ls-files 2>/dev/null |
             fzf --preview 'bat --color=always --style=numbers {}' --preview-window=right:60%
-    ) &&
-        nvim "$file"
+    ) && nvim "$file"
 }
 
 gl() {
@@ -222,39 +187,22 @@ gl() {
         fzf --ansi --preview 'git show --color {1}' --preview-window=right:60%
 }
 
-extract() {
-    if [ -f "$1" ]; then
-        case "$1" in
-        *.tar.bz2) tar xjf "$1" ;;
-        *.tar.gz) tar xzf "$1" ;;
-        *.bz2) bunzip2 "$1" ;;
-        *.gz) gunzip "$1" ;;
-        *.tar) tar xf "$1" ;;
-        *.zip) unzip "$1" ;;
-        *.Z) uncompress "$1" ;;
-        *.7z) 7z x "$1" ;;
-        *) echo "'$1' cannot be extracted" ;;
-        esac
-    fi
-}
-
-# Tmux Sessionizer (Ctrl+f to trigger)
 bindkey -s '^f' '^u~/.config/tmux/scripts/tmux-sessionizer.sh\n'
 
-# ============================================================================
+# SUFFIX ALIASES
+
+alias -s {js,ts,jsx,tsx,py,json,yaml,yml,toml,md,txt}=nvim
+alias -s {pdf}=zathura
+alias -s git="git clone"
+
 # ALIASES
-# ============================================================================
+
 alias c='clear'
 alias e='nvim'
 alias n='nvim'
 alias y='yazi'
-alias t='tmux'
-
-alias python='python3'
-alias pip='pip3'
-
+alias t='tmux -u'
 alias speedtest='speedtest-cli'
-
 alias btop='btop --force-utf'
 alias tmux='tmux -u'
 
@@ -290,11 +238,9 @@ alias myip="ip -4 addr show | awk '/inet/ {print \$2}' | cut -d/ -f1"
 alias localip="ip route get 1.1.1.1 | awk '{print \$7}'"
 alias publicip='curl -s ifconfig.me'
 alias ports='ss -tulwn'
-
 alias mountde='~/Scripts/mount-scripts/mount_drives.sh'
 alias unmountde='~/Scripts/mount-scripts/unmount_drives.sh'
 
-# CONFIG FILES
 alias zshconfig='nvim ~/.zshrc'
 alias ghosttyconfig='nvim ~/.config/ghostty/config'
 alias nvimconfig='nvim ~/.config/nvim/'
@@ -302,8 +248,6 @@ alias swayconfig='nvim ~/.config/sway/config'
 alias dotfiles='nvim ~/dotfiles'
 alias reload='source ~/.zshrc'
 
-# Load local configurations if they exist
 [[ -r ~/.zsh_local ]] && source ~/.zsh_local
 
-# Ensure clean exit
 true

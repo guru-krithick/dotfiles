@@ -16,8 +16,7 @@ set $pics ${XDG_PICTURES_DIR:-$HOME/Pictures}
 set $vids ${XDG_VIDEOS_DIR:-$HOME/Recordings}
 
 # Font
-font pango:JetBrainsMono Nerd Font 14
-
+font pango:Maple Mono NF 16
 # ============================================================================
 # COLOR THEME (Ultra Dark - muted palette)
 # ============================================================================

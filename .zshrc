@@ -174,19 +174,6 @@ serve() {
     }
 }
 
-vf() {
-    local file
-    file=$(
-        git ls-files 2>/dev/null |
-            fzf --preview 'bat --color=always --style=numbers {}' --preview-window=right:60%
-    ) && nvim "$file"
-}
-
-gl() {
-    git log --oneline --color=always |
-        fzf --ansi --preview 'git show --color {1}' --preview-window=right:60%
-}
-
 bindkey -s '^f' '^u~/.config/tmux/scripts/tmux-sessionizer.sh\n'
 
 # SUFFIX ALIASES

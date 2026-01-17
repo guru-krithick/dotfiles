@@ -1,0 +1,126 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 42,
+    "spacing": 0,
+    "modules-left": [
+        "sway/workspaces",
+        "sway/scratchpad",
+        "sway/mode",
+        "mpris"
+    ],
+    "modules-center": [
+        "custom/pomodoro",
+        "clock"
+    ],
+    "modules-right": [
+        "pulseaudio",
+        "battery",
+        "network",
+        "backlight",
+        "custom/kb-mode",
+        "idle_inhibitor"
+    ],
+    "sway/workspaces": {
+        "on-click": "activate",
+        "format": "{name}",
+        "disable-scroll": true,
+        "all-outputs": true
+    },
+    "sway/scratchpad": {
+        "format": "{icon} {count}",
+        "format-icons": ["󰖲", "󰖲"],
+        "show-empty": false,
+        "tooltip": true,
+        "tooltip-format": "{title}"
+    },
+    "sway/mode": {
+        "format": "{}",
+        "tooltip": false
+    },
+    "mpris": {
+        "format": "{status_icon} {artist} - {title}",
+        "format-paused": "{status_icon} {artist} - {title}",
+        "format-stopped": "󰎇 Not Playing",
+        "status-icons": {
+            "playing": "󰎆",
+            "paused": "󰏤",
+            "stopped": "󰎇"
+        },
+        "max-length": 40,
+        "tooltip-format": "{player}: {title} by {artist} ({album})",
+        "tooltip-format-stopped": "No media playing",
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous"
+    },
+    "custom/pomodoro": {
+        "exec": "~/.config/waybar/scripts/pomodoro.sh",
+        "return-type": "json",
+        "interval": 1,
+        "on-click": "~/.config/waybar/scripts/pomodoro.sh start",
+        "on-click-right": "~/.config/waybar/scripts/pomodoro.sh toggle",
+        "on-click-middle": "~/.config/waybar/scripts/pomodoro.sh reset",
+        "on-scroll-up": "~/.config/waybar/scripts/pomodoro.sh add",
+        "on-scroll-down": "~/.config/waybar/scripts/pomodoro.sh sub"
+    },
+    "clock": {
+        "timezone": "Asia/Kolkata",
+        "tooltip-format": "<tt><small>{calendar}</small></tt>",
+        "format-alt": " {:%a %d %b}",
+        "format": " {:%H:%M}"
+    },
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "󰖁",
+        "format-icons": {
+            "default": ["󰕿", "󰖀", "󰕾"],
+            "headphone": "󰋋",
+            "headset": "󰋎"
+        },
+        "max-volume": 100,
+        "on-click": "pavucontrol",
+        "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+    },
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-plugged": "󰚥 {capacity}%",
+        "format-alt": "{icon} {time}",
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "network": {
+        "format-wifi": "󰤨 {signalStrength}%",
+        "format-ethernet": "󰈀",
+        "format-linked": "󰈀",
+        "format-disconnected": "󰤭",
+        "format-alt": "{essid}",
+        "tooltip-format": "{ifname}\n{ipaddr}/{cidr}\n{gwaddr}",
+        "tooltip-format-wifi": "{essid}\n{ipaddr}/{cidr}\n󰇚 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes}"
+    },
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "{icon} {percent}%",
+        "on-scroll-up": "brightnessctl set +5%",
+        "on-scroll-down": "brightnessctl set 5%-",
+        "format-icons": ["󰃞", "󰃟", "󰃠"]
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "󰅶",
+            "deactivated": "󰾪"
+        }
+    },
+    "custom/kb-mode": {
+        "exec": "~/.config/waybar/scripts/keyboard-mode.sh",
+        "return-type": "json",
+        "interval": 2,
+        "on-click": "~/.config/sway/scripts/toggle-mouse.sh"
+    }
+}

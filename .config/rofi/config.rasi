@@ -1,0 +1,16 @@
+configuration {
+    modi: "drun,run";
+    show-icons: true;
+    icon-theme: "Papirus-Dark";
+    terminal: "ghostty";
+    drun-display-format: "{name}";
+    display-drun: " Apps";
+    display-run: " Run";
+    display-window: " Windows";
+    sidebar-mode: false;
+    hover-select: true;
+    me-select-entry: "";
+    me-accept-entry: "MousePrimary";
+}
+
+@theme "~/.config/rofi/theme.rasi"

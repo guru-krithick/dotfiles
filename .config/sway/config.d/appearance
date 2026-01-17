@@ -1,0 +1,51 @@
+font pango:Maple Mono NF 16
+
+set $black   #0a0a0a
+set $red     #b06a6e
+set $green   #8aaa6a
+set $yellow  #b09a5a
+set $blue    #6a8ac0
+set $magenta #9a7aba
+set $cyan    #6aaaba
+set $white   #b0b0b0
+
+set $bright_black   #333333
+set $bright_red     #c07a7e
+set $bright_green   #9aba7a
+set $bright_yellow  #c0aa6a
+set $bright_blue    #7a9ad0
+set $bright_magenta #aa8aca
+set $bright_cyan    #7abaca
+set $bright_white   #d0d0d0
+
+set $bg #0a0a0a
+set $fg #b0b0b0
+set $ac #6a8ac0
+set $in #333333
+set $ur #b06a6e
+
+output * bg $HOME/Pictures/wallpaper.jpg fill
+
+default_border pixel 2
+default_floating_border pixel 2
+titlebar_padding 1
+titlebar_border_thickness 0
+hide_edge_borders smart
+smart_borders on
+smart_gaps on
+gaps inner 8
+gaps outer 4
+gaps top 10
+
+client.focused          $ac $ac $bg $ac $ac
+client.focused_inactive $in $in $fg $in $in
+client.unfocused        $in $in $fg $in $in
+client.urgent           $ur $ur $bg $ur $ur
+client.placeholder      $bg $bg $fg $bg $bg
+client.background       $bg
+
+bar {
+    swaybar_command waybar
+}
+
+

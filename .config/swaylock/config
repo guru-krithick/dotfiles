@@ -4,27 +4,27 @@ clock
 screenshot
 effect-blur=7x5
 effect-vignette=0.5:0.5
-color=0a0a0a
+color=1a1a1a
 
 indicator
 indicator-radius=120
 indicator-thickness=12
 indicator-caps-lock
 
-ring-color=333333
-key-hl-color=6a8ac0
+ring-color=3a3a3a
+key-hl-color=b0b0b0
 separator-color=00000000
 
-inside-color=0a0a0a88
-inside-clear-color=0a0a0a88
-inside-caps-lock-color=0a0a0a88
-inside-ver-color=0a0a0a88
-inside-wrong-color=0a0a0a88
+inside-color=1a1a1a88
+inside-clear-color=1a1a1a88
+inside-caps-lock-color=1a1a1a88
+inside-ver-color=1a1a1a88
+inside-wrong-color=1a1a1a88
 
-ring-clear-color=9a7aba
-ring-caps-lock-color=b09a5a
-ring-ver-color=6a8ac0
-ring-wrong-color=b06a6e
+ring-clear-color=888888
+ring-caps-lock-color=cccccc
+ring-ver-color=b0b0b0
+ring-wrong-color=666666
 
 line-color=00000000
 line-clear-color=00000000

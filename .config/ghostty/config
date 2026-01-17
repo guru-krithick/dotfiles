@@ -13,7 +13,7 @@ font-thicken = true
 
 window-padding-balance = true
 window-save-state = always
-window-decoration = true 
+window-decoration = true
 confirm-close-surface = false
 macos-option-as-alt = true
 
@@ -25,8 +25,8 @@ shell-integration-features = no-cursor,sudo,no-title
 window-inherit-working-directory = false
 
 scrollback-limit = 100000
-background-opacity = 0.7
-background-blur-radius = 10 
+background-opacity = 0.85
+background-blur-radius = 25
 title = "Ghostty"
 class = "ghostty"
 

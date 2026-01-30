@@ -25,7 +25,7 @@ shell-integration-features = no-cursor,sudo,no-title
 window-inherit-working-directory = false
 
 scrollback-limit = 100000
-background-opacity = 0.85
+background-opacity = 0.82
 background-blur-radius = 25
 title = "Ghostty"
 class = "ghostty"

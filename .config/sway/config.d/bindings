@@ -19,7 +19,6 @@ bindsym $mod+Shift+x exec chromium
 bindsym $mod+Shift+e exec thunar
 
 bindsym $mod+d exec $menu -show drun
-bindsym $mod+Shift+d exec $menu -show run
 
 bindsym $mod+Shift+v exec cliphist list | $menu -dmenu -theme ~/.config/rofi/clipboard.rasi -p "󰅍" | cliphist decode | wl-copy
 bindsym $mod+Ctrl+Delete exec cliphist wipe && notify-send "Clipboard cleared"

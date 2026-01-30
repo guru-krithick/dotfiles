@@ -39,6 +39,8 @@
         "tooltip": false
     },
     "mpris": {
+        "player": "firefox",
+        "ignored-players": ["chromium", "chrome", "brave", "vlc", "mpv"],
         "format": "{status_icon} {artist} - {title}",
         "format-paused": "{status_icon} {artist} - {title}",
         "format-stopped": "󰎇 Not Playing",

@@ -5,12 +5,21 @@ return {
 		"hrsh7th/cmp-nvim-lsp",
 		"hrsh7th/cmp-buffer",
 		"hrsh7th/cmp-path",
+		"hrsh7th/cmp-nvim-lsp-signature-help",
+		"onsails/lspkind.nvim",
 	},
 
 	config = function()
 		local cmp = require("cmp")
+		local lspkind = require("lspkind")
 
 		cmp.setup({
+			preselect = cmp.PreselectMode.None,
+			completion = {
+				completeopt = "menu,menuone,noselect",
+				keyword_length = 2,
+			},
+
 			snippet = {
 				-- Disable snippets completely
 				expand = function() end,
@@ -19,6 +28,13 @@ return {
 			window = {
 				completion = cmp.config.window.bordered(),
 				documentation = cmp.config.window.bordered(),
+			},
+
+			-- Filter out snippets and limit results
+			matching = {
+				disallow_fuzzy_matching = false,
+				disallow_partial_matching = false,
+				disallow_prefix_unmatching = true,
 			},
 
 			mapping = cmp.mapping.preset.insert({
@@ -48,22 +64,31 @@ return {
 			}),
 
 			sources = cmp.config.sources({
-				{ name = "nvim_lsp" },
-				{ name = "path" },
+				{
+					name = "nvim_lsp",
+					max_item_count = 10,
+					entry_filter = function(entry)
+						-- Filter out snippets from LSP
+						return require("cmp.types").lsp.CompletionItemKind[entry:get_kind()] ~= "Snippet"
+					end,
+				},
+				{ name = "nvim_lsp_signature_help" },
+				{ name = "path", max_item_count = 5 },
 			}, {
-				{ name = "buffer", keyword_length = 3 },
+				{ name = "buffer", keyword_length = 4, max_item_count = 5 },
 			}),
 
 			formatting = {
-				fields = { "kind", "abbr", "menu" },
-				format = function(entry, vim_item)
-					vim_item.menu = ({
+				format = lspkind.cmp_format({
+					mode = "symbol_text",
+					maxwidth = 50,
+					ellipsis_char = "...",
+					menu = {
 						nvim_lsp = "[LSP]",
-						buffer = "[Buffer]",
+						buffer = "[Buf]",
 						path = "[Path]",
-					})[entry.source.name]
-					return vim_item
-				end,
+					},
+				}),
 			},
 
 			experimental = {

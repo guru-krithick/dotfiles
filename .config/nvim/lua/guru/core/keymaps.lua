@@ -3,7 +3,20 @@ local keymap = vim.keymap
 
 g.mapleader = " "
 
-keymap.set("n", "<leader>ee", vim.cmd.Ex, { desc = "Open file explorer (netrw btw)" })
+vim.keymap.set({ "n", "i", "v" }, "<Up>", "<Nop>")
+vim.keymap.set({ "n", "i", "v" }, "<Down>", "<Nop>")
+vim.keymap.set({ "n", "i", "v" }, "<Left>", "<Nop>")
+vim.keymap.set({ "n", "i", "v" }, "<Right>", "<Nop>")
+
+-- Better escape
+keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode" })
+
+-- Quick save and quit
+keymap.set("n", "<leader>w", "<cmd>w<cr>", { desc = "Save file" })
+keymap.set("n", "<leader>q", "<cmd>q<cr>", { desc = "Quit" })
+
+-- Clear search highlights
+keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear highlights" })
 
 keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
 keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
@@ -23,6 +36,13 @@ keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer
 
 keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move the selected line bellow" })
 keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move the selected line above" })
+
+-- Better indenting in visual mode (stay in visual mode)
+keymap.set("v", "<", "<gv", { desc = "Indent left" })
+keymap.set("v", ">", ">gv", { desc = "Indent right" })
+
+-- Join lines without moving cursor
+keymap.set("n", "J", "mzJ`z", { desc = "Join lines" })
 
 keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Move half page down and keep the cursor centered" })
 keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Move half page up and keep the cursor centered" })
@@ -59,14 +79,3 @@ keymap.set(
 	"<cmd>silent !tmux neww ~/.config/tmux/scripts/tmux-sessionizer.sh -s 0<CR>",
 	{ desc = "Sessionizer new window" }
 )
-
--- C++ Learning Keymaps (works with single files or Makefile projects)
-keymap.set("n", "<leader>cb", "<cmd>!g++ -std=c++17 -Wall -Wextra -g -o %:r %<CR>", { desc = "C++ Build current file" })
-keymap.set("n", "<leader>cr", "<cmd>!./%:r<CR>", { desc = "C++ Run compiled binary" })
-keymap.set(
-	"n",
-	"<leader>cx",
-	"<cmd>!g++ -std=c++17 -Wall -Wextra -g -o %:r % && .%:r<CR>",
-	{ desc = "C++ Build and Run" }
-)
-keymap.set("n", "<leader>cm", "<cmd>!make && make run<CR>", { desc = "C++ Make and Run (Makefile)" })

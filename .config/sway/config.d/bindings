@@ -97,8 +97,8 @@ bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5% && no
 bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle && notify-send -t 1000 "Volume" "$(pactl get-sink-mute @DEFAULT_SINK@ | grep -q yes && echo Muted || echo Unmuted)"
 bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
-bindsym XF86MonBrightnessUp exec brightnessctl set +5% && notify-send -t 1000 "Brightness" "$(brightnessctl -m | cut -d',' -f4)"
-bindsym XF86MonBrightnessDown exec brightnessctl set 5%- && notify-send -t 1000 "Brightness" "$(brightnessctl -m | cut -d',' -f4)"
+bindsym XF86MonBrightnessUp exec brightnessctl set +2% && notify-send -t 1000 "Brightness" "$(brightnessctl -m | cut -d',' -f4)"
+bindsym XF86MonBrightnessDown exec brightnessctl set 2%- && notify-send -t 1000 "Brightness" "$(brightnessctl -m | cut -d',' -f4)"
 
 bindsym XF86AudioPlay exec playerctl play-pause
 bindsym XF86AudioNext exec playerctl next

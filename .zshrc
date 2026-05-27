@@ -59,6 +59,7 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git --exclude node_modules'
 
 export BAT_THEME="base16-256"
+export _JAVA_AWT_WM_NONREPARENTING=1
 
 plugins=(
     command-not-found
@@ -192,6 +193,7 @@ alias t='tmux -u'
 alias speedtest='speedtest-cli'
 alias btop='btop --force-utf'
 alias tmux='tmux -u'
+alias cc='claude'
 
 if command -v eza >/dev/null 2>&1; then
     alias ls='eza --icons --group-directories-first'
@@ -238,3 +240,4 @@ alias reload='source ~/.zshrc'
 [[ -r ~/.zsh_local ]] && source ~/.zsh_local
 
 true
+export PATH=~/.npm-global/bin:$PATH

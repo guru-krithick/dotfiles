@@ -13,7 +13,6 @@ font-thicken = true
 
 window-padding-balance = true
 window-save-state = always
-window-decoration = true
 confirm-close-surface = false
 macos-option-as-alt = true
 
@@ -35,3 +34,4 @@ clipboard-write = allow
 clipboard-paste-protection = true
 
 focus-follows-mouse = false
+

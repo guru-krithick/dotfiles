@@ -57,3 +57,4 @@ for_window [app_id="zen*"] inhibit_idle fullscreen
 no_focus [window_role="pop-up"]
 no_focus [app_id="waybar"]
 focus_on_window_activation smart
+

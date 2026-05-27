@@ -14,8 +14,10 @@ video/mp4=mpv.desktop
 video/mkv=mpv.desktop
 video/webm=mpv.desktop
 video/avi=mpv.desktop
-application/pdf=org.pwmt.zathura.desktop
+application/pdf=zen.desktop
 text/plain=nvim.desktop
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 
 [Added Associations]
 image/png=com.mitchellh.ghostty.desktop;
+application/pdf=zen.desktop;

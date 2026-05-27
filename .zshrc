@@ -1,5 +1,5 @@
 # Auto-start Sway on tty1
-[[ -z "$NO_SWAY" && "$(tty)" = "/dev/tty1" ]] && exec sway --unsupported-gpu
+[[ -z "$NO_NIRI" && "$(tty)" = "/dev/tty1" ]] && exec niri
 
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME=robbyrussell
@@ -233,7 +233,7 @@ alias unmountde='~/Scripts/mount-scripts/unmount_drives.sh'
 alias zshconfig='nvim ~/.zshrc'
 alias ghosttyconfig='nvim ~/.config/ghostty/config'
 alias nvimconfig='nvim ~/.config/nvim/'
-alias swayconfig='nvim ~/.config/sway/config'
+alias niriconfig='nvim ~/.config/niri/config'
 alias dotfiles='nvim ~/dotfiles'
 alias reload='source ~/.zshrc'
 

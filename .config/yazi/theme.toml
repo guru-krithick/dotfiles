@@ -184,3 +184,7 @@ rules = [
   # Folders (use default)
   { name = "*/", text = "" },
 ]
+
+[flavor]
+dark  = "noctalia"
+light = "noctalia"

@@ -34,4 +34,3 @@ clipboard-write = allow
 clipboard-paste-protection = true
 
 focus-follows-mouse = false
-

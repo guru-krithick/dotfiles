@@ -3,7 +3,7 @@
 * {
   font-family: "Maple Mono NF", "JetBrainsMono Nerd Font", "Symbols Nerd Font", monospace;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 15px;
   min-height: 0;
 }
 
@@ -22,14 +22,14 @@ tooltip label {
   color: @foreground;
 }
 
-#workspaces {
+#tags {
   margin: 5px 0 5px 10px;
   padding: 3px;
   background-color: @background-alt;
   border-radius: 18px;
 }
 
-#workspaces button {
+#tags button {
   padding: 2px 0;
   margin: 2px;
   min-width: 26px;
@@ -38,7 +38,7 @@ tooltip label {
   background-color: transparent;
   border: none;
   border-radius: 13px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: bold;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1),
               background-color 0.2s ease,
@@ -46,23 +46,22 @@ tooltip label {
               min-width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-#workspaces button.active,
-#workspaces button.focused {
+#tags button.focused {
   min-width: 36px;
   color: @black;
   background: linear-gradient(135deg, #ffffff 0%, #d0d0d0 100%);
 }
 
-#workspaces button.visible {
+#tags button.occupied {
   color: @gray;
 }
 
-#workspaces button:hover {
-  color: @white;
-  background-color: rgba(255, 255, 255, 0.1);
+#tags button:hover {
+  color: @foreground;
+  background-color: @surface1;
 }
 
-#workspaces button.urgent {
+#tags button.urgent {
   color: @white;
   background: linear-gradient(135deg, #ff5555 0%, #aa3333 100%);
 }
@@ -77,7 +76,7 @@ tooltip label {
 }
 
 #window:hover {
-  color: @white;
+  color: @accent-dim;
 }
 
 #mpris {
@@ -90,7 +89,7 @@ tooltip label {
 }
 
 #mpris:hover {
-  color: @white;
+  color: @accent-dim;
 }
 
 #mpris.playing {
@@ -121,7 +120,7 @@ tooltip label {
 }
 
 #custom-pomodoro:hover {
-  color: @white;
+  color: @accent-dim;
 }
 
 #custom-pomodoro.standby {
@@ -148,7 +147,7 @@ tooltip label {
 }
 
 #clock:hover {
-  color: @white;
+  color: @accent-dim;
 }
 
 #pulseaudio,
@@ -168,7 +167,7 @@ tooltip label {
 #network:hover,
 #backlight:hover,
 #idle_inhibitor:hover {
-  color: @white;
+  color: @accent-dim;
 }
 
 #pulseaudio {

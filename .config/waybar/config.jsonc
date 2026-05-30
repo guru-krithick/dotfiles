@@ -1,9 +1,9 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 42,
+  "height": 50,
   "spacing": 0,
-  "modules-left": ["niri/workspaces", "mpris"],
+  "modules-left": ["dwl/tags", "mpris"],
   "modules-center": ["custom/pomodoro", "clock"],
   "modules-right": [
     "pulseaudio",
@@ -12,20 +12,8 @@
     "backlight",
     "idle_inhibitor",
   ],
-  "niri/workspaces": {
-    "format": "{value}",
-    "on-click": "activate",
-  },
-  "niri/window": {
-    "format": "{}",
-    "max-length": 50,
-    "rewrite": {
-      "(.*) — Mozilla Firefox": "$1",
-      "(.*) - Zen Browser": "$1",
-      "(.*) — Zen Browser": "$1",
-      "(.*) - Visual Studio Code": "$1",
-      "Ghostty": "",
-    },
+  "dwl/tags": {
+    "num-tags": 9,
   },
   "mpris": {
     "player": "firefox",

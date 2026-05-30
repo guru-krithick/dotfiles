@@ -24,13 +24,12 @@ shell-integration-features = no-cursor,sudo,no-title
 window-inherit-working-directory = false
 
 scrollback-limit = 100000
-background-opacity = 0.82
+background-opacity = 0.60
 background-blur-radius = 25
-title = "Ghostty"
-class = "ghostty"
 
 clipboard-read = allow
 clipboard-write = allow
 clipboard-paste-protection = true
 
 focus-follows-mouse = false
+

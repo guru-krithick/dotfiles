@@ -1,9 +1,0 @@
-include $HOME/.config/sway/config.d/appearance
-include $HOME/.config/sway/config.d/autostart
-include $HOME/.config/sway/config.d/bindings
-include $HOME/.config/sway/config.d/inputs
-include $HOME/.config/sway/config.d/outputs
-include $HOME/.config/sway/config.d/rules
-include $HOME/.config/sway/config.d/swayfx
-include $HOME/.config/sway/user/*
-include /etc/sway/outputs/*

@@ -2,6 +2,7 @@ return {
 	"nvim-treesitter/nvim-treesitter",
 	lazy = false, -- Load immediately on startup
 	priority = 1000, -- Load before everything else
+	branch = "master",
 	build = ":TSUpdate",
 	dependencies = {
 		{

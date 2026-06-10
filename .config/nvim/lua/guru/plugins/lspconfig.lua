@@ -356,11 +356,6 @@ return {
 				cmd = { "gopls" },
 				filetypes = { "go", "gomod", "gowork", "gotmpl" },
 			},
-			{
-				name = "nginx_language_server",
-				cmd = { "nginx-language-server" },
-				filetypes = { "nginx" },
-			},
 		}
 
 		for _, server in ipairs(basic_servers) do

@@ -42,7 +42,6 @@ return {
 				"dockerls",
 				"docker_compose_language_service",
 				"sqls",
-				"nginx_language_server",
 			},
 			automatic_installation = true,
 		})

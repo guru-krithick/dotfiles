@@ -18,8 +18,8 @@
   "mpris": {
     "player": "firefox",
     "ignored-players": ["chromium", "chrome", "brave", "vlc", "mpv"],
-    "format": "{status_icon} {artist} - {title}",
-    "format-paused": "{status_icon} {artist} - {title}",
+    "format": "{status_icon} {title} - {artist}",
+    "format-paused": "{status_icon} {title} - {artist}",
     "format-stopped": "󰎇 Not Playing",
     "status-icons": {
       "playing": "󰎆",

@@ -18,7 +18,8 @@ application/pdf=zen.desktop
 text/plain=nvim.desktop
 x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 x-scheme-handler/figma=figma-linux.desktop
+x-scheme-handler/antigravity=antigravity.desktop
 
 [Added Associations]
-image/png=com.mitchellh.ghostty.desktop;
+image/png=zen.desktop;chromium.desktop;com.mitchellh.ghostty.desktop;
 application/pdf=zen.desktop;

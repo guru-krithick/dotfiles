@@ -61,6 +61,9 @@ export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git --exclude
 export BAT_THEME="base16-256"
 export _JAVA_AWT_WM_NONREPARENTING=1
 
+export GTK_THEME=Materia-dark
+export GTK_USE_PORTAL=1
+
 plugins=(
     command-not-found
     extract

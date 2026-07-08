@@ -1,0 +1,69 @@
+[
+  {
+    "bindings": {
+      "space g s": "git_panel::Toggle",
+      "space e e": "workspace::ToggleLeftDock",
+    },
+  },
+  {
+    "context": "Editor && (vim_mode == normal || vim_mode == visual) && !VimWaiting && !menu",
+    "bindings": {
+      "space f f": "file_finder::Toggle",
+      "space f g": "workspace::NewSearch",
+      "space c z": "workspace::ToggleCenteredLayout",
+      "space m p": "markdown::OpenPreviewToTheSide",
+      "g d": "editor::GoToDefinition",
+      "g r": "editor::FindAllReferences",
+      "shift-k": "editor::Hover",
+
+      // Quick save / quit
+      "space w": "workspace::Save",
+      "space q": "pane::CloseActiveItem",
+
+      // Yank to system clipboard (works in normal AND visual, like your nvim map)
+      "space y": ["workspace::SendKeystrokes", "\" + y"],
+      "space shift-y": ["workspace::SendKeystrokes", "\" + y $"],
+
+      // Splits (your <leader>sv / sh)
+      "space s v": "pane::SplitRight",
+      "space s h": "pane::SplitDown",
+
+      "ctrl-d": ["workspace::SendKeystrokes", "ctrl-d z z"],
+      "ctrl-u": ["workspace::SendKeystrokes", "ctrl-u z z"],
+    },
+  },
+
+  {
+    "context": "Editor && vim_mode == visual && !VimWaiting && !menu",
+    "bindings": {
+      // Paste over selection WITHOUT clobbering your yank ("_dP)
+      "space p": ["workspace::SendKeystrokes", "\" _ d shift-p"],
+
+      // Move selected lines down/up (your J/K in visual)
+      "shift-j": "editor::MoveLineDown",
+      "shift-k": "editor::MoveLineUp",
+
+      // Indent and STAY in visual mode
+      ">": ["workspace::SendKeystrokes", "> g v"],
+      "<": ["workspace::SendKeystrokes", "< g v"],
+    },
+  },
+
+  {
+    "context": "Editor && vim_mode == insert && !menu",
+    "bindings": {
+      "j j": "vim::NormalBefore",
+      "j k": "vim::NormalBefore",
+    },
+  },
+
+  {
+    "context": "Dock || Editor || Terminal",
+    "bindings": {
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-j": "workspace::ActivatePaneDown",
+    },
+  },
+]

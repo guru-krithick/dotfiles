@@ -1,36 +1,29 @@
-// Zed settings — merged & tuned for Modest Dark
-// Docs: https://zed.dev/docs/configuring-zed
-// Default settings: `zed: open default settings` in the command palette
 {
-  // ─── Theme & Look ─────────────────────────────────────────────
+  "diff_view_style": "split",
+  "cli_default_open_behavior": "existing_window",
+  "vim": {
+    "toggle_relative_line_numbers": true,
+  },
   "theme": "Modest Dark",
   "icon_theme": "Soft Charmed Icons",
   "theme_overrides": {
     "Modest Dark": {
-      // Modest Dark's real palette is blue-black (#0F1219 bg, #1e242e border).
-      // These overrides flatten the UI into one seamless dark surface,
-      // same trick as the Aura config, but using Modest's own colors.
-      "border": "#0F1219",
-      "border.variant": "#0F1219",
-      "title_bar.background": "#0F1219",
+      // "border": "#0F1219",
+      // "border.variant": "#0F1219",
+      // "title_bar.background": "#0F1219",
       "panel.background": "#0F1219",
       "panel.focused_border": "#2c313a",
-      // Kill the boxy highlight when your cursor sits on a symbol
       "editor.document_highlight.read_background": "#00000000",
       "editor.document_highlight.write_background": "#00000000",
-      // Cursor in Modest's function-blue instead of default white
       "players": [
         {
           "cursor": "#5ab0f6",
           "selection": "#2c313a",
         },
       ],
-      // NOTE: no syntax italic overrides needed — Modest Dark already
-      // ships comments AND keywords/functions in italics.
     },
   },
 
-  // ─── Fonts ────────────────────────────────────────────────────
   "ui_font_family": "Adwaita Sans",
   "ui_font_size": 18,
   "buffer_font_family": "Maple Mono NF",
@@ -38,16 +31,13 @@
   "buffer_line_height": "comfortable", // 2.0 wastes half your screen; comfortable ≈ 1.618
   "agent_buffer_font_size": 18,
 
-  // ─── Vim ──────────────────────────────────────────────────────
   "vim_mode": true,
   "base_keymap": "VSCode",
   "relative_line_numbers": "enabled", // makes 5j / 12k actually usable — the #1 vim QoL setting
-  "cursor_shape": "block",
-  "cursor_blink": false,
+  "cursor_blink": true,
   "vertical_scroll_margin": 8, // keeps context around cursor while jumping (like scrolloff)
   "horizontal_scroll_margin": 1,
 
-  // ─── Minimal UI (the good parts of the YouTuber's setup) ─────
   "title_bar": {
     "show_onboarding_banner": false,
     "show_project_items": false,
@@ -78,8 +68,8 @@
     "right_padding": 0.15,
   },
 
-  // ─── Project panel — on the LEFT, as requested ────────────────
   "project_panel": {
+    "hide_hidden": false,
     "dock": "left",
     "default_width": 300,
     "auto_fold_dirs": true,
@@ -97,7 +87,6 @@
     "modal_max_width": "large",
   },
 
-  // ─── Editing behavior (where the YouTuber's config was WRONG) ─
   "auto_indent": "syntax_aware", // he had this off — pure pain for actual coding
   "auto_indent_on_paste": true,
   "format_on_save": "on",
@@ -113,7 +102,6 @@
   "seed_search_query_from_cursor": "never",
   "multi_cursor_modifier": "cmd_or_ctrl",
 
-  // ─── Inlay hints & edit predictions ───────────────────────────
   "inlay_hints": {
     "enabled": true,
     "show_type_hints": true,
@@ -123,13 +111,11 @@
     "mode": "subtle", // predictions only show while holding alt — zero visual noise
   },
 
-  // ─── Git ──────────────────────────────────────────────────────
   "git": {
     "git_gutter": "tracked_files", // keep it — knowing what you changed is not clutter
     "inline_blame": { "enabled": false },
   },
 
-  // ─── Sessions & windows ───────────────────────────────────────
   "restore_on_startup": "last_session",
   "when_closing_with_no_tabs": "keep_window_open",
   "close_on_file_delete": true,
@@ -139,14 +125,12 @@
   },
   "auto_update": true, // Zed ships fixes weekly; don't freeze yourself on a stale build
 
-  // ─── Agents / AI ──────────────────────────────────────────────
   "agent_servers": {
     "github-copilot-cli": {
       "type": "registry",
     },
   },
 
-  // ─── Misc ─────────────────────────────────────────────────────
   "markdown_preview": {
     "max_width": 799.0,
   },

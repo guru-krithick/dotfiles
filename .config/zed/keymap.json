@@ -2,7 +2,7 @@
   {
     "bindings": {
       "space g s": "git_panel::Toggle",
-      "space e e": "workspace::ToggleLeftDock",
+      "space e e": "project_panel::Toggle",
     },
   },
   {

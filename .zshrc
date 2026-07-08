@@ -189,7 +189,7 @@ alias -s git="git clone"
 # ALIASES
 
 alias c='printf "\033[H\033[2J\033[3J"'
-alias e='nvim'
+alias e='zeditor --existing'
 alias n='nvim'
 alias y='yazi'
 alias t='tmux -u'

@@ -188,7 +188,7 @@ alias -s git="git clone"
 
 # ALIASES
 
-alias c='clear'
+alias c='printf "\033[H\033[2J\033[3J"'
 alias e='nvim'
 alias n='nvim'
 alias y='yazi'
@@ -197,6 +197,7 @@ alias speedtest='speedtest-cli'
 alias btop='btop --force-utf'
 alias tmux='tmux -u'
 alias cc='claude'
+alias oc='opencode'
 
 if command -v eza >/dev/null 2>&1; then
     alias ls='eza --icons --group-directories-first'
@@ -209,15 +210,15 @@ else
     alias l='ls -l --color=auto'
 fi
 
-if command -v rg >/dev/null 2>&1; then
-    alias grep='rg'
-    alias fgrep='rg -F'
-    alias egrep='rg'
-else
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
+# if command -v rg >/dev/null 2>&1; then
+#    alias grep='rg'
+#    alias fgrep='rg -F'
+#    alias egrep='rg'
+# else
+#    alias grep='grep --color=auto'
+#    alias fgrep='fgrep --color=auto'
+#    alias egrep='egrep --color=auto'
+# fi'
 
 if command -v bat >/dev/null 2>&1; then
     alias cat='bat --paging=never'

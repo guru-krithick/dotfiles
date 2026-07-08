@@ -1,0 +1,153 @@
+// Zed settings — merged & tuned for Modest Dark
+// Docs: https://zed.dev/docs/configuring-zed
+// Default settings: `zed: open default settings` in the command palette
+{
+  // ─── Theme & Look ─────────────────────────────────────────────
+  "theme": "Modest Dark",
+  "icon_theme": "Soft Charmed Icons",
+  "theme_overrides": {
+    "Modest Dark": {
+      // Modest Dark's real palette is blue-black (#0F1219 bg, #1e242e border).
+      // These overrides flatten the UI into one seamless dark surface,
+      // same trick as the Aura config, but using Modest's own colors.
+      "border": "#0F1219",
+      "border.variant": "#0F1219",
+      "title_bar.background": "#0F1219",
+      "panel.background": "#0F1219",
+      "panel.focused_border": "#2c313a",
+      // Kill the boxy highlight when your cursor sits on a symbol
+      "editor.document_highlight.read_background": "#00000000",
+      "editor.document_highlight.write_background": "#00000000",
+      // Cursor in Modest's function-blue instead of default white
+      "players": [
+        {
+          "cursor": "#5ab0f6",
+          "selection": "#2c313a",
+        },
+      ],
+      // NOTE: no syntax italic overrides needed — Modest Dark already
+      // ships comments AND keywords/functions in italics.
+    },
+  },
+
+  // ─── Fonts ────────────────────────────────────────────────────
+  "ui_font_family": "Adwaita Sans",
+  "ui_font_size": 18,
+  "buffer_font_family": "Maple Mono NF",
+  "buffer_font_size": 18,
+  "buffer_line_height": "comfortable", // 2.0 wastes half your screen; comfortable ≈ 1.618
+  "agent_buffer_font_size": 18,
+
+  // ─── Vim ──────────────────────────────────────────────────────
+  "vim_mode": true,
+  "base_keymap": "VSCode",
+  "relative_line_numbers": "enabled", // makes 5j / 12k actually usable — the #1 vim QoL setting
+  "cursor_shape": "block",
+  "cursor_blink": false,
+  "vertical_scroll_margin": 8, // keeps context around cursor while jumping (like scrolloff)
+  "horizontal_scroll_margin": 1,
+
+  // ─── Minimal UI (the good parts of the YouTuber's setup) ─────
+  "title_bar": {
+    "show_onboarding_banner": false,
+    "show_project_items": false,
+    "show_user_menu": false,
+  },
+  "tab_bar": {
+    "show": false, // with vim + ctrl-p file finder you won't miss tabs; flip to true if you do
+  },
+  "toolbar": {
+    "quick_actions": false,
+  },
+  "scrollbar": {
+    "show": "never",
+  },
+  "indent_guides": {
+    "enabled": false,
+  },
+  "gutter": {
+    "min_line_number_digits": 2,
+    "folds": false,
+    "runnables": false,
+  },
+  "current_line_highlight": "gutter", // subtle: highlights line number only, not whole line
+  "selection_highlight": false,
+  "show_whitespaces": "none",
+  "centered_layout": {
+    "left_padding": 0.15,
+    "right_padding": 0.15,
+  },
+
+  // ─── Project panel — on the LEFT, as requested ────────────────
+  "project_panel": {
+    "dock": "left",
+    "default_width": 300,
+    "auto_fold_dirs": true,
+    "starts_open": false,
+    "sticky_scroll": false,
+    "scrollbar": { "show": "never" },
+    "indent_guides": { "show": "never" },
+  },
+  "outline_panel": {
+    "dock": "left",
+    "default_width": 300,
+    "indent_guides": { "show": "never" },
+  },
+  "file_finder": {
+    "modal_max_width": "large",
+  },
+
+  // ─── Editing behavior (where the YouTuber's config was WRONG) ─
+  "auto_indent": "syntax_aware", // he had this off — pure pain for actual coding
+  "auto_indent_on_paste": true,
+  "format_on_save": "on",
+  "remove_trailing_whitespace_on_save": true,
+  "ensure_final_newline_on_save": true,
+  "tab_size": 2,
+  "show_completions_on_input": true, // he disabled LSP completions — looks clean on video, useless IRL
+  "show_completion_documentation": true,
+  "hover_popover_enabled": true,
+  "inline_code_actions": false, // the lightbulb icon — safe to hide, use `space c a` / cmd-.
+  "extend_comment_on_newline": false,
+  "autosave": "on_focus_change", // saner than saving every 1s while you're mid-thought
+  "seed_search_query_from_cursor": "never",
+  "multi_cursor_modifier": "cmd_or_ctrl",
+
+  // ─── Inlay hints & edit predictions ───────────────────────────
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": true,
+    "show_parameter_hints": false, // param hints get noisy; types are the useful ones
+  },
+  "edit_predictions": {
+    "mode": "subtle", // predictions only show while holding alt — zero visual noise
+  },
+
+  // ─── Git ──────────────────────────────────────────────────────
+  "git": {
+    "git_gutter": "tracked_files", // keep it — knowing what you changed is not clutter
+    "inline_blame": { "enabled": false },
+  },
+
+  // ─── Sessions & windows ───────────────────────────────────────
+  "restore_on_startup": "last_session",
+  "when_closing_with_no_tabs": "keep_window_open",
+  "close_on_file_delete": true,
+  "session": {
+    "trust_all_worktrees": true,
+    "restore_unsaved_buffers": true, // he had false — that setting silently eats unsaved work
+  },
+  "auto_update": true, // Zed ships fixes weekly; don't freeze yourself on a stale build
+
+  // ─── Agents / AI ──────────────────────────────────────────────
+  "agent_servers": {
+    "github-copilot-cli": {
+      "type": "registry",
+    },
+  },
+
+  // ─── Misc ─────────────────────────────────────────────────────
+  "markdown_preview": {
+    "max_width": 799.0,
+  },
+}

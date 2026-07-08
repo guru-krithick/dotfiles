@@ -83,8 +83,13 @@ return {
 			on_attach = on_attach,
 			settings = {
 				["rust-analyzer"] = {
-					checkOnSave = { command = "clippy" },
-					cargo = { allFeatures = true },
+					check = {
+						command = "clippy",
+					},
+
+					cargo = {
+						allFeatures = true,
+					},
 				},
 			},
 		})

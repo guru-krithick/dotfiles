@@ -1,46 +1,49 @@
-# Auto-start Mango on tty1
-[[ -z "$NO_MANGO" && "$(tty)" = "/dev/tty1" ]] && exec mango
+[[ -z "$NO_MANGO" && "$(tty)" == "/dev/tty1" ]] && exec mango
 
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME=robbyrussell
-export ZSH_COMPDUMP="$HOME/.zcompdump"
+zsh_plugins=${ZDOTDIR:-$HOME}/.zsh_plugins
+[[ -f ${zsh_plugins}.txt ]] || touch ${zsh_plugins}.txt
+
+source ${ZDOTDIR:-$HOME}/.antidote/antidote.zsh
+
+if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
+    antidote bundle <${zsh_plugins}.txt >|${zsh_plugins}.zsh
+fi
+source ${zsh_plugins}.zsh
+
+eval "$(starship init zsh)"
+
 export TZ="Asia/Kolkata"
 export EDITOR="code"
 export BROWSER="zen-browser"
+export _JAVA_AWT_WM_NONREPARENTING=1
+export GTK_THEME=Materia-dark
+export GTK_USE_PORTAL=1
+export BAT_THEME="base16-256"
 
-# pnpm
-export PNPM_HOME="/home/guru/.local/share/pnpm"
-case ":$PATH:" in
-*":$PNPM_HOME:"*) ;;
-*) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-
-# Java
-export PATH="/usr/lib/jvm/java-17-openjdk/bin:$PATH"
-
-# Android SDK
-export ANDROID_HOME=$HOME/Android/Sdk
-export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
-
-# bun
+export PNPM_HOME="$HOME/.local/share/pnpm"
+export ANDROID_HOME="$HOME/Android/Sdk"
 export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
-# PATH
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/bin:$PATH"
-export PATH="$HOME/go/bin:$PATH"
-export PATH="$HOME/.npm-global/bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$HOME/.pyenv/bin:$PATH"
-export PATH="/opt/apache-maven-3.9.6/bin:$PATH"
-export PATH="/opt/docker/bin:$PATH"
-
-# Conda
 export CONDA_HOME="$HOME/miniconda3"
-export PATH="$CONDA_HOME/bin:$PATH"
 
-# FZF Configuration
+path=(
+    $PNPM_HOME
+    /usr/lib/jvm/java-17-openjdk/bin
+    $ANDROID_HOME/tools
+    $ANDROID_HOME/platform-tools
+    $BUN_INSTALL/bin
+    $HOME/.local/bin
+    $HOME/bin
+    $HOME/go/bin
+    $HOME/.npm-global/bin
+    $HOME/.cargo/bin
+    $HOME/.pyenv/bin
+    /opt/apache-maven-3.9.6/bin
+    /opt/docker/bin
+    $CONDA_HOME/bin
+    $path
+)
+typeset -U path
+
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git --exclude node_modules --exclude .cache --exclude .npm --exclude dist --exclude build'
 export FZF_DEFAULT_OPTS="
   --height 85%
@@ -58,94 +61,32 @@ export FZF_DEFAULT_OPTS="
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git --exclude node_modules'
 
-export BAT_THEME="base16-256"
-export _JAVA_AWT_WM_NONREPARENTING=1
-
-export GTK_THEME=Materia-dark
-export GTK_USE_PORTAL=1
-
-plugins=(
-    command-not-found
-    extract
-    fzf
-    zsh-completions
-    zsh-autosuggestions
-    zsh-syntax-highlighting
-)
-
-fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
-
-source "$ZSH/oh-my-zsh.sh"
-
-# bun completions
-[ -s "/home/guru/.bun/_bun" ] && source "/home/guru/.bun/_bun"
-
-# Conda initialize
-if [ -f "/home/guru/miniconda3/etc/profile.d/conda.sh" ]; then
-    . "/home/guru/miniconda3/etc/profile.d/conda.sh"
-else
-    export PATH="/home/guru/miniconda3/bin:$PATH"
-fi
-
-# ZSH OPTIONS
-
 HISTFILE=~/.zsh_history
 HISTSIZE=100000
 SAVEHIST=100000
 
-setopt EXTENDED_HISTORY
-setopt INC_APPEND_HISTORY
-setopt SHARE_HISTORY
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_FIND_NO_DUPS
-setopt HIST_IGNORE_SPACE
-setopt HIST_SAVE_NO_DUPS
-setopt HIST_REDUCE_BLANKS
-setopt HIST_VERIFY
+setopt EXTENDED_HISTORY INC_APPEND_HISTORY SHARE_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST HIST_IGNORE_DUPS HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS HIST_IGNORE_SPACE HIST_SAVE_NO_DUPS
+setopt HIST_REDUCE_BLANKS HIST_VERIFY
 
-setopt AUTO_CD
-setopt AUTO_PUSHD
-setopt PUSHD_IGNORE_DUPS
-setopt PUSHD_SILENT
-setopt CDABLE_VARS
-
-setopt COMPLETE_IN_WORD
-setopt ALWAYS_TO_END
-setopt PATH_DIRS
-setopt AUTO_MENU
-setopt AUTO_LIST
-setopt AUTO_PARAM_SLASH
-setopt COMPLETE_ALIASES
-
-setopt EXTENDED_GLOB
-setopt GLOB_DOTS
-setopt NUMERIC_GLOB_SORT
-
-setopt CORRECT
-setopt INTERACTIVE_COMMENTS
-setopt LONG_LIST_JOBS
-setopt AUTO_RESUME
-setopt NOTIFY
-setopt NO_BEEP
-setopt NO_FLOW_CONTROL
-
-# ZOXIDE
+setopt AUTO_CD AUTO_PUSHD PUSHD_IGNORE_DUPS PUSHD_SILENT CDABLE_VARS
+setopt COMPLETE_IN_WORD ALWAYS_TO_END PATH_DIRS AUTO_MENU AUTO_LIST
+setopt AUTO_PARAM_SLASH COMPLETE_ALIASES
+setopt EXTENDED_GLOB GLOB_DOTS NUMERIC_GLOB_SORT
+setopt INTERACTIVE_COMMENTS LONG_LIST_JOBS AUTO_RESUME NOTIFY
+setopt NO_BEEP NO_FLOW_CONTROL
 
 eval "$(zoxide init zsh)"
 
 function cd() {
     if [[ $# -eq 0 ]]; then
         builtin cd ~
-        _venv_auto_activate
     else
         __zoxide_z "$@"
-        _venv_auto_activate
     fi
+    _venv_auto_activate
 }
-
-# FUNCTIONS
 
 _venv_auto_activate() {
     if [[ -z "$VIRTUAL_ENV" ]]; then
@@ -160,7 +101,7 @@ _venv_auto_activate() {
             current_dir="$(dirname "$current_dir")"
         done
     else
-        parentdir="$(dirname "$VIRTUAL_ENV")"
+        local parentdir="$(dirname "$VIRTUAL_ENV")"
         if [[ "$PWD"/ != "$parentdir"/* ]]; then
             deactivate
         fi
@@ -171,7 +112,7 @@ autoload -U add-zsh-hook
 add-zsh-hook chpwd _venv_auto_activate
 
 serve() {
-    port=${1:-8000}
+    local port=${1:-8000}
     python3 -m http.server "$port" && echo "HTTP server on http://localhost:$port" || {
         echo "Failed to start server on port $port"
         return 1
@@ -180,22 +121,18 @@ serve() {
 
 bindkey -s '^f' '^u~/.config/tmux/scripts/tmux-sessionizer.sh\n'
 
-# SUFFIX ALIASES
-
 alias -s {js,ts,jsx,tsx,py,json,yaml,yml,toml,md,txt}=nvim
-alias -s {pdf}=zathura
+alias -s pdf=zathura
 alias -s git="git clone"
-
-# ALIASES
 
 alias c='printf "\033[H\033[2J\033[3J"'
 alias e='zeditor --new .'
 alias n='nvim'
 alias y='yazi'
 alias t='tmux -u'
+alias tmux='tmux -u'
 alias speedtest='speedtest-cli'
 alias btop='btop --force-utf'
-alias tmux='tmux -u'
 alias cc='claude'
 alias oc='opencode'
 
@@ -232,6 +169,3 @@ alias dotfiles='nvim ~/dotfiles'
 alias reload='source ~/.zshrc'
 
 [[ -r ~/.zsh_local ]] && source ~/.zsh_local
-
-true
-export PATH=~/.npm-global/bin:$PATH

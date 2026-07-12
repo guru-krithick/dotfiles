@@ -1,6 +1,15 @@
 {
+  "agent": {
+    "default_model": {
+      "provider": "google",
+      "model": "gemini-2.5-flash",
+      "enable_thinking": true,
+    },
+    "favorite_models": [],
+    "model_parameters": [],
+  },
   "diff_view_style": "split",
-  "cli_default_open_behavior": "existing_window",
+  "cli_default_open_behavior": "new_window",
   "vim": {
     "toggle_relative_line_numbers": true,
   },
@@ -116,7 +125,7 @@
     "inline_blame": { "enabled": false },
   },
 
-  "restore_on_startup": "last_session",
+  "restore_on_startup": "empty_tab",
   "when_closing_with_no_tabs": "keep_window_open",
   "close_on_file_delete": true,
   "session": {
@@ -127,6 +136,13 @@
 
   "agent_servers": {
     "github-copilot-cli": {
+      "type": "registry",
+    },
+    "gemini": {
+      "default_mode": "autoEdit",
+      "type": "registry",
+    },
+    "claude-acp": {
       "type": "registry",
     },
   },

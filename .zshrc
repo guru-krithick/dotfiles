@@ -189,7 +189,7 @@ alias -s git="git clone"
 # ALIASES
 
 alias c='printf "\033[H\033[2J\033[3J"'
-alias e='zeditor --existing'
+alias e='zeditor --new .'
 alias n='nvim'
 alias y='yazi'
 alias t='tmux -u'
@@ -209,16 +209,6 @@ else
     alias la='ls -la --color=auto'
     alias l='ls -l --color=auto'
 fi
-
-# if command -v rg >/dev/null 2>&1; then
-#    alias grep='rg'
-#    alias fgrep='rg -F'
-#    alias egrep='rg'
-# else
-#    alias grep='grep --color=auto'
-#    alias fgrep='fgrep --color=auto'
-#    alias egrep='egrep --color=auto'
-# fi'
 
 if command -v bat >/dev/null 2>&1; then
     alias cat='bat --paging=never'

@@ -3,7 +3,15 @@
   "position": "top",
   "height": 50,
   "spacing": 0,
-  "modules-left": ["dwl/tags", "mpris"],
+  "modules-left": ["ext/workspaces", "mpris"],
+  "ext/workspaces": {
+    "format": "{name}",
+    "all-outputs": true,
+    "active-only": false,
+    "persistent-workspaces": {
+      "*": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    },
+  },
   "modules-center": ["custom/pomodoro", "clock"],
   "modules-right": [
     "pulseaudio",

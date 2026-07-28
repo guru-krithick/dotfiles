@@ -1,9 +1,11 @@
+-- The crash that prompted this rebuild surfaced here, but the fault was in
+-- nvim-treesitter's locked `master` branch. See plugins/treesitter.lua.
 return {
 	"MeanderingProgrammer/render-markdown.nvim",
 	ft = { "markdown" },
 	dependencies = {
 		"nvim-treesitter/nvim-treesitter",
-		"nvim-tree/nvim-web-devicons",
+		"echasnovski/mini.icons",
 	},
 	opts = {
 		heading = {

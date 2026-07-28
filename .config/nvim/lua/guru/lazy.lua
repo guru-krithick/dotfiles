@@ -1,8 +1,14 @@
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+if not vim.uv.fs_stat(lazypath) then
+	local out = vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"--branch=stable",
+		"https://github.com/folke/lazy.nvim.git",
+		lazypath,
+	})
 	if vim.v.shell_error ~= 0 then
 		vim.api.nvim_echo({
 			{ "Failed to clone lazy.nvim:\n", "ErrorMsg" },
@@ -16,7 +22,20 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-	spec = "guru.plugins",
+	spec = { { import = "guru.plugins" } },
 	change_detection = { notify = false },
 	checker = { enabled = false },
+	rocks = { enabled = false },
+	performance = {
+		rtp = {
+			disabled_plugins = {
+				"gzip",
+				"tarPlugin",
+				"tohtml",
+				"tutor",
+				"zipPlugin",
+				"netrwPlugin", -- oil.nvim replaces netrw
+			},
+		},
+	},
 })

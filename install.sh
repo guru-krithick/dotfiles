@@ -23,6 +23,10 @@ PACMAN_PACKAGES=(
     greetd greetd-tuigreet seatd
     pipewire-pulse brightnessctl
     fzf fd ripgrep bat eza zoxide jq fastfetch btop duf
+    # nvim-treesitter's main branch shells out to the tree-sitter CLI to compile
+    # parsers; the old master branch did this in-process. Without it every
+    # parser build fails with ENOENT.
+    tree-sitter-cli
     speedtest-cli smartmontools unzip zip wget
     thunar chromium noto-fonts-emoji adw-gtk-theme
 )

@@ -1,59 +1,68 @@
+-- `main` branch: installs parsers only. Highlight and indent are enabled per
+-- buffer by the FileType autocmd in guru/autocmds.lua. `master` is locked
+-- upstream and crashes on Neovim 0.12.
+-- Requires the tree-sitter CLI on PATH to compile parsers.
+
+local parsers = {
+	"bash",
+	"c",
+	"cpp",
+	"css",
+	"diff",
+	"dockerfile",
+	"git_config",
+	"gitcommit",
+	"gitignore",
+	"go",
+	"gomod",
+	"graphql",
+	"html",
+	"java",
+	"javascript",
+	"json", -- jsonc is not a separate parser; it reuses this one
+	"lua",
+	"luadoc",
+	"markdown",
+	"markdown_inline",
+	"nix",
+	"python",
+	"query",
+	"regex",
+	"ron",
+	"rust",
+	"sql",
+	"svelte",
+	"toml",
+	"tsx",
+	"typescript",
+	"vim",
+	"vimdoc",
+	"yaml",
+}
+
 return {
-	"nvim-treesitter/nvim-treesitter",
-	lazy = false, -- Load immediately on startup
-	priority = 1000, -- Load before everything else
-	branch = "master",
-	build = ":TSUpdate",
-	dependencies = {
-		{
-			"windwp/nvim-ts-autotag",
+	{
+		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
+		lazy = false,
+		priority = 1000,
+		build = ":TSUpdate",
+		config = function()
+			require("nvim-treesitter").setup({})
+			-- Async, and a no-op for parsers already present.
+			require("nvim-treesitter").install(parsers)
+		end,
+	},
+
+	{
+		"windwp/nvim-ts-autotag",
+		event = { "BufReadPre", "BufNewFile" },
+		opts = {
 			opts = {
-				opts = {
-					enable_close = true,
-					enable_rename = true,
-					enable_close_on_slash = true,
-				},
+				enable_close = true,
+				enable_rename = true,
+				enable_close_on_slash = true,
 			},
 		},
 	},
-	config = function()
-		local treesitter = require("nvim-treesitter.configs")
-		treesitter.setup({
-			highlight = {
-				enable = true,
-			},
-			indent = { enable = true },
-			ensure_installed = {
-				"c",
-				"cpp",
-				"json",
-				"graphql",
-				"ron",
-				"javascript",
-				"typescript",
-				"tsx",
-				"yaml",
-				"html",
-				"css",
-				"markdown",
-				"markdown_inline",
-				"svelte",
-				"bash",
-				"lua",
-				"python",
-				"sql",
-				"rust",
-				"nix",
-			},
-			incremental_selection = {
-				enable = true,
-				keymaps = {
-					init_selection = "<C-space>",
-					node_incremental = "<C-space>",
-					scope_incremental = false,
-					node_decremental = "<bs>",
-				},
-			},
-		})
-	end,
 }

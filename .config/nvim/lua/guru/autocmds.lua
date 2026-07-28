@@ -2,10 +2,15 @@ local augroup = function(name)
 	return vim.api.nvim_create_augroup("guru_" .. name, { clear = true })
 end
 
--- Treesitter highlight and indent. The `main` branch dropped its highlight and
--- indent modules, so enabling them per buffer is the config's job.
--- `language.add()` returns false for uninstalled parsers, keeping unknown
--- filetypes silent rather than throwing.
+-- Treesitter highlighting. The `main` branch dropped its highlight module, so
+-- enabling it per buffer is the config's job. `language.add()` returns false
+-- for uninstalled parsers, keeping unknown filetypes silent rather than
+-- throwing.
+--
+-- Indent is deliberately NOT wired to nvim-treesitter's indentexpr: it is
+-- flagged experimental upstream and measured ~685ms *per line* here, so any
+-- `o`, `cc`, paste or <CR> stalled for seconds. Neovim's built-in ftplugin
+-- indent handles these filetypes fine.
 vim.api.nvim_create_autocmd("FileType", {
 	group = augroup("treesitter"),
 	callback = function(args)
@@ -25,10 +30,6 @@ vim.api.nvim_create_autocmd("FileType", {
 		end
 
 		pcall(vim.treesitter.start, args.buf, lang)
-		-- Experimental upstream.
-		pcall(function()
-			vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-		end)
 	end,
 })
 
@@ -58,21 +59,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		map("n", "]d", function()
 			vim.diagnostic.jump({ count = 1, float = true })
 		end, "Next diagnostic")
-
-		local client = vim.lsp.get_client_by_id(event.data.client_id)
-		if client and client:supports_method("textDocument/documentHighlight") then
-			local hl_group = augroup("lsp_highlight_" .. event.buf)
-			vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-				group = hl_group,
-				buffer = event.buf,
-				callback = vim.lsp.buf.document_highlight,
-			})
-			vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-				group = hl_group,
-				buffer = event.buf,
-				callback = vim.lsp.buf.clear_references,
-			})
-		end
 	end,
 })
 

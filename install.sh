@@ -1,95 +1,218 @@
 #!/usr/bin/env bash
+#
+# Provision an Arch machine from this dotfiles repo: packages, out-of-repo
+# toolchains, plugin managers, then stow the configs into $HOME.
+#
+# Assumes the base install already handles the login manager, networking,
+# graphics drivers and microcode. None of that is touched here.
+#
+# Safe to re-run; every step is guarded and skips work already done.
 
 set -euo pipefail
 
-if [[ $EUID -eq 0 ]]; then
-    echo "don't run this as root — it'll sudo when it needs to" >&2
-    exit 1
-fi
-
-if ! command -v pacman >/dev/null; then
-    echo "this script only knows how to set up Arch (or an Arch derivative)" >&2
-    exit 1
-fi
-
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DOTFILES_DIR
 
-log() { printf '\n\033[1;36m==>\033[0m %s\n' "$*"; }
+readonly PACMAN_PACKAGES=(
+    # shell and prompt
+    zsh starship tmux
 
-PACMAN_PACKAGES=(
-    zsh tmux neovim ghostty yazi git github-cli git-delta stow man-db
-    waybar mako rofi swaybg swayidle slurp grim wl-clipboard cliphist
-    xwayland-satellite xdg-desktop-portal-hyprland xdg-utils libinput-tools
-    greetd greetd-tuigreet seatd
-    pipewire-pulse brightnessctl
+    # editors and terminals
+    neovim ghostty kitty zed
+
+    # cli toolbelt
+    git github-cli git-delta stow man-db yazi
     fzf fd ripgrep bat eza zoxide jq fastfetch btop duf
-    # nvim-treesitter's main branch shells out to the tree-sitter CLI to compile
-    # parsers; the old master branch did this in-process. Without it every
-    # parser build fails with ENOENT.
-    tree-sitter-cli
     speedtest-cli smartmontools unzip zip wget
-    thunar chromium noto-fonts-emoji adw-gtk-theme
+
+    # nvim-treesitter's main branch shells out to the tree-sitter CLI to
+    # compile parsers; the old master branch did this in-process. Without it
+    # every parser build fails with ENOENT.
+    tree-sitter-cli
+
+    # mason installs the LSPs and formatters, but the language runtimes they
+    # execute under have to come from the system
+    nodejs npm pnpm rustup go jdk21-openjdk
+
+    # wayland session: compositor bits, bar, launcher, screenshots
+    waybar mako rofi swaybg swayidle
+    slurp grim wl-clipboard cliphist
+    # swayidle's timeout chain calls wlopm to blank the outputs, and
+    # Super+Shift+R records through wf-recorder
+    wlopm wf-recorder
+    xwayland-satellite xorg-xwayland
+    xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-utils
+    libinput-tools brightnessctl
+
+    # audio
+    pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber
+    pavucontrol libpulse sof-firmware
+
+    # theming — GTK_THEME in .zshrc and the gsettings calls in mango's
+    # exec-once block name these by string, so a missing one degrades to an
+    # unstyled session rather than an error
+    materia-gtk-theme adw-gtk-theme papirus-icon-theme
+    lxappearance qt5ct qt6ct
+    noto-fonts-emoji
+
+    # file manager and thumbnailers (tumbler backs thunar's previews; yazi
+    # reads poppler and ffmpegthumbnailer for pdf and video thumbs)
+    thunar tumbler ffmpegthumbnailer poppler-glib
+
+    # media and documents
+    mpv zathura zathura-pdf-mupdf okular foliate libreoffice-fresh
+    gst-libav gst-plugin-pipewire
+
+    # browsers
+    chromium
+
+    # secrets — the only daemon installed here; git and the browsers expect a
+    # running secret service for stored credentials
+    gnome-keyring
 )
 
-AUR_PACKAGES=(
+readonly AUR_PACKAGES=(
     mangowm-git
     maplemono-nf-unhinted
     swaylock-effects-git
     zen-browser-bin
     visual-studio-code-bin
+    obsidian-bin
 )
 
-if ! command -v yay >/dev/null; then
-    log "installing yay"
-    sudo pacman -S --needed --noconfirm base-devel git
+readonly NPM_GLOBALS=(
+    vercel
+    @juliusbrussee/caveman-code
+)
 
-    build_dir="$(mktemp -d)"
-    git clone --depth 1 https://aur.archlinux.org/yay.git "$build_dir/yay"
-    (cd "$build_dir/yay" && makepkg -si --noconfirm)
-    rm -rf "$build_dir"
-else
-    log "yay already installed, skipping"
-fi
+readonly NPM_PREFIX="$HOME/.npm-global"
 
-log "installing official packages"
-sudo pacman -S --needed --noconfirm "${PACMAN_PACKAGES[@]}"
+# --- helpers ----------------------------------------------------------------
 
-log "installing AUR packages"
-yay -S --needed --noconfirm "${AUR_PACKAGES[@]}"
+log()  { printf '\n\033[1;36m==>\033[0m %s\n' "$*"; }
+skip() { printf '    \033[2m%s already present, skipping\033[0m\n' "$*"; }
+die()  { printf '\033[1;31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 
-if [[ -d "$HOME/.oh-my-zsh" ]]; then
-    log "oh-my-zsh already installed, skipping"
-else
-    log "installing oh-my-zsh"
-    RUNZSH=no KEEP_ZSHRC=yes sh -c \
-        "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-fi
+have() { command -v "$1" >/dev/null 2>&1; }
 
 clone_if_missing() {
     local repo="$1" dest="$2"
-    [[ -d "$dest" ]] || git clone --depth 1 "$repo" "$dest"
+    [[ -d "$dest" ]] && return 0
+    git clone --depth 1 "$repo" "$dest"
 }
 
-ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+# --- phases -----------------------------------------------------------------
 
-log "fetching zsh plugins (autosuggestions, syntax-highlighting, completions)"
-clone_if_missing https://github.com/zsh-users/zsh-autosuggestions \
-    "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
-clone_if_missing https://github.com/zsh-users/zsh-syntax-highlighting.git \
-    "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
-clone_if_missing https://github.com/zsh-users/zsh-completions.git \
-    "$ZSH_CUSTOM/plugins/zsh-completions"
+check_preconditions() {
+    [[ $EUID -ne 0 ]] || die "don't run this as root — it'll sudo when it needs to"
+    have pacman || die "this script only knows how to set up Arch (or an Arch derivative)"
+}
 
-log "fetching tpm"
-clone_if_missing https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+install_yay() {
+    if have yay; then
+        skip yay
+        return
+    fi
 
-log "symlinking dotfiles into \$HOME"
-stow -v -R -d "$(dirname "$DOTFILES_DIR")" -t "$HOME" "$(basename "$DOTFILES_DIR")"
+    log "installing yay"
+    sudo pacman -S --needed --noconfirm base-devel git
 
-if [[ "$SHELL" != *"/zsh" ]]; then
+    local build_dir
+    build_dir="$(mktemp -d)"
+    trap 'rm -rf "$build_dir"' RETURN
+
+    git clone --depth 1 https://aur.archlinux.org/yay.git "$build_dir/yay"
+    (cd "$build_dir/yay" && makepkg -si --noconfirm)
+}
+
+install_packages() {
+    log "installing official packages"
+    sudo pacman -S --needed --noconfirm "${PACMAN_PACKAGES[@]}"
+
+    log "installing AUR packages"
+    yay -S --needed --noconfirm "${AUR_PACKAGES[@]}"
+}
+
+# Toolchains with no Arch package that the shell config still expects on PATH.
+# Guards test the binary rather than its install directory, so a half-finished
+# install is retried instead of skipped.
+install_toolchains() {
+    log "installing out-of-repo toolchains"
+
+    if rustup toolchain list 2>/dev/null | grep -q .; then
+        skip "rust toolchain"
+    else
+        rustup default stable
+    fi
+
+    if have bun; then
+        skip bun
+    else
+        curl -fsSL https://bun.sh/install | bash
+    fi
+
+    if have uv; then
+        skip uv
+    else
+        curl -fsSL https://astral.sh/uv/install.sh | sh
+    fi
+
+    # .zshrc aliases cc to claude
+    if have claude; then
+        skip "claude code"
+    else
+        curl -fsSL https://claude.ai/install.sh | bash
+    fi
+
+    log "installing npm globals"
+    npm install -g --prefix "$NPM_PREFIX" "${NPM_GLOBALS[@]}"
+}
+
+# antidote replaced oh-my-zsh. It reads .zsh_plugins.txt (stowed below) and
+# compiles it to .zsh_plugins.zsh on first shell start, so nothing here needs
+# to fetch individual plugin repos.
+install_plugin_managers() {
+    log "fetching antidote"
+    clone_if_missing https://github.com/mattmc3/antidote.git "$HOME/.antidote"
+
+    log "fetching tpm"
+    clone_if_missing https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+}
+
+link_dotfiles() {
+    log "symlinking dotfiles into \$HOME"
+    stow -v -R -d "$(dirname "$DOTFILES_DIR")" -t "$HOME" "$(basename "$DOTFILES_DIR")"
+}
+
+set_login_shell() {
+    if [[ "$SHELL" == *"/zsh" ]]; then
+        skip "zsh as login shell"
+        return
+    fi
+
     log "switching default shell to zsh"
     chsh -s "$(command -v zsh)"
-fi
+}
 
-log "done. log out and back in (or reboot) to land in mango with everything wired up."
-echo "first time in tmux, press <prefix> + I to have tpm pull down the plugins."
+print_next_steps() {
+    log "done"
+    cat <<'EOF'
+    log out and back in (or reboot) to land in mango with everything wired up.
+    first time in tmux, press <prefix> + I to have tpm pull down the plugins.
+EOF
+}
+
+# --- entrypoint -------------------------------------------------------------
+
+main() {
+    check_preconditions
+    install_yay
+    install_packages
+    install_toolchains
+    install_plugin_managers
+    link_dotfiles
+    set_login_shell
+    print_next_steps
+}
+
+main "$@"

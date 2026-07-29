@@ -21,25 +21,17 @@ export GTK_USE_PORTAL=1
 export BAT_THEME="base16-256"
 
 export PNPM_HOME="$HOME/.local/share/pnpm"
-export ANDROID_HOME="$HOME/Android/Sdk"
 export BUN_INSTALL="$HOME/.bun"
-export CONDA_HOME="$HOME/miniconda3"
 
+# No jvm entry: archlinux-java points /usr/bin/java at
+# /usr/lib/jvm/default, so the toolchain is already on PATH.
 path=(
     $PNPM_HOME
-    /usr/lib/jvm/java-17-openjdk/bin
-    $ANDROID_HOME/tools
-    $ANDROID_HOME/platform-tools
     $BUN_INSTALL/bin
     $HOME/.local/bin
-    $HOME/bin
     $HOME/go/bin
     $HOME/.npm-global/bin
     $HOME/.cargo/bin
-    $HOME/.pyenv/bin
-    /opt/apache-maven-3.9.6/bin
-    /opt/docker/bin
-    $CONDA_HOME/bin
     $path
 )
 typeset -U path
@@ -134,7 +126,6 @@ alias tmux='tmux -u'
 alias speedtest='speedtest-cli'
 alias btop='btop --force-utf'
 alias cc='claude'
-alias oc='opencode'
 
 if command -v eza >/dev/null 2>&1; then
     alias ls='eza --icons --group-directories-first'

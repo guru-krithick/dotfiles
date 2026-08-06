@@ -27,7 +27,10 @@ return {
 			documentation = { auto_show = true, auto_show_delay_ms = 500 },
 			ghost_text = { enabled = false },
 			menu = { border = "rounded" },
-			list = { selection = { preselect = false, auto_insert = false } },
+			-- preselect off so the menu opening does not commit to anything;
+			-- auto_insert on so <Tab>/<S-Tab> write each item into the buffer
+			-- as you cycle. <C-e> undoes the insert and closes the menu.
+			list = { selection = { preselect = false, auto_insert = true } },
 		},
 
 		appearance = { nerd_font_variant = "mono" },

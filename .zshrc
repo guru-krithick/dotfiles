@@ -126,6 +126,8 @@ alias tmux='tmux -u'
 alias speedtest='speedtest-cli'
 alias btop='btop --force-utf'
 alias cc='claude'
+alias cc1='CLAUDE_CONFIG_DIR="$HOME/.claude-pro1" claude'
+alias cc2='CLAUDE_CONFIG_DIR="$HOME/.claude-pro2" claude'
 
 if command -v eza >/dev/null 2>&1; then
     alias ls='eza --icons --group-directories-first'

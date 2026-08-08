@@ -1,0 +1,76 @@
+#!/bin/bash
+# Toggle system performance knobs that power-profiles-daemon does not manage,
+# alongside the PPD profile itself.
+
+BOOST_PROFILE="performance"
+NORMAL_PROFILE="balanced"
+BOOST_GPU_MIN=600
+NORMAL_GPU_MIN=300
+BOOST_SWAPPINESS=150
+NORMAL_SWAPPINESS=60
+
+GPU_MIN_FILE=$(echo /sys/class/drm/card*/gt_min_freq_mhz | cut -d' ' -f1)
+
+notify() {
+    notify-send "󰓅 Power" "$1" -t 3000
+}
+
+apply() {
+    local profile=$1 gpu_min=$2 swappiness=$3
+
+    powerprofilesctl set "$profile"
+
+    # PPD owns platform_profile, governor and EPP; these two it never touches.
+    [[ -w "$GPU_MIN_FILE" || $EUID -eq 0 ]] || SUDO=sudo
+    [[ -e "$GPU_MIN_FILE" ]] && echo "$gpu_min" | ${SUDO:-} tee "$GPU_MIN_FILE" >/dev/null
+    ${SUDO:-} sysctl -q -w vm.swappiness="$swappiness"
+}
+
+case "$1" in
+on)
+    apply "$BOOST_PROFILE" "$BOOST_GPU_MIN" "$BOOST_SWAPPINESS"
+    notify "Boost on — performance, GPU floor ${BOOST_GPU_MIN}MHz"
+    ;;
+off)
+    apply "$NORMAL_PROFILE" "$NORMAL_GPU_MIN" "$NORMAL_SWAPPINESS"
+    notify "Boost off — balanced"
+    ;;
+toggle)
+    if [[ "$(powerprofilesctl get)" == "$BOOST_PROFILE" ]]; then
+        exec "$0" off
+    else
+        exec "$0" on
+    fi
+    ;;
+run)
+    # Scoped boost: reverts when the command exits, including on crash or Ctrl-C.
+    shift
+    [[ $# -eq 0 ]] && {
+        echo "usage: powerboost run <command> [args...]" >&2
+        exit 1
+    }
+    prev_profile=$(powerprofilesctl get)
+    prev_gpu_min=$(cat "$GPU_MIN_FILE" 2>/dev/null)
+    prev_swappiness=$(sysctl -n vm.swappiness)
+    trap 'apply "$prev_profile" "$prev_gpu_min" "$prev_swappiness"' EXIT INT TERM
+
+    apply "$BOOST_PROFILE" "$BOOST_GPU_MIN" "$BOOST_SWAPPINESS"
+    if command -v gamemoderun >/dev/null; then
+        gamemoderun "$@"
+    else
+        "$@"
+    fi
+    ;;
+status | "")
+    printf 'profile      %s\n' "$(powerprofilesctl get)"
+    printf 'governor     %s\n' "$(sort -u /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor | paste -sd,)"
+    printf 'EPP          %s\n' "$(cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference)"
+    printf 'platform     %s\n' "$(cat /sys/firmware/acpi/platform_profile)"
+    printf 'GPU min      %s MHz\n' "$(cat "$GPU_MIN_FILE" 2>/dev/null)"
+    printf 'swappiness   %s\n' "$(sysctl -n vm.swappiness)"
+    ;;
+*)
+    echo "usage: powerboost {on|off|toggle|run <cmd>|status}" >&2
+    exit 1
+    ;;
+esac

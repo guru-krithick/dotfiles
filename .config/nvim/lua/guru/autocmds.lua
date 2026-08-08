@@ -46,7 +46,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		map("n", "gr", vim.lsp.buf.references, "Go to references")
 		map("n", "gi", vim.lsp.buf.implementation, "Go to implementation")
 		map("n", "K", vim.lsp.buf.hover, "Hover documentation")
-		map("n", "<C-k>", vim.lsp.buf.signature_help, "Signature help")
+		-- Signature help is NOT bound to <C-k> here: this map is buffer-local, so
+		-- it would shadow vim-tmux-navigator's global <C-k> in every LSP buffer.
+		-- blink.cmp already owns <C-k> in insert mode, which is where it's useful.
 		map("n", "<leader>D", vim.lsp.buf.type_definition, "Type definition")
 		map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
 		map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")

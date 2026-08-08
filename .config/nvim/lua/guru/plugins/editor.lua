@@ -18,9 +18,8 @@ return {
 				desc = "Flash",
 			},
 			{
-				-- Not mapped in visual mode; nvim-surround owns visual `S`.
 				"S",
-				mode = { "n", "o" },
+				mode = { "n", "x", "o" },
 				function()
 					require("flash").treesitter()
 				end,
@@ -54,29 +53,6 @@ return {
 	},
 
 	{
-		"kylechui/nvim-surround",
-		event = { "BufReadPre", "BufNewFile" },
-		opts = {
-			aliases = {
-				["a"] = ">",
-				["b"] = ")",
-				["B"] = "}",
-				["r"] = "]",
-				["q"] = { '"', "'", "`" },
-			},
-			highlight = { duration = 200 },
-			move_cursor = "begin",
-		},
-	},
-
-	-- Replaces nvim-autopairs, which only existed to hook nvim-cmp.
-	{
-		"echasnovski/mini.pairs",
-		event = "InsertEnter",
-		opts = {},
-	},
-
-	{
 		"stevearc/oil.nvim",
 		dependencies = { "echasnovski/mini.icons" },
 		lazy = false, -- must claim the netrw hijack before any directory buffer
@@ -104,6 +80,7 @@ return {
 				["<C-v>"] = { "actions.select", opts = { vertical = true } },
 				["<C-s>"] = { "actions.select", opts = { horizontal = true } },
 				["<C-t>"] = { "actions.select", opts = { tab = true } },
+				-- Buffer-local, so it shadows the global <C-p> file picker here only.
 				["<C-p>"] = "actions.preview",
 				["<C-c>"] = "actions.close",
 				["q"] = "actions.close",
@@ -116,58 +93,6 @@ return {
 				["gx"] = "actions.open_external",
 				["g."] = "actions.toggle_hidden",
 			},
-		},
-	},
-
-	{
-		"ThePrimeagen/harpoon",
-		branch = "harpoon2",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		opts = {
-			settings = { save_on_toggle = true },
-		},
-		config = function(_, opts)
-			require("harpoon"):setup(opts)
-		end,
-		keys = function()
-			-- All under <leader>h. It used to be both a which-key group and a
-			-- standalone binding, which forced a 'timeoutlen' wait.
-			local keys = {
-				{
-					"<leader>ha",
-					function()
-						require("harpoon"):list():add()
-					end,
-					desc = "Harpoon add file",
-				},
-				{
-					"<leader>hh",
-					function()
-						local harpoon = require("harpoon")
-						harpoon.ui:toggle_quick_menu(harpoon:list())
-					end,
-					desc = "Harpoon quick menu",
-				},
-			}
-
-			for i = 1, 9 do
-				table.insert(keys, {
-					"<leader>" .. i,
-					function()
-						require("harpoon"):list():select(i)
-					end,
-					desc = "Harpoon to file " .. i,
-				})
-			end
-			return keys
-		end,
-	},
-
-	{
-		"mbbill/undotree",
-		cmd = { "UndotreeToggle", "UndotreeShow" },
-		keys = {
-			{ "<leader>u", "<cmd>UndotreeToggle<cr>", desc = "Toggle undotree" },
 		},
 	},
 

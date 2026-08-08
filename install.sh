@@ -184,6 +184,28 @@ link_dotfiles() {
     stow -v -R -d "$(dirname "$DOTFILES_DIR")" -t "$HOME" "$(basename "$DOTFILES_DIR")"
 }
 
+# powerboost writes the GPU frequency floor and vm.swappiness, both root-only.
+# It is bound to a key and to a waybar click, neither of which has a tty for
+# sudo to prompt on, so without this rule those two writes fail silently and
+# only the power-profiles-daemon half of the toggle takes effect.
+install_powerboost_sudoers() {
+    local rule=/etc/sudoers.d/powerboost
+
+    if sudo test -f "$rule"; then
+        skip "powerboost sudoers rule"
+        return
+    fi
+
+    log "installing powerboost sudoers rule"
+    # Scoped to these two exact commands, nothing else.
+    sudo tee "$rule" >/dev/null <<EOF
+$USER ALL=(root) NOPASSWD: /usr/bin/tee /sys/class/drm/card[0-9]/gt_min_freq_mhz
+$USER ALL=(root) NOPASSWD: /usr/bin/sysctl -q -w vm.swappiness=[0-9]*
+EOF
+    sudo chmod 0440 "$rule"
+    sudo visudo -cf "$rule"
+}
+
 set_login_shell() {
     if [[ "$SHELL" == *"/zsh" ]]; then
         skip "zsh as login shell"
@@ -211,6 +233,7 @@ main() {
     install_toolchains
     install_plugin_managers
     link_dotfiles
+    install_powerboost_sudoers
     set_login_shell
     print_next_steps
 }

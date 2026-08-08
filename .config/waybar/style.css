@@ -162,6 +162,7 @@ tooltip label {
 #battery,
 #network,
 #backlight,
+#custom-powerboost,
 #idle_inhibitor {
   margin: 6px 0;
   padding: 6px 12px;
@@ -174,6 +175,7 @@ tooltip label {
 #battery:hover,
 #network:hover,
 #backlight:hover,
+#custom-powerboost:hover,
 #idle_inhibitor:hover {
   color: @accent-dim;
 }
@@ -190,6 +192,14 @@ tooltip label {
 
 #battery.critical:not(.charging) {
   color: @red;
+}
+
+#custom-powerboost.normal {
+  color: @surface2;
+}
+
+#custom-powerboost.boosted {
+  color: @yellow;
 }
 
 #idle_inhibitor {

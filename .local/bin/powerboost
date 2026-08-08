@@ -21,9 +21,15 @@ apply() {
     powerprofilesctl set "$profile"
 
     # PPD owns platform_profile, governor and EPP; these two it never touches.
-    [[ -w "$GPU_MIN_FILE" || $EUID -eq 0 ]] || SUDO=sudo
+    # Both writes need root, so sudo unless we already are — see
+    # /etc/sudoers.d/powerboost for the NOPASSWD rule that keeps the keybind
+    # working without a tty to prompt on.
+    [[ $EUID -eq 0 ]] || SUDO=sudo
     [[ -e "$GPU_MIN_FILE" ]] && echo "$gpu_min" | ${SUDO:-} tee "$GPU_MIN_FILE" >/dev/null
     ${SUDO:-} sysctl -q -w vm.swappiness="$swappiness"
+
+    # Repaint the waybar module now instead of waiting out its poll interval.
+    pkill -RTMIN+8 waybar 2>/dev/null || true
 }
 
 case "$1" in
@@ -61,6 +67,17 @@ run)
         "$@"
     fi
     ;;
+waybar)
+    # JSON for the waybar custom module. Kept in this script rather than
+    # waybar/scripts/ so BOOST_PROFILE has exactly one definition.
+    if [[ "$(powerprofilesctl get)" == "$BOOST_PROFILE" ]]; then
+        printf '{"text": "󰓅", "class": "boosted", "tooltip": "Boost on — %s, GPU floor %sMHz, swappiness %s\\nClick to turn off"}' \
+            "$BOOST_PROFILE" "$(cat "$GPU_MIN_FILE" 2>/dev/null)" "$(sysctl -n vm.swappiness)"
+    else
+        printf '{"text": "󰾆", "class": "normal", "tooltip": "Boost off — %s\\nClick to turn on"}' \
+            "$(powerprofilesctl get)"
+    fi
+    ;;
 status | "")
     printf 'profile      %s\n' "$(powerprofilesctl get)"
     printf 'governor     %s\n' "$(sort -u /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor | paste -sd,)"
@@ -70,7 +87,7 @@ status | "")
     printf 'swappiness   %s\n' "$(sysctl -n vm.swappiness)"
     ;;
 *)
-    echo "usage: powerboost {on|off|toggle|run <cmd>|status}" >&2
+    echo "usage: powerboost {on|off|toggle|run <cmd>|status|waybar}" >&2
     exit 1
     ;;
 esac

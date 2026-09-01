@@ -45,8 +45,8 @@ readonly PACMAN_PACKAGES=(
     libinput-tools brightnessctl
 
     # audio
-    pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber
-    pavucontrol libpulse sof-firmware
+    # pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber
+    # pavucontrol libpulse sof-firmware
 
     # theming — GTK_THEME in .zshrc and the gsettings calls in mango's
     # exec-once block name these by string, so a missing one degrades to an
@@ -179,9 +179,15 @@ install_plugin_managers() {
     clone_if_missing https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 }
 
+# The repo is a single stow package rather than a tree of them, so the stow
+# directory has to be the repo itself with "." as the package name. Passing
+# -d "$HOME" and the repo as the package looks equivalent but is not: stow
+# 2.4 refuses to plan anything when the stow directory and the target
+# directory are the same path, and it exits 0 while doing so, so the whole
+# step silently becomes a no-op.
 link_dotfiles() {
     log "symlinking dotfiles into \$HOME"
-    stow -v -R -d "$(dirname "$DOTFILES_DIR")" -t "$HOME" "$(basename "$DOTFILES_DIR")"
+    stow -v -R -d "$DOTFILES_DIR" -t "$HOME" .
 }
 
 # powerboost writes the GPU frequency floor and vm.swappiness, both root-only.

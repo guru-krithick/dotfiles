@@ -1,161 +1,193 @@
 @import url("./ultradark.css");
 
 * {
-  font-family:
-    "Maple Mono NF", "JetBrainsMono Nerd Font", "Symbols Nerd Font", monospace;
-  font-weight: 600;
-  font-size: 15px;
-  min-height: 0;
+    font-family:
+        "Maple Mono NF", "JetBrainsMono Nerd Font", "Symbols Nerd Font", monospace;
+    font-weight: 600;
+    font-size: 15px;
+    min-height: 0;
 }
 
 window#waybar {
-  color: @foreground;
-  background-color: transparent;
+    color: @foreground;
+    background-color: transparent;
 }
 
 tooltip {
-  background-color: @background-alt;
-  border: 1px solid @surface1;
-  border-radius: 10px;
+    background-color: @background-alt;
+    border: 1px solid @surface1;
+    border-radius: 10px;
 }
 
 tooltip label {
-  color: @foreground;
+    color: @foreground;
 }
 
 #workspaces {
-  margin: 5px 0 5px 10px;
-  padding: 3px;
-  background-color: @background-alt;
-  border-radius: 18px;
+    margin: 5px 0 5px 10px;
+    padding: 3px;
+    background-color: @background-alt;
+    border-radius: 18px;
 }
 
 #workspaces button {
-  padding: 2px 0;
-  margin: 2px;
-  min-width: 26px;
-  min-height: 26px;
-  color: @gray;
-  background: transparent;
-  border: none;
-  border-radius: 13px;
-  font-size: 13px;
-  font-weight: bold;
-  box-shadow: none;
-  text-shadow: none;
-  transition:
-    all 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-    background-color 0.2s ease,
-    color 0.15s ease,
-    min-width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    padding: 2px 0;
+    margin: 2px;
+    min-width: 26px;
+    min-height: 26px;
+    color: @gray;
+    background: transparent;
+    border: none;
+    border-radius: 13px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: none;
+    text-shadow: none;
+    opacity: 0.6;
+    transition:
+        min-width 300ms cubic-bezier(0.34, 1.5, 0.5, 1),
+        background-image 260ms cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 160ms ease-out,
+        color 120ms ease-out,
+        opacity 160ms ease-out;
 }
 
 #workspaces button:hover {
-  color: @foreground;
-  background-color: @surface1;
+    color: @foreground;
+    background-color: @surface1;
+    opacity: 1;
 }
 
 #workspaces button.active {
-  min-width: 36px;
-  color: @black;
-  background: linear-gradient(135deg, #ffffff 0%, #d0d0d0 100%);
+    min-width: 36px;
+    color: @black;
+    opacity: 1;
+    background: linear-gradient(135deg, #ffffff 0%, #d0d0d0 100%);
 }
 
 #workspaces button.visible {
-  color: @foreground;
+    color: @foreground;
+    opacity: 0.85;
 }
 
-#workspaces button.empty {
-  color: @gray;
+#workspaces button.empty,
+#workspaces button.hidden {
+    color: @gray;
+    opacity: 0.45;
 }
 
 #workspaces button.urgent {
-  color: @white;
-  background: linear-gradient(135deg, #ff5555 0%, #aa3333 100%);
+    color: @white;
+    background: linear-gradient(135deg, #ff5555 0%, #aa3333 100%);
 }
 
 #window {
-  margin: 6px 0 6px 6px;
-  padding: 6px 14px;
-  background-color: @background-alt;
-  color: @surface2;
-  border-radius: 20px;
-  transition: color 0.2s ease;
+    margin: 6px 0 6px 6px;
+    padding: 6px 14px;
+    background-color: @background-alt;
+    color: @surface2;
+    border-radius: 20px;
+    transition: color 0.2s ease;
 }
 
 #window:hover {
-  color: @accent-dim;
+    color: @accent-dim;
 }
 
 #mpris {
-  margin: 6px 0 6px 6px;
-  padding: 6px 14px;
-  background-color: @background-alt;
-  color: @surface2;
-  border-radius: 20px;
-  transition: color 0.2s ease;
+    margin: 6px 0 6px 6px;
+    padding: 6px 14px;
+    background-color: @background-alt;
+    color: @surface2;
+    border-radius: 20px;
+    transition: color 0.2s ease;
 }
 
 #mpris:hover {
-  color: @accent-dim;
+    color: @accent-dim;
 }
 
 #mpris.playing {
-  color: @green;
+    color: @green;
 }
 
 #mpris.paused {
-  color: @yellow;
+    color: @yellow;
 }
 
 #mpris.stopped {
-  color: @surface2;
+    color: @surface2;
 }
 
 #custom-pomodoro,
 #clock {
-  margin: 6px 0;
-  padding: 6px 14px;
-  background-color: @background-alt;
-  color: @foreground;
+    margin: 6px 0;
+    padding: 6px 14px;
+    background-color: @background-alt;
+    color: @foreground;
 }
 
 #custom-pomodoro {
-  border-radius: 20px 0 0 20px;
-  padding-left: 14px;
-  padding-right: 10px;
-  transition: color 0.2s ease;
+    border-radius: 20px 0 0 20px;
+    padding-left: 14px;
+    padding-right: 10px;
+    transition: color 0.2s ease;
 }
 
 #custom-pomodoro:hover {
-  color: @accent-dim;
+    color: @accent-dim;
 }
 
 #custom-pomodoro.standby {
-  color: @surface2;
+    color: @surface2;
 }
 
 #custom-pomodoro.work {
-  color: @red;
+    color: @red;
 }
 
 #custom-pomodoro.break {
-  color: @green;
+    color: @green;
 }
 
 #custom-pomodoro.paused {
-  color: @yellow;
+    color: @yellow;
 }
 
 #clock {
-  border-radius: 0 20px 20px 0;
-  padding-right: 14px;
-  padding-left: 10px;
-  transition: color 0.2s ease;
+    border-radius: 0 20px 20px 0;
+    padding-right: 14px;
+    padding-left: 10px;
+    transition: color 0.2s ease;
 }
 
 #clock:hover {
-  color: @accent-dim;
+    color: @accent-dim;
+}
+
+#privacy {
+    margin: 6px 0 6px 10px;
+    padding: 6px 12px;
+    background-color: @background-alt;
+    border-radius: 20px;
+    color: @red;
+}
+
+#privacy-item {
+    padding: 0 3px;
+    color: @red;
+}
+
+#privacy-item.screenshare {
+    color: @yellow;
+}
+
+#privacy-item.audio-in {
+    color: @red;
+}
+
+#privacy-item.audio-out {
+    color: @green;
 }
 
 #pulseaudio,
@@ -164,11 +196,11 @@ tooltip label {
 #backlight,
 #custom-powerboost,
 #idle_inhibitor {
-  margin: 6px 0;
-  padding: 6px 12px;
-  background-color: @background-alt;
-  color: @foreground;
-  transition: color 0.2s ease;
+    margin: 6px 0;
+    padding: 6px 12px;
+    background-color: @background-alt;
+    color: @foreground;
+    transition: color 0.2s ease;
 }
 
 #pulseaudio:hover,
@@ -177,37 +209,37 @@ tooltip label {
 #backlight:hover,
 #custom-powerboost:hover,
 #idle_inhibitor:hover {
-  color: @accent-dim;
+    color: @accent-dim;
 }
 
 #pulseaudio {
-  margin-left: 10px;
-  border-radius: 20px 0 0 20px;
-  padding-left: 14px;
+    margin-left: 10px;
+    border-radius: 20px 0 0 20px;
+    padding-left: 14px;
 }
 
 #battery.warning:not(.charging) {
-  color: @yellow;
+    color: @yellow;
 }
 
 #battery.critical:not(.charging) {
-  color: @red;
+    color: @red;
 }
 
 #custom-powerboost.normal {
-  color: @surface2;
+    color: @surface2;
 }
 
 #custom-powerboost.boosted {
-  color: @yellow;
+    color: @yellow;
 }
 
 #idle_inhibitor {
-  margin-right: 10px;
-  border-radius: 0 20px 20px 0;
-  padding-right: 14px;
+    margin-right: 10px;
+    border-radius: 0 20px 20px 0;
+    padding-right: 14px;
 }
 
 #idle_inhibitor.activated {
-  color: @green;
+    color: @green;
 }

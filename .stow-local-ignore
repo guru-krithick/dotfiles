@@ -1,13 +1,3 @@
-# Stow's built-in default ignore list. Supplying this file REPLACES the
-# defaults entirely, so they must be repeated here verbatim.
-RCS
-.+,v
-CVS
-\.\#.+
-\.cvsignore
-\.svn
-_darcs
-\.hg
 \.git
 \.gitignore
 \.gitmodules
@@ -15,7 +5,5 @@ _darcs
 \#.*\#
 ^/README.*
 ^/LICENSE.*
-^/COPYING
-
-# Local additions: archived config, kept in the repo but never symlinked.
-^/\.config/nvim\.old
+^/install\.sh
+^/\.stow-local-ignore

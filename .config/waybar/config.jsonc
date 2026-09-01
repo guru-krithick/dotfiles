@@ -1,117 +1,177 @@
 {
-  "layer": "top",
-  "position": "top",
-  "height": 50,
-  "spacing": 0,
-  "modules-left": ["ext/workspaces", "mpris"],
-  "ext/workspaces": {
-    "format": "{name}",
-    "all-outputs": true,
-    "active-only": false,
-    "persistent-workspaces": {
-      "*": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    "layer": "top",
+    "position": "top",
+    "height": 50,
+    "spacing": 0,
+    "modules-left": [
+        "ext/workspaces",
+        "mpris"
+    ],
+    "ext/workspaces": {
+        "format": "{name}",
+        "format-icons": {
+            "overview": "󰋙",
+            "default": "{name}",
+        },
+        "all-outputs": true,
+        "active-only": false,
+        "ignore-hidden": true,
+        "sort-by-id": true,
+        "on-click": "activate",
+        "on-click-right": "deactivate",
+        "on-scroll-up": "activate-next",
+        "on-scroll-down": "activate-prev",
     },
-  },
-  "modules-center": ["custom/pomodoro", "clock"],
-  "modules-right": [
-    "pulseaudio",
-    "battery",
-    "network",
-    "backlight",
-    "custom/powerboost",
-    "idle_inhibitor",
-  ],
-  "dwl/tags": {
-    "num-tags": 9,
-  },
-  "mpris": {
-    "player": "firefox",
-    "ignored-players": ["chromium", "chrome", "brave", "vlc", "mpv"],
-    "format": "{status_icon} {title} - {artist}",
-    "format-paused": "{status_icon} {title} - {artist}",
-    "format-stopped": "󰎇 Not Playing",
-    "status-icons": {
-      "playing": "󰎆",
-      "paused": "󰏤",
-      "stopped": "󰎇",
+    "modules-center": [
+        "custom/pomodoro",
+        "clock"
+    ],
+    "modules-right": [
+        "privacy",
+        "pulseaudio",
+        "battery",
+        "network",
+        "backlight",
+        "custom/powerboost",
+        "idle_inhibitor",
+    ],
+    "mpris": {
+        "player": "firefox",
+        "ignored-players": [
+            "chromium",
+            "chrome",
+            "brave",
+            "vlc",
+            "mpv"
+        ],
+        "format": "{status_icon} {title} - {artist}",
+        "format-paused": "{status_icon} {title} - {artist}",
+        "format-stopped": "󰎇 Not Playing",
+        "status-icons": {
+            "playing": "󰎆",
+            "paused": "󰏤",
+            "stopped": "󰎇",
+        },
+        "max-length": 40,
+        "tooltip-format": "{player}: {title} by {artist} ({album})",
+        "tooltip-format-stopped": "No media playing",
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous",
     },
-    "max-length": 40,
-    "tooltip-format": "{player}: {title} by {artist} ({album})",
-    "tooltip-format-stopped": "No media playing",
-    "on-click": "playerctl play-pause",
-    "on-scroll-up": "playerctl next",
-    "on-scroll-down": "playerctl previous",
-  },
-  "custom/pomodoro": {
-    "exec": "~/.config/waybar/scripts/pomodoro.sh",
-    "return-type": "json",
-    "interval": 1,
-    "on-click": "~/.config/waybar/scripts/pomodoro.sh start",
-    "on-click-right": "~/.config/waybar/scripts/pomodoro.sh toggle",
-    "on-click-middle": "~/.config/waybar/scripts/pomodoro.sh reset",
-    "on-scroll-up": "~/.config/waybar/scripts/pomodoro.sh add",
-    "on-scroll-down": "~/.config/waybar/scripts/pomodoro.sh sub",
-  },
-  "clock": {
-    "timezone": "Asia/Kolkata",
-    "tooltip-format": "<tt><small>{calendar}</small></tt>",
-    "format-alt": " {:%a %d %b}",
-    "format": " {:%H:%M}",
-  },
-  "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-muted": "󰖁",
-    "format-icons": {
-      "default": ["󰕿", "󰖀", "󰕾"],
-      "headphone": "󰋋",
-      "headset": "󰋎",
+    "custom/pomodoro": {
+        "exec": "~/.config/waybar/scripts/pomodoro.sh",
+        "return-type": "json",
+        "interval": 1,
+        "on-click": "~/.config/waybar/scripts/pomodoro.sh start",
+        "on-click-right": "~/.config/waybar/scripts/pomodoro.sh toggle",
+        "on-click-middle": "~/.config/waybar/scripts/pomodoro.sh reset",
+        "on-scroll-up": "~/.config/waybar/scripts/pomodoro.sh add",
+        "on-scroll-down": "~/.config/waybar/scripts/pomodoro.sh sub",
     },
-    "max-volume": 100,
-    "on-click": "pavucontrol",
-    "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
-    "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
-  },
-  "battery": {
-    "states": {
-      "warning": 30,
-      "critical": 15,
+    "clock": {
+        "timezone": "Asia/Kolkata",
+        "tooltip-format": "<tt><small>{calendar}</small></tt>",
+        "format-alt": " {:%a %d %b}",
+        "format": " {:%H:%M}",
     },
-    "format": "{icon} {capacity}%",
-    "format-charging": "󰂄 {capacity}%",
-    "format-plugged": "󰚥 {capacity}%",
-    "format-alt": "{icon} {time}",
-    "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-  },
-  "network": {
-    "format-wifi": "󰤨 {signalStrength}%",
-    "format-ethernet": "󰈀",
-    "format-linked": "󰈀",
-    "format-disconnected": "󰤭",
-    "format-alt": "{essid}",
-    "tooltip-format": "{ifname}\n{ipaddr}/{cidr}\n{gwaddr}",
-    "tooltip-format-wifi": "{essid}\n{ipaddr}/{cidr}\n󰇚 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes}",
-  },
-  "backlight": {
-    "device": "intel_backlight",
-    "format": "{icon} {percent}%",
-    "on-scroll-up": "brightnessctl set +5%",
-    "on-scroll-down": "brightnessctl set 5%-",
-    "format-icons": ["󰃞", "󰃟", "󰃠"],
-  },
-  // Polls slowly because the profile only changes when something asks it to;
-  // powerboost raises RTMIN+8 on every apply for the instant repaint.
-  "custom/powerboost": {
-    "exec": "~/.local/bin/powerboost waybar",
-    "return-type": "json",
-    "interval": 30,
-    "signal": 8,
-    "on-click": "~/.local/bin/powerboost toggle",
-  },
-  "idle_inhibitor": {
-    "format": "{icon}",
-    "format-icons": {
-      "activated": "󰅶",
-      "deactivated": "󰾪",
+    // Event-driven via PipeWire — no polling, costs nothing when idle.
+    // Each entry renders its own icon; the module hides itself when nothing is active.
+    "privacy": {
+        "icon-spacing": 6,
+        "icon-size": 15,
+        "transition-duration": 250,
+        "modules": [
+            {
+                "type": "screenshare",
+                "tooltip": true,
+                "tooltip-icon-size": 22,
+            },
+            {
+                "type": "audio-in",
+                "tooltip": true,
+                "tooltip-icon-size": 22,
+            },
+            {
+                "type": "audio-out",
+                "tooltip": true,
+                "tooltip-icon-size": 22,
+            },
+        ],
     },
-  },
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "󰖁",
+        "format-icons": {
+            "default": [
+                "󰕿",
+                "󰖀",
+                "󰕾"
+            ],
+            "headphone": "󰋋",
+            "headset": "󰋎",
+        },
+        "max-volume": 100,
+        "on-click": "pavucontrol",
+        "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+    },
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15,
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-plugged": "󰚥 {capacity}%",
+        "format-alt": "{icon} {time}",
+        "format-icons": [
+            "󰁺",
+            "󰁻",
+            "󰁼",
+            "󰁽",
+            "󰁾",
+            "󰁿",
+            "󰂀",
+            "󰂁",
+            "󰂂",
+            "󰁹"
+        ],
+    },
+    "network": {
+        "format-wifi": "󰤨 {signalStrength}%",
+        "format-ethernet": "󰈀",
+        "format-linked": "󰈀",
+        "format-disconnected": "󰤭",
+        "format-alt": "{essid}",
+        "tooltip-format": "{ifname}\n{ipaddr}/{cidr}\n{gwaddr}",
+        "tooltip-format-wifi": "{essid}\n{ipaddr}/{cidr}\n󰇚 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes}",
+    },
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "{icon} {percent}%",
+        "on-scroll-up": "brightnessctl set +5%",
+        "on-scroll-down": "brightnessctl set 5%-",
+        "format-icons": [
+            "󰃞",
+            "󰃟",
+            "󰃠"
+        ],
+    },
+    // Polls slowly because the profile only changes when something asks it to;
+    // powerboost raises RTMIN+8 on every apply for the instant repaint.
+    "custom/powerboost": {
+        "exec": "~/.local/bin/powerboost waybar",
+        "return-type": "json",
+        "interval": 30,
+        "signal": 8,
+        "on-click": "~/.local/bin/powerboost toggle",
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "󰅶",
+            "deactivated": "󰾪",
+        },
+    },
 }

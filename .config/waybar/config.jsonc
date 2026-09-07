@@ -92,11 +92,6 @@
                 "tooltip": true,
                 "tooltip-icon-size": 22,
             },
-            {
-                "type": "audio-out",
-                "tooltip": true,
-                "tooltip-icon-size": 22,
-            },
         ],
     },
     "pulseaudio": {

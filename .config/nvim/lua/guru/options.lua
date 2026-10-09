@@ -30,7 +30,7 @@ o.signcolumn = "yes"
 
 o.scrolloff = 8
 o.sidescrolloff = 8
-o.updatetime = 50
+o.updatetime = 250
 vim.opt.isfname:append("@-@")
 vim.opt.iskeyword:append("-")
 

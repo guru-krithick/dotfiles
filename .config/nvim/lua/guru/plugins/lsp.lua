@@ -12,7 +12,7 @@ return {
 	},
 	config = function()
 		vim.diagnostic.config({
-			virtual_text = true,
+			virtual_text = false,
 			signs = {
 				text = {
 					[vim.diagnostic.severity.ERROR] = "✘",
@@ -98,18 +98,6 @@ return {
 					schemas = require("schemastore").yaml.schemas(),
 				},
 			},
-		})
-
-		-- Svelte needs telling when TS/JS files it tracks change on disk.
-		vim.lsp.config("svelte", {
-			on_attach = function(client)
-				vim.api.nvim_create_autocmd("BufWritePost", {
-					pattern = { "*.js", "*.ts" },
-					callback = function(ctx)
-						client:notify("$/onDidChangeTsOrJsFile", { uri = vim.uri_from_fname(ctx.match) })
-					end,
-				})
-			end,
 		})
 
 		-- mason's automatic_enable covers the rest; rust_analyzer comes from

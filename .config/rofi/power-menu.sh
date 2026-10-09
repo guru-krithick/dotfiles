@@ -12,7 +12,7 @@ case "$selected" in
     swaylock -f -C ~/.config/swaylock/config && systemctl suspend
     ;;
 *"Logout"*)
-    swaymsg exit
+    mmsg dispatch quit
     ;;
 *"Battery"*)
     if [[ -f "/tmp/battery-saver-enabled" ]]; then

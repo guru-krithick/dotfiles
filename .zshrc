@@ -1,16 +1,12 @@
-[[ -z "$NO_MANGO" && "$(tty)" == "/dev/tty1" ]] && exec mango
+[[ -z "$NO_MANGO" && "$TTY" == /dev/tty1 ]] && exec mango
 
-zsh_plugins=${ZDOTDIR:-$HOME}/.zsh_plugins
-[[ -f ${zsh_plugins}.txt ]] || touch ${zsh_plugins}.txt
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="robbyrussell"
 
-source ${ZDOTDIR:-$HOME}/.antidote/antidote.zsh
-
-if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
-    antidote bundle <${zsh_plugins}.txt >|${zsh_plugins}.zsh
-fi
-source ${zsh_plugins}.zsh
-
-eval "$(starship init zsh)"
+# Extra completions need to be on fpath before OMZ starts.
+fpath=("${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-completions/src" $fpath)
+plugins=(git extract sudo zsh-autosuggestions zsh-syntax-highlighting)
+source "$ZSH/oh-my-zsh.sh"
 
 export TZ="Asia/Kolkata"
 export BROWSER="zen-browser"
@@ -23,8 +19,6 @@ export BAT_THEME="base16-256"
 export PNPM_HOME="$HOME/.local/share/pnpm"
 export BUN_INSTALL="$HOME/.bun"
 
-# No jvm entry: archlinux-java points /usr/bin/java at
-# /usr/lib/jvm/default, so the toolchain is already on PATH.
 path=(
     $PNPM_HOME
     $BUN_INSTALL/bin
@@ -52,66 +46,40 @@ export FZF_DEFAULT_OPTS="
 "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git --exclude node_modules'
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:200 {}'"
+export FZF_ALT_C_OPTS="--preview 'eza --tree --level=2 --color=always {}'"
+source <(fzf --zsh)
 
-HISTFILE=~/.zsh_history
+# OMZ handles the usual history and completion options.
 HISTSIZE=100000
 SAVEHIST=100000
-
-setopt EXTENDED_HISTORY INC_APPEND_HISTORY SHARE_HISTORY
-setopt HIST_EXPIRE_DUPS_FIRST HIST_IGNORE_DUPS HIST_IGNORE_ALL_DUPS
-setopt HIST_FIND_NO_DUPS HIST_IGNORE_SPACE HIST_SAVE_NO_DUPS
-setopt HIST_REDUCE_BLANKS HIST_VERIFY
-
-setopt AUTO_CD AUTO_PUSHD PUSHD_IGNORE_DUPS PUSHD_SILENT CDABLE_VARS
-setopt COMPLETE_IN_WORD ALWAYS_TO_END PATH_DIRS AUTO_MENU AUTO_LIST
-setopt AUTO_PARAM_SLASH COMPLETE_ALIASES
-setopt EXTENDED_GLOB GLOB_DOTS NUMERIC_GLOB_SORT
-setopt INTERACTIVE_COMMENTS LONG_LIST_JOBS AUTO_RESUME NOTIFY
+setopt HIST_IGNORE_ALL_DUPS HIST_FIND_NO_DUPS HIST_SAVE_NO_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt PUSHD_SILENT NUMERIC_GLOB_SORT INTERACTIVE_COMMENTS
 setopt NO_BEEP NO_FLOW_CONTROL
 
-eval "$(zoxide init zsh)"
-
-function cd() {
-    if [[ $# -eq 0 ]]; then
-        builtin cd ~
-    else
-        __zoxide_z "$@"
-    fi
-    _venv_auto_activate
-}
-
-_venv_auto_activate() {
-    if [[ -z "$VIRTUAL_ENV" ]]; then
-        local current_dir="$PWD"
-        while [[ "$current_dir" != "/" ]]; do
-            for candidate in .venv venv .env; do
-                if [[ -d "$current_dir/$candidate" ]]; then
-                    source "$current_dir/$candidate/bin/activate"
-                    return
-                fi
-            done
-            current_dir="$(dirname "$current_dir")"
-        done
-    else
-        local parentdir="$(dirname "$VIRTUAL_ENV")"
-        if [[ "$PWD"/ != "$parentdir"/* ]]; then
-            deactivate
-        fi
-    fi
-}
-
-autoload -U add-zsh-hook
-add-zsh-hook chpwd _venv_auto_activate
+eval "$(zoxide init zsh --cmd cd)"
+alias z=cd
+alias zi=cdi
 
 serve() {
-    local port=${1:-8000}
-    python3 -m http.server "$port" && echo "HTTP server on http://localhost:$port" || {
-        echo "Failed to start server on port $port"
-        return 1
-    }
+    python3 -m http.server "${1:-8000}"
 }
 
-bindkey -s '^f' '^u~/.config/tmux/scripts/tmux-sessionizer.sh\n'
+# Ctrl-R: history, Ctrl-T: files, Alt-C: directories (fzf).
+# Ctrl-F accepts a suggestion; Alt-Right accepts one word.
+bindkey '^F' autosuggest-accept
+bindkey '^[[1;3C' forward-word
+bindkey '^[[1;3D' backward-word
+bindkey '^P' up-line-or-beginning-search
+bindkey '^N' down-line-or-beginning-search
+bindkey '^X^U' undo
+bindkey '^X^R' redo
+# Edit a long command in nvim with Ctrl-X Ctrl-E.
+autoload -Uz edit-command-line
+zle -N edit-command-line
+zstyle :zle:edit-command-line editor nvim
+bindkey '^X^E' edit-command-line
 
 alias -s {js,ts,jsx,tsx,py,json,yaml,yml,toml,md,txt}=nvim
 alias -s pdf=zathura
@@ -149,14 +117,14 @@ alias myip="ip -4 addr show | awk '/inet/ {print \$2}' | cut -d/ -f1"
 alias localip="ip route get 1.1.1.1 | awk '{print \$7}'"
 alias publicip='curl -s ifconfig.me'
 alias ports='ss -tulwn'
-alias mountde='~/Scripts/mount-scripts/mount_drives.sh'
-alias unmountde='~/Scripts/mount-scripts/unmount_drives.sh'
 
 alias zshconfig='nvim ~/.zshrc'
 alias ghosttyconfig='nvim ~/.config/ghostty/config'
 alias nvimconfig='nvim ~/.config/nvim/'
 alias mangoconfig='nvim ~/.config/mango/config.conf'
 alias dotfiles='nvim ~/dotfiles'
-alias reload='source ~/.zshrc'
+alias reload='exec zsh'
 
-[[ -r ~/.zsh_local ]] && source ~/.zsh_local
+if [[ -r ~/.zsh_local ]]; then
+    source ~/.zsh_local
+fi

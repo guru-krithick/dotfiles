@@ -65,9 +65,7 @@ return {
 			ensure_installed = {
 				"stylua",
 				"prettier",
-				"eslint_d",
-				"black",
-				"isort",
+				"ruff",
 				"clang-format",
 				"google-java-format",
 				"gofumpt",
@@ -75,7 +73,6 @@ return {
 				"shfmt",
 				"shellcheck",
 				"sqlfluff",
-				"yamlfmt",
 			},
 			-- Both true meant a network round-trip on every startup.
 			-- Run :MasonToolsUpdate by hand instead.

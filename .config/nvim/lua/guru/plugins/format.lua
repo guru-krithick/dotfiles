@@ -30,7 +30,7 @@ return {
 			prisma = { "prettier" },
 			toml = { "taplo" },
 			lua = { "stylua" },
-			python = { "isort", "black" },
+			python = { "ruff_organize_imports", "ruff_format" },
 			c = { "clang-format" },
 			cpp = { "clang-format" },
 			cuda = { "clang-format" },

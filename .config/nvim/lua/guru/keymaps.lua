@@ -1,11 +1,5 @@
 local map = vim.keymap.set
 
--- Break the arrow-key habit
-map({ "n", "i", "v" }, "<Up>", "<Nop>")
-map({ "n", "i", "v" }, "<Down>", "<Nop>")
-map({ "n", "i", "v" }, "<Left>", "<Nop>")
-map({ "n", "i", "v" }, "<Right>", "<Nop>")
-
 map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 
 map("n", "<leader>w", "<cmd>w<cr>", { desc = "Save file" })
@@ -58,24 +52,16 @@ map(
 	{ desc = "Search and replace word under cursor" }
 )
 
-map("n", "<leader>X", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make file executable" })
+map("n", "<leader>X", function()
+	vim.system({ "chmod", "+x", vim.api.nvim_buf_get_name(0) }):wait()
+end, { desc = "Make file executable" })
 
--- Tmux sessionizer (no-ops outside tmux)
-map(
-	"n",
-	"<C-f>",
-	"<cmd>silent !tmux neww ~/.config/tmux/scripts/tmux-sessionizer.sh<CR>",
-	{ desc = "Open tmux sessionizer" }
-)
-map(
-	"n",
-	"<M-h>",
-	"<cmd>silent !tmux neww ~/.config/tmux/scripts/tmux-sessionizer.sh -s 0 --vsplit<CR>",
-	{ desc = "Sessionizer vsplit" }
-)
-map(
-	"n",
-	"<M-H>",
-	"<cmd>silent !tmux neww ~/.config/tmux/scripts/tmux-sessionizer.sh -s 0<CR>",
-	{ desc = "Sessionizer new window" }
-)
+map("n", "]q", "<cmd>cnext<cr>", { desc = "Next quickfix item" })
+map("n", "[q", "<cmd>cprevious<cr>", { desc = "Previous quickfix item" })
+map("n", "<leader>cl", function()
+	if vim.fn.getqflist({ winid = 0 }).winid == 0 then
+		vim.cmd.copen()
+	else
+		vim.cmd.cclose()
+	end
+end, { desc = "Toggle quickfix" })

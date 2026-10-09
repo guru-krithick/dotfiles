@@ -15,7 +15,7 @@ readonly DOTFILES_DIR
 
 readonly PACMAN_PACKAGES=(
     # shell and prompt
-    zsh starship tmux
+    zsh tmux
 
     # editors and terminals
     neovim ghostty kitty zed
@@ -36,12 +36,10 @@ readonly PACMAN_PACKAGES=(
 
     # wayland session: compositor bits, bar, launcher, screenshots
     waybar mako rofi swaybg swayidle
-    slurp grim wl-clipboard cliphist
-    # swayidle's timeout chain calls wlopm to blank the outputs, and
-    # Super+Shift+R records through wf-recorder
-    wlopm wf-recorder
+    slurp grim wl-clipboard cliphist wl-clip-persist
+    wlopm playerctl polkit-gnome libnotify
     xwayland-satellite xorg-xwayland
-    xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-utils
+    xdg-desktop-portal-wlr xdg-desktop-portal-gtk xdg-utils
     libinput-tools brightnessctl
 
     # audio
@@ -168,12 +166,16 @@ install_toolchains() {
     npm install -g --prefix "$NPM_PREFIX" "${NPM_GLOBALS[@]}"
 }
 
-# antidote replaced oh-my-zsh. It reads .zsh_plugins.txt (stowed below) and
-# compiles it to .zsh_plugins.zsh on first shell start, so nothing here needs
-# to fetch individual plugin repos.
+# Oh My Zsh provides the prompt and completion initialization. Keep the
+# extra plugins in its custom directory, outside the dotfiles repo.
 install_plugin_managers() {
-    log "fetching antidote"
-    clone_if_missing https://github.com/mattmc3/antidote.git "$HOME/.antidote"
+    log "fetching Oh My Zsh and shell plugins"
+    local omz_dir="$HOME/.oh-my-zsh"
+    local plugin_dir="${ZSH_CUSTOM:-$omz_dir/custom}/plugins"
+    clone_if_missing https://github.com/ohmyzsh/ohmyzsh.git "$omz_dir"
+    clone_if_missing https://github.com/zsh-users/zsh-completions.git "$plugin_dir/zsh-completions"
+    clone_if_missing https://github.com/zsh-users/zsh-autosuggestions.git "$plugin_dir/zsh-autosuggestions"
+    clone_if_missing https://github.com/zsh-users/zsh-syntax-highlighting.git "$plugin_dir/zsh-syntax-highlighting"
 
     log "fetching tpm"
     clone_if_missing https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"

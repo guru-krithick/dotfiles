@@ -4,8 +4,8 @@ return {
 		event = "VeryLazy",
 		opts = {
 			modes = {
-				search = { enabled = true },
-				char = { jump_labels = true },
+				search = { enabled = false },
+				char = { enabled = false },
 			},
 		},
 		keys = {
@@ -98,6 +98,9 @@ return {
 
 	{
 		"christoomey/vim-tmux-navigator",
+		init = function()
+			vim.g.tmux_navigator_preserve_zoom = 1
+		end,
 		cmd = {
 			"TmuxNavigateLeft",
 			"TmuxNavigateDown",
@@ -111,6 +114,59 @@ return {
 			{ "<C-k>", "<cmd>TmuxNavigateUp<cr>", desc = "Navigate up (vim/tmux)" },
 			{ "<C-l>", "<cmd>TmuxNavigateRight<cr>", desc = "Navigate right (vim/tmux)" },
 			{ "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Navigate to previous (vim/tmux)" },
+		},
+	},
+
+	{
+		"nvim-mini/mini.surround",
+		event = "VeryLazy",
+		opts = {
+			-- Keep s/S for Flash and gs for Git status.
+			mappings = {
+				add = "gza",
+				delete = "gzd",
+				replace = "gzr",
+				find = "gzf",
+				find_left = "gzF",
+				highlight = "gzh",
+				update_n_lines = "gzn",
+			},
+		},
+	},
+
+	{
+		"folke/persistence.nvim",
+		event = "BufReadPre",
+		opts = {},
+		keys = {
+			{
+				"<leader>or",
+				function()
+					require("persistence").load()
+				end,
+				desc = "Restore session",
+			},
+			{
+				"<leader>os",
+				function()
+					require("persistence").select()
+				end,
+				desc = "Select session",
+			},
+			{
+				"<leader>ol",
+				function()
+					require("persistence").load({ last = true })
+				end,
+				desc = "Last session",
+			},
+			{
+				"<leader>od",
+				function()
+					require("persistence").stop()
+				end,
+				desc = "Stop saving session",
+			},
 		},
 	},
 }

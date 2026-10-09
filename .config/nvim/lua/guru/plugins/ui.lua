@@ -24,13 +24,32 @@ return {
 				component_separators = { left = "", right = "" },
 				section_separators = { left = "", right = "" },
 				globalstatus = true,
+				disabled_filetypes = { statusline = { "lazy", "mason" } },
 			},
 			sections = {
-				lualine_a = { "mode" },
-				lualine_b = { "branch", "diff", "diagnostics" },
-				lualine_c = { { "filename", path = 1 } },
-				lualine_x = { "encoding", "fileformat", "filetype" },
-				lualine_y = { "progress" },
+				lualine_a = { {
+					"mode",
+					fmt = function(mode)
+						return mode:sub(1, 3)
+					end,
+				} },
+				lualine_b = { "branch" },
+				lualine_c = {
+					{ "filename", path = 1, symbols = { modified = "●", readonly = "", unnamed = "[new]" } },
+				},
+				lualine_x = {
+					{
+						"diff",
+						source = function()
+							local git = vim.b.gitsigns_status_dict
+							if git then
+								return { added = git.added, modified = git.changed, removed = git.removed }
+							end
+						end,
+					},
+					{ "diagnostics", sources = { "nvim_diagnostic" }, sections = { "error", "warn" } },
+				},
+				lualine_y = {},
 				lualine_z = { "location" },
 			},
 			inactive_sections = {
@@ -46,19 +65,6 @@ return {
 	},
 
 	{
-		"lukas-reineke/indent-blankline.nvim",
-		event = { "BufReadPre", "BufNewFile" },
-		main = "ibl",
-		opts = {
-			indent = { char = "│" },
-			scope = { enabled = true, show_start = false, show_end = false },
-			exclude = {
-				filetypes = { "help", "lazy", "mason", "notify", "oil", "checkhealth", "man" },
-			},
-		},
-	},
-
-	{
 		"folke/which-key.nvim",
 		event = "VeryLazy",
 		opts = {
@@ -68,6 +74,8 @@ return {
 				{ "<leader>e", group = "explorer" },
 				{ "<leader>f", group = "find" },
 				{ "<leader>g", group = "git" },
+				{ "<leader>o", group = "sessions" },
+				{ "gz", group = "surround" },
 				{ "<leader>r", group = "rename/replace" },
 				{ "<leader>s", group = "split" },
 				{ "<leader>t", group = "tabs" },

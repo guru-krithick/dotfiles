@@ -5,6 +5,12 @@ return {
 	"ibhagwan/fzf-lua",
 	dependencies = { "echasnovski/mini.icons" },
 	cmd = "FzfLua",
+	init = function()
+		vim.ui.select = function(items, opts, on_choice)
+			require("fzf-lua").register_ui_select()
+			vim.ui.select(items, opts, on_choice)
+		end
+	end,
 	opts = {
 		"default",
 		files = { hidden = true },
@@ -19,6 +25,11 @@ return {
 		},
 	},
 	keys = {
+		{ "<leader>fz", "<cmd>FzfLua zoxide<cr>", desc = "Find project directory" },
+		{ '<leader>f"', "<cmd>FzfLua registers<cr>", desc = "Registers" },
+		{ "<leader>fj", "<cmd>FzfLua jumps<cr>", desc = "Jump history" },
+		{ "<leader>fc", "<cmd>FzfLua changes<cr>", desc = "Change history" },
+		{ "<leader>fk", "<cmd>FzfLua keymaps<cr>", desc = "Find keymaps" },
 		{ "<leader>ff", "<cmd>FzfLua files<cr>", desc = "Find files" },
 		{ "<leader>fg", "<cmd>FzfLua live_grep<cr>", desc = "Live grep" },
 		{ "<leader>fb", "<cmd>FzfLua buffers<cr>", desc = "Buffers" },
@@ -31,15 +42,6 @@ return {
 		{ "<leader>/", "<cmd>FzfLua blines<cr>", desc = "Fuzzy find in buffer" },
 		{ "<leader>gc", "<cmd>FzfLua git_commits<cr>", desc = "Git commits" },
 		{ "<leader>gs", "<cmd>FzfLua git_status<cr>", desc = "Git status" },
-		{
-			"<C-p>",
-			function()
-				-- git_files errors outside a repo.
-				if not pcall(require("fzf-lua").git_files) then
-					require("fzf-lua").files()
-				end
-			end,
-			desc = "Git files or find files",
-		},
+		{ "<C-p>", "<cmd>FzfLua vcs_files<cr>", desc = "Git files or find files" },
 	},
 }

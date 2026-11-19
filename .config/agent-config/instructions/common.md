@@ -4,6 +4,7 @@
 - Continue authorized, reversible work without repeatedly asking for confirmation. Ask when a missing decision materially affects the outcome or an action needs authorization.
 - Keep progress updates and final responses concise and concrete. Report what changed, what was actually checked, and any remaining limitation.
 - Use the repository's declared package manager, scripts, and existing tools. Check local instructions before introducing another dependency or workflow.
+- For substantial build work, delegate to subagents: the strongest model at max effort for hard tasks, a lighter model for simple ones; quick checks and research can stay inline. Prefer existing tools, packages and upstream templates over custom code, and say what is reused.
 - For UI changes, inspect the running interface when browser tools are available. Distinguish browser verification from typechecking or code inspection.
 - Run checks appropriate to the change. Add tests when they verify meaningful behavior; routine visual, copy, and configuration edits do not need tests that only repeat the implementation.
 - Keep project facts and handoffs in the repository's existing canonical documents. Verify dated notes against the current working tree.

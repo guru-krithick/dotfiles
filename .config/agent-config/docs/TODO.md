@@ -30,7 +30,7 @@ Each step lists how it is verified. Build steps go to subagents; the main sessio
    - `find-skills`: drop `-y`; keep one copy only.
 10. UI: commit impeccable (pinned upstream revision, LICENSE/NOTICE fetched from upstream) plus the `ui` router with add-on references extracted from ui-ux-pro-max (data + search script with fixed path), emil-design-eng (motion details), refactoring-ui (MIT, quick diagnostic) and web-design-guidelines (final checklist). Record source, revision and license per add-on in `skills/SOURCES.md`. Image-first stays deferred.
 11. Claude agents in `agents/claude/`: `reviewer` (read-only, checks diff against spec, skips style), `builder` (Opus, max effort), `quick-worker` (Sonnet), `ui-checker` (drives agent-browser, returns findings, not screenshots). Matching Codex roles where useful.
-12. Move the delegation preference from auto-memory into `instructions/common.md`.
+12. [x] Move the delegation preference from auto-memory into `instructions/common.md`.
 13. Remove `~/.agents/skills/{design-taste-frontend,emil-design-eng,refactoring-ui,ui-ux-pro-max}` and the duplicate `find-skills`. Verify: `/skill-doctor` shows no overlapping UI skills.
 
 ## Phase 3: `install.sh` and README

@@ -21,7 +21,7 @@ dotfiles/.config/agent-config/      the one canonical source, in git
 ├── global/      → ~/.claude, ~/.codex     every project, every session
 │   ├── instructions/common.md           working rules
 │   ├── autonomy                          bypassPermissions / no approvals
-│   ├── skills: grilling, wiki, debug, project-flow, ui, impeccable, web-ui-review, find-skills
+│   ├── skills: brainstorming, grilling, wiki, debug, project-flow, ui, impeccable, web-ui-review, find-skills
 │   └── agents: reviewer, builder (Opus), quick-worker (Sonnet), ui-checker
 ├── packs/       → copied into a project on request
 │   ├── web-ui/       ui (impeccable core + add-ons), shadcn, react-best-practices, agent-browser
@@ -60,7 +60,7 @@ Out of scope for now. When revisited: Codex CLI 0.170 has `image_generation` as 
 
 | Phase | Mechanism | Enforced by |
 |---|---|---|
-| Idea / spec | `grilling` ends by writing `SPEC.md` and decision drafts | user approval |
+| Idea / spec | `brainstorming` works out what to build and ends with an approved design doc; `grilling` stress-tests a plan in rounds and offers `SPEC.md` and decision drafts | user approval |
 | Plan | plan mode for single PRs; SPEC.md for features | — |
 | Build | project feature/API skills; `builder` / `quick-worker` subagents; `ui` for screens | — |
 | Verify | project check command; `ui-checker` subagent drives agent-browser and returns findings | optional Stop hook: typecheck + affected tests |
@@ -71,7 +71,7 @@ Out of scope for now. When revisited: Codex CLI 0.170 has `image_generation` as 
 
 ## Build flow ([0005](decisions/0005-project-flow.md))
 
-Contract-first, backend before UI: `project-flow` stages 0 Scaffold → 1 PRD → 2 TRD → 3 contracts → 4 backend and 5 UI per phase, pausing for approval after every stage; stage 0 scaffolds from `templates/fullstack/` (ask for `project-flow`, or say "start a new project"). Per-project hooks from `.agents/flow.json`: `contract-sync` and `quality-gate` (Stop), `format-on-edit` (PostToolUse), all in `scripts/hooks/`, fail-open.
+Contract-first, backend before UI by default, with frontend and light tracks and any stage skippable ([0007](decisions/0007-brainstorming-and-flow-tracks.md)): `project-flow` stages 0 Scaffold → 1 PRD → 2 TRD → 3 contracts → 4 backend and 5 UI per phase, pausing for approval after every stage; stage 0 scaffolds from `templates/fullstack/` (ask for `project-flow`, or say "start a new project"). Per-project hooks from `.agents/flow.json`: `contract-sync` and `quality-gate` (Stop), `format-on-edit` (PostToolUse), all in `scripts/hooks/`, fail-open.
 
 ## Project wiki
 

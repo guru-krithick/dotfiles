@@ -14,8 +14,8 @@
 
 ## How I build
 
-- Contract-first, backend before UI. For a product: scaffold → product requirements (PRD) → technical requirements (TRD) and decisions → API contracts in markdown → backend → UI derived from the endpoints. Use the `project-flow` skill to find the current stage and what it must produce.
-- The API contract in `docs/api` is the source of truth. A feature that changes behaviour updates the contract before the code; backend and UI follow the contract, not the other way round.
+- Contract-first, backend before UI, by default. For a product: scaffold → product requirements (PRD) → technical requirements (TRD) and decisions → API contracts in markdown → backend → UI derived from the endpoints. Use the `project-flow` skill to find the current stage and what it must produce. It is a default, not a rule: frontend-only work (I often own only the UI, as in jaggs) skips contracts and backend, small or low-stakes jobs take the light track, and I can skip any stage; do it without arguing.
+- When a project has an API contract, `docs/api` is the source of truth. A feature that changes behaviour updates the contract before the code; backend and UI follow the contract, not the other way round.
 - Backend and UI go phase by phase: a phase's endpoints are built and tested, then that phase's pages, then the next phase.
-- Pause for my review after every stage (PRD, TRD, contracts, each phase's backend, each phase's UI). Record the stage in the handoff so the next session resumes there.
+- Pause for my review after every stage the project keeps (PRD, TRD, contracts, each phase's backend, each phase's UI). Record the stage in the handoff so the next session resumes there.
 - Default full-stack stack: pnpm monorepo with apps/web (Next.js, React, TypeScript) and apps/api (FastAPI, Python, uv), docs/ as the wiki. Ask only when the requirements clearly need something else.

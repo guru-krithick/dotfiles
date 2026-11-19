@@ -21,6 +21,16 @@ Impeccable's SKILL.md frontmatter is unchanged, so its description would otherwi
 - Claude Code: `"skillOverrides": {"impeccable": "user-invocable-only"}` in `config/claude.json`, merged into every Claude home. The model does not see it; `/impeccable` still works, and ui reads its files directly.
 - Codex: `policy.allow_implicit_invocation: false` in `impeccable/agents/openai.yaml` (the one local change above). `$impeccable` still works explicitly.
 
+## brainstorming
+
+| | |
+|---|---|
+| Path | `brainstorming/` |
+| Upstream | https://github.com/obra/superpowers, path `skills/brainstorming` |
+| Revision | commit `22f0b463e7a5e579904dd6211a520321035526f7` |
+| Licence | MIT (`brainstorming/LICENSE`, copied from the repo root) |
+| Modifications | `SKILL.md`: description rewritten to stop over-triggering and to point to debug, grilling and project-flow; the three `superpowers:writing-plans` handoffs now go to a new "After Approval" section (feed project-flow's current stage, otherwise a short build plan and the `builder`/`reviewer` agents); design docs go to `docs/specs/` instead of `docs/superpowers/specs/`, with an offer of `wiki decide`; attribution line added. `visual-companion.md`: script paths resolve from the skill folder. `scripts/server.cjs`: telemetry forced off, so pages never load the remote primeradiant.com logo, and the version string is fixed instead of read from `../../../package.json`. `builder-check-prompt.md` and the other scripts are unchanged. Added `agents/openai.yaml`. Decision 0007. |
+
 ## find-skills
 
 | | |

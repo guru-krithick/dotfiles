@@ -4,7 +4,7 @@ Goal: `docs/product/PRD.md`, the product intent every later stage derives from. 
 
 ## Interview first
 
-Use the `grilling` skill before writing. The design tree usually covers: the problem and who has it; user roles and what each wants; the core journeys end to end; features, and which depend on which; what is explicitly out of scope for v0; how it makes money (if it does); how success is measured; constraints (performance, security, money, data retention, locale, devices). Look up facts yourself; put every decision to the user.
+Use the `brainstorming` skill before writing; its approved design doc is the raw material for the PRD (write the PRD instead of a separate spec, or link the spec from it). The conversation usually covers: the problem and who has it; user roles and what each wants; the core journeys end to end; features, and which depend on which; what is explicitly out of scope for v0; how it makes money (if it does); how success is measured; constraints (performance, security, money, data retention, locale, devices). Look up facts yourself; put every decision to the user. On the frontend track, the PRD covers screens, journeys and what the client approves; backend features belong to whoever owns the backend.
 
 ## Phases
 

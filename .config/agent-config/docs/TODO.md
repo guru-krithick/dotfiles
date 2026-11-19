@@ -1,6 +1,6 @@
 # Harness build plan
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) and decisions [0001](decisions/0001-harness-architecture.md), [0002](decisions/0002-autonomy-and-committed-skills.md), [0003](decisions/0003-accounts-memory-and-sudo.md), [0004](decisions/0004-wiki-is-the-memory.md), [0005](decisions/0005-project-flow.md), [0006](decisions/0006-drop-shortcut-skills.md).
+See [ARCHITECTURE.md](ARCHITECTURE.md) and decisions [0001](decisions/0001-harness-architecture.md), [0002](decisions/0002-autonomy-and-committed-skills.md), [0003](decisions/0003-accounts-memory-and-sudo.md), [0004](decisions/0004-wiki-is-the-memory.md), [0005](decisions/0005-project-flow.md), [0006](decisions/0006-drop-shortcut-skills.md), [0007](decisions/0007-brainstorming-and-flow-tracks.md).
 
 **Goal:** a new Arch machine runs `git clone` → `./install.sh` → `claude` / `codex login` / `gh auth login`, and the full agent setup is ready. Re-running `install.sh` on this machine changes nothing unexpected.
 

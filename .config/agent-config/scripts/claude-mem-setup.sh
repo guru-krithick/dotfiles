@@ -28,6 +28,7 @@ d = json.loads(p.read_text()) if p.exists() else {}
 d["CLAUDE_MEM_PROVIDER"] = "claude"
 d["CLAUDE_MEM_PROVIDER_BY_SOURCE"] = json.dumps({"codex": "codex", "claude": "claude"})
 d["CLAUDE_MEM_SESSION_START_INCLUDE_ALL_SOURCES"] = "true"
+d["CLAUDE_MEM_WELCOME_HINT_ENABLED"] = "false"
 p.parent.mkdir(parents=True, exist_ok=True)
 p.write_text(json.dumps(d, indent=2) + "\n")
 EOF

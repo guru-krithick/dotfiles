@@ -1,6 +1,6 @@
 # Harness build plan
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) and decisions [0001](decisions/0001-harness-architecture.md), [0002](decisions/0002-autonomy-and-committed-skills.md), [0003](decisions/0003-accounts-memory-and-sudo.md), [0004](decisions/0004-wiki-is-the-memory.md), [0005](decisions/0005-project-flow.md).
+See [ARCHITECTURE.md](ARCHITECTURE.md) and decisions [0001](decisions/0001-harness-architecture.md), [0002](decisions/0002-autonomy-and-committed-skills.md), [0003](decisions/0003-accounts-memory-and-sudo.md), [0004](decisions/0004-wiki-is-the-memory.md), [0005](decisions/0005-project-flow.md), [0006](decisions/0006-drop-shortcut-skills.md).
 
 **Goal:** a new Arch machine runs `git clone` → `./install.sh` → `claude` / `codex login` / `gh auth login`, and the full agent setup is ready. Re-running `install.sh` on this machine changes nothing unexpected.
 
@@ -25,7 +25,7 @@ Each step lists how it is verified. Build steps go to subagents; the main sessio
 9. [x] Global workflow skills in `skills/`:
    - `wiki` (decide / handoff / lint); replaces `project-handoff`.
    - `debug` (reproduce → isolate → fix → regression test), adapted from Superpowers' systematic-debugging (MIT, attributed).
-   - `ship` (conventional commit, `gh pr create`; user-invoked only).
+   - ~~`ship`~~ removed 2026-11-19 with `kickoff` and `grill-me` ([0006](decisions/0006-drop-shortcut-skills.md)).
    - `grilling`: end by offering `SPEC.md` and decision drafts.
    - `find-skills`: drop `-y`; keep one copy only.
 10. [x] UI: commit impeccable (pinned upstream revision, LICENSE/NOTICE fetched from upstream) plus the `ui` router with add-on references extracted from ui-ux-pro-max (data + search script with fixed path), emil-design-eng (motion details), refactoring-ui (MIT, quick diagnostic) and web-design-guidelines (final checklist). Record source, revision and license per add-on in `skills/SOURCES.md`. Image-first stays deferred.
@@ -46,7 +46,7 @@ Each step lists how it is verified. Build steps go to subagents; the main sessio
 19. [x] klyz: replace `ui-taste`, `motion`, `klyz-handoff` with `ui` and `wiki` via `npx skills add guru-krithick/dotfiles --skill … --copy`; update `docs/SKILLS.md` and the manifest; run `pnpm harness:check`. reckon done 2026-11-19 (`dfec0bf` on `training-ui-redesign`, pushed; keeps its single docs/DECISIONS.md). (klyz done 2026-11-19, `5b695a7`, pushed. LUPI excluded by the user: collaborator's repo.)
 20. [x] (klyz only; reckon uses docs/DECISIONS.md) Add `docs/decisions/INDEX.md` to each project wiki.
 21. [x] Verification hooks built (decision 0005): `contract-sync`, `quality-gate`, `format-on-edit`, configured per project by `.agents/flow.json`. Wired into klyz (`5f5ecde`) and reckon (`94431d9`), both pushed and tested live.
-28. Run a full `/kickoff` stage 0 scaffold end to end once and fix anything the template misses.
+28. Run a full `project-flow` stage 0 scaffold end to end once and fix anything the template misses.
 
 ## Phase 5: two Claude accounts and shared memory
 

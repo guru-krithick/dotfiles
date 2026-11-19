@@ -1,6 +1,6 @@
 ---
 name: project-flow
-description: Run a product build contract-first and backend before UI - scaffold, product requirements (PRD), technical requirements (TRD) and decisions, API contracts, then backend and UI phase by phase, pausing for the user's approval after every stage. Says which stage or phase comes next, what it must produce and which skills and agents it uses; detects the current stage from the handoff or from the docs that exist. Use when starting a new product or full-stack app, when asked to continue, resume or plan what to build next, when moving to the next stage or phase, or when a feature request in an existing project needs a contract change before code. Not for designing a screen (ui), recording decisions or handoffs (wiki), interviewing about a plan (grilling), fixing a bug (debug) or committing (ship).
+description: Run a product build contract-first and backend before UI - scaffold, product requirements (PRD), technical requirements (TRD) and decisions, API contracts, then backend and UI phase by phase, pausing for the user's approval after every stage. Says which stage or phase comes next, what it must produce and which skills and agents it uses; detects the current stage from the handoff or from the docs that exist. Use when starting a new product or full-stack app, when asked to continue, resume or plan what to build next, when moving to the next stage or phase, or when a feature request in an existing project needs a contract change before code. Not for designing a screen (ui), recording decisions or handoffs (wiki), interviewing about a plan (grilling) or fixing a bug (debug).
 ---
 
 The user builds products contract-first, backend before UI. Each stage has one job and an output the user approves before the next stage starts. This file routes; read only the reference for the stage at hand (in `references/`, next to this file).
@@ -69,7 +69,7 @@ No contract change is needed for a UI-only change that uses existing endpoints a
 | 3 | `reviewer` subagent: every PRD feature has endpoints, every page's data has an endpoint, every error code is in the catalog |
 | 4 | `builder` subagents per endpoint group; `reviewer` against the contract; `debug` for failures |
 | 5 | `ui` for every screen (first UI phase sets up PRODUCT.md/DESIGN.md); `builder` for data wiring; `ui-checker` for the running pages |
-| Every pause | `wiki handoff`; the user's `/ship` when they want a PR |
+| Every pause | `wiki handoff` |
 
 ## Project hooks
 

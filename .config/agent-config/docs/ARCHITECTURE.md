@@ -21,7 +21,7 @@ dotfiles/.config/agent-config/      the one canonical source, in git
 ├── global/      → ~/.claude, ~/.codex     every project, every session
 │   ├── instructions/common.md           working rules
 │   ├── autonomy                          bypassPermissions / no approvals
-│   ├── skills: grilling, wiki, debug, ship, web-ui-review
+│   ├── skills: grilling, wiki, debug, project-flow, ui, impeccable, web-ui-review, find-skills
 │   └── agents: reviewer, builder (Opus), quick-worker (Sonnet), ui-checker
 ├── packs/       → copied into a project on request
 │   ├── web-ui/       ui (impeccable core + add-ons), shadcn, react-best-practices, agent-browser
@@ -66,12 +66,12 @@ Out of scope for now. When revisited: Codex CLI 0.170 has `image_generation` as 
 | Verify | project check command; `ui-checker` subagent drives agent-browser and returns findings | optional Stop hook: typecheck + affected tests |
 | Debug | `debug` skill: reproduce → isolate → fix → regression test | — |
 | Review | `reviewer` subagent checks diff against spec, skips style; `/code-review`, `/security-review` | — |
-| Ship | `ship` skill: conventional commit, `gh pr create` | — |
+| Ship | agents commit and push finished work (`common.md`); PRs on request with `gh pr create` | — |
 | Remember | `wiki` skill: decide / handoff / learn / lint; SessionStart hook loads handoff + decision index | `wiki lint` when asked |
 
 ## Build flow ([0005](decisions/0005-project-flow.md))
 
-Contract-first, backend before UI: `project-flow` stages 0 Scaffold → 1 PRD → 2 TRD → 3 contracts → 4 backend and 5 UI per phase, pausing for approval after every stage; `/kickoff` starts it from `templates/fullstack/`. Per-project hooks from `.agents/flow.json`: `contract-sync` and `quality-gate` (Stop), `format-on-edit` (PostToolUse), all in `scripts/hooks/`, fail-open.
+Contract-first, backend before UI: `project-flow` stages 0 Scaffold → 1 PRD → 2 TRD → 3 contracts → 4 backend and 5 UI per phase, pausing for approval after every stage; stage 0 scaffolds from `templates/fullstack/` (ask for `project-flow`, or say "start a new project"). Per-project hooks from `.agents/flow.json`: `contract-sync` and `quality-gate` (Stop), `format-on-edit` (PostToolUse), all in `scripts/hooks/`, fail-open.
 
 ## Project wiki
 

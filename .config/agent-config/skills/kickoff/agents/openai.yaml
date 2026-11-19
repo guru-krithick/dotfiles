@@ -1,5 +1,0 @@
-interface:
-  display_name: "Kickoff"
-  short_description: "Start or resume a contract-first product build"
-policy:
-  allow_implicit_invocation: false

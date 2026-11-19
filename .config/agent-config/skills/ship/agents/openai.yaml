@@ -1,0 +1,5 @@
+interface:
+  display_name: "Ship"
+  short_description: "Check, commit, push and open a PR"
+policy:
+  allow_implicit_invocation: false

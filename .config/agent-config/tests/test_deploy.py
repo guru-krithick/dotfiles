@@ -182,7 +182,7 @@ class DeploymentTests(unittest.TestCase):
     def test_claude_agents_link_into_every_home(self):
         self.runtime()
         agents = self.source / "agents/claude"
-        agents.mkdir()
+        agents.mkdir(exist_ok=True)
         (agents / "reviewer.md").write_text("---\nname: reviewer\ndescription: Review a diff against its spec.\n---\n\nReview only.\n")
         planned = [path for kind, path, _ in self.deployment.plan() if kind == "link"]
         homes = [self.home / ".claude", self.home / ".claude-alt"]

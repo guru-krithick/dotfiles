@@ -239,7 +239,7 @@ class Deployment:
         links.append((self.config_root / "agent-config", self.source))
         links.append((self.home / ".local/bin/agent-config", self.source.parents[1] / ".local/bin/agent-config"))
         personal = (self.source / "instructions/common.md").read_text()
-        skills = sorted((self.source / "skills").iterdir())
+        skills = sorted(path for path in (self.source / "skills").iterdir() if path.is_dir())
         if self.only in ("both", "claude"):
             desired = json.loads((self.source / "config/claude.json").read_text())
             agents = [claude_agent(path) for path in sorted((self.source / "agents/claude").glob("*.md"))]

@@ -46,5 +46,8 @@
         ]
       }
     ]
+  },
+  "skillOverrides": {
+    "impeccable": "user-invocable-only"
   }
 }

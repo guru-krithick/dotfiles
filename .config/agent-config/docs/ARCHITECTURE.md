@@ -39,16 +39,16 @@ Distribution ([0002](decisions/0002-autonomy-and-committed-skills.md)): every sk
 
 ## The `ui` skill
 
-The only model-invocable UI skill. Impeccable upstream (4.9.x) is vendored **unchanged** so it keeps taking updates. A thin `ui` router sends work to impeccable's commands and reads these add-on references:
+The only intended UI entry point. Impeccable upstream (4.9.x) is vendored **unchanged** in `skills/impeccable` so it keeps taking updates; the `ui` router finds it as a sibling folder, maps the request to an impeccable command and reads these add-on references from `skills/ui/references/`. Impeccable's own description stays visible until harness config hides it (`skillOverrides` name-only in Claude; see `skills/SOURCES.md`). Runtime verification stays with `web-ui-review` / `ui-checker`.
 
 | Add-on | Taken from | Used when |
 |---|---|---|
 | `image-first.md` (deferred) | ui-taste (Uizze, Apache-2.0, keep attribution) | Later: new screens start from a mockup image. Until then, build from a supplied image or the project's existing system |
-| `design-data` + fixed search script | ui-ux-pro-max | Impeccable `init` / `colorize` / `typeset`: palette, font and style lookup |
+| `design-data.md` + `design-data/` (CSV data, search script run with `python3 -I -B`) | ui-ux-pro-max | Impeccable `init` / `colorize` / `typeset`: palette, font and style lookup |
 | `motion-details.md` | emil-design-eng, merged with the project `motion` skill | `animate`, press/hover states, popovers, easing and duration |
-| `quick-diagnostic.md` | refactoring-ui (8-row rubric) | `critique` scoring |
-| `marketing-assets` (optional) | design-taste-frontend photo library and copy-lint only | Marketing/landing pages only |
-| final web checklist | web-design-guidelines | Last pass before declaring UI done |
+| `quick-diagnostic.md` | refactoring-ui (8-row rubric) | `critique` / `polish` scoring |
+| `marketing-assets` (optional, not built) | design-taste-frontend photo library and copy-lint only | Marketing/landing pages only |
+| `web-checklist.md` | web-design-guidelines (Vercel Web Interface Guidelines, offline) | Last pass before declaring UI done |
 
 Dropped: the Uizze paid-MCP upsell, ui-taste's outdated impeccable 4.6 copy, ui-ux-pro-max's `design-system/MASTER.md` workflow, refactoring-ui's affiliate links, the taste-skill house rules, 40 MB of assets and its blocking Stop hook. The other design skills are uninstalled globally.
 

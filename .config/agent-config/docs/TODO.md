@@ -22,16 +22,16 @@ Each step lists how it is verified. Build steps go to subagents; the main sessio
 
 ## Phase 2: skills and agents (all committed)
 
-9. Global workflow skills in `skills/`:
+9. [x] Global workflow skills in `skills/`:
    - `wiki` (decide / handoff / lint); replaces `project-handoff`.
    - `debug` (reproduce → isolate → fix → regression test), adapted from Superpowers' systematic-debugging (MIT, attributed).
    - `ship` (conventional commit, `gh pr create`; user-invoked only).
    - `grilling`: end by offering `SPEC.md` and decision drafts.
    - `find-skills`: drop `-y`; keep one copy only.
-10. UI: commit impeccable (pinned upstream revision, LICENSE/NOTICE fetched from upstream) plus the `ui` router with add-on references extracted from ui-ux-pro-max (data + search script with fixed path), emil-design-eng (motion details), refactoring-ui (MIT, quick diagnostic) and web-design-guidelines (final checklist). Record source, revision and license per add-on in `skills/SOURCES.md`. Image-first stays deferred.
-11. Claude agents in `agents/claude/`: `reviewer` (read-only, checks diff against spec, skips style), `builder` (Opus, max effort), `quick-worker` (Sonnet), `ui-checker` (drives agent-browser, returns findings, not screenshots). Matching Codex roles where useful.
+10. [x] UI: commit impeccable (pinned upstream revision, LICENSE/NOTICE fetched from upstream) plus the `ui` router with add-on references extracted from ui-ux-pro-max (data + search script with fixed path), emil-design-eng (motion details), refactoring-ui (MIT, quick diagnostic) and web-design-guidelines (final checklist). Record source, revision and license per add-on in `skills/SOURCES.md`. Image-first stays deferred.
+11. [x] Claude agents in `agents/claude/`: `reviewer` (read-only, checks diff against spec, skips style), `builder` (Opus, max effort), `quick-worker` (Sonnet), `ui-checker` (drives agent-browser, returns findings, not screenshots). Matching Codex roles where useful.
 12. [x] Move the delegation preference from auto-memory into `instructions/common.md`.
-13. Remove `~/.agents/skills/{design-taste-frontend,emil-design-eng,refactoring-ui,ui-ux-pro-max}` and the duplicate `find-skills`. Verify: `/skill-doctor` shows no overlapping UI skills.
+13. [x] Remove `~/.agents/skills/{design-taste-frontend,emil-design-eng,refactoring-ui,ui-ux-pro-max}` and the duplicate `find-skills`. Verify: `/skill-doctor` shows no overlapping UI skills.
 
 ## Phase 3: `install.sh` and README
 

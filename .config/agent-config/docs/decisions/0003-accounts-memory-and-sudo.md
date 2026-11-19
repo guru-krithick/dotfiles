@@ -18,7 +18,7 @@ Accepted 2026-11-19.
    - Installed for both Claude homes and Codex, with one store at `~/.claude-mem` and startup context drawn from all agents (`CLAUDE_MEM_SESSION_START_INCLUDE_ALL_SOURCES=true`).
    - Telemetry off.
    - Portable settings live in dotfiles; the store and any API keys never do, because they contain session content and the repo is public.
-   - The observer provider follows the session: Claude sessions summarise with the Claude account that started them, Codex sessions with the ChatGPT plan (`CLAUDE_MEM_PROVIDER_BY_SOURCE`).
+   - The observer provider follows the agent (`CLAUDE_MEM_PROVIDER_BY_SOURCE` = codex→codex, claude→claude): Codex sessions summarise with the ChatGPT plan, Claude sessions with the Claude plan. `cc` and `cc1` share one worker, so Claude summaries bill whichever Claude login the worker reads. The `host` provider was rejected: it needs a self-run OpenAI-compatible observer.
 6. **Division of memory.**
    - claude-mem holds automatic recall of what happened.
    - Each project's `docs/` wiki holds decisions and current state.

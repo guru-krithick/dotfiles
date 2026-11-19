@@ -11,4 +11,4 @@ Accepted 2026-11-19. Supersedes the guardrail items and the distribution mechani
 3. **Projects install from the public repo.** A project copies the skills it needs with `npx skills add guru-krithick/dotfiles --skill <name> --copy`, which records a pinned hash in the project's `skills-lock.json`. This replaces the planned custom `vendor`/`doctor` commands.
 4. **`deploy.py` stays the merge tool.** It remains the only custom piece: it merges portable settings into `~/.claude/settings.json` and `~/.codex/config.toml` and links skills, agents and instructions.
 
-**Consequences.** `deploy.py` learns to carry `permissions.defaultMode`, all hooks that point into `agent-config`, and `~/.claude/agents`. `install.sh` gains plugin installs and login reminders. Design skills in `~/.agents/skills` are removed after extraction.
+**Consequences.** `deploy.py` learns to carry `permissions.defaultMode`, all hooks that point into `agent-config`, and `~/.claude/agents`. `install.sh` gains the sudo rule and any packages the skills need (LSP plugins and login reminders were later dropped). Design skills in `~/.agents/skills` are removed after extraction.

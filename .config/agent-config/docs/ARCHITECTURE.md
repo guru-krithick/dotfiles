@@ -67,7 +67,7 @@ Out of scope for now. When revisited: Codex CLI 0.170 has `image_generation` as 
 | Debug | `debug` skill: reproduce → isolate → fix → regression test | — |
 | Review | `reviewer` subagent checks diff against spec, skips style; `/code-review`, `/security-review` | — |
 | Ship | `ship` skill: conventional commit, `gh pr create` | — |
-| Remember | `wiki` skill: decide / handoff / lint | monthly drift check |
+| Remember | `wiki` skill: decide / handoff / lint; claude-mem for automatic recall | `wiki lint` when asked |
 
 ## Project wiki
 
@@ -83,6 +83,6 @@ The `wiki` skill has three actions: `decide` (write a decision and index line), 
 
 ## Tools
 
-Use (free, local): `gh`, agent-browser, Claude in Chrome, official `typescript-lsp` and `pyright-lsp` plugins, shadcn's local MCP inside the web-ui pack, the built-in Learning output style for learning projects.
+Use (free, local): `gh`, agent-browser, Claude in Chrome, shadcn's local MCP inside the web-ui pack, the built-in Learning output style for learning projects, and claude-mem as one shared memory for `cc`, `cc1` and Codex ([0003](decisions/0003-accounts-memory-and-sudo.md)).
 
-Skip: GitHub MCP (`gh` is cheaper), Context7 (rate-limited free tier; fetch docs directly), Graphify and memory/vector plugins, paid design MCPs, large agent packs.
+Skip: LSP plugins, `/loop` and scheduled maintenance jobs, GitHub MCP (`gh` is cheaper), Context7 (rate-limited free tier; fetch docs directly), Graphify and memory/vector plugins, paid design MCPs, large agent packs.

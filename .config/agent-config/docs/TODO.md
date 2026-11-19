@@ -35,9 +35,9 @@ Each step lists how it is verified. Build steps go to subagents; the main sessio
 
 ## Phase 3: `install.sh` and README
 
-14. Add packages the harness uses to `PACMAN_PACKAGES` (e.g. `shellcheck`; anything a skill script needs). Drop `@juliusbrussee/caveman-code` from `NPM_GLOBALS` if unused. Add a passwordless sudoers drop-in for the user (`/etc/sudoers.d/agent-nopasswd`, checked with `visudo -cf`), like the powerboost rule.
-15. After `configure_agents`: install free plugins (`typescript-lsp`, `pyright-lsp` from `claude-plugins-official`) when `claude` is logged in; otherwise print the command.
-16. `print_next_steps`: list `claude` login, `codex login`, `gh auth login`.
+14. [x] (in install.sh working tree; live rule pending the user running it) Add packages the harness uses to `PACMAN_PACKAGES` (e.g. `shellcheck`; anything a skill script needs). Drop `@juliusbrussee/caveman-code` from `NPM_GLOBALS` if unused. Add a passwordless sudoers drop-in for the user (`/etc/sudoers.d/agent-nopasswd`, checked with `visudo -cf`), like the powerboost rule.
+15. ~~LSP plugins~~ dropped (user, 2026-11-19).
+16. ~~Login reminders in `print_next_steps`~~ dropped (user, 2026-11-19).
 17. Update README's agent section (autonomy, skill list, how projects install skills).
 18. Verify end to end: `./install.sh` re-run on this machine is a no-op for agent config; `deploy.py apply --home <tmp>` from a fresh clone produces a working tree (settings, skills, agents, instructions).
 
@@ -51,9 +51,9 @@ Each step lists how it is verified. Build steps go to subagents; the main sessio
 
 22. [x] `deploy.py`: a list of Claude homes (`~/.claude`, `~/.claude-alt`); apply settings, instructions, skills, agents and plugins to each. Unit test with two homes.
 23. [~] (link applied 2026-11-19; resume test pending) Link `~/.claude-alt/projects` → `~/.claude/projects` for shared history and auto-memory. Verify: a session started with `cc` resumes under `cc1`.
-24. `.zshrc`: `cc` = `claude`; `cc1` = `CLAUDE_CONFIG_DIR=$HOME/.claude-alt claude`. `print_next_steps` lists both logins.
-25. claude-mem: install from its marketplace for both Claude homes and for Codex; one store `~/.claude-mem`; `CLAUDE_MEM_SESSION_START_INCLUDE_ALL_SOURCES=true`; telemetry disabled. Observer provider follows the session (user decision 2026-11-19): `CLAUDE_MEM_PROVIDER_BY_SOURCE` maps Claude Code → `claude` and Codex → `codex`, so each harness spends its own plan. Verify which Claude account the shared worker bills (it likely inherits `CLAUDE_CONFIG_DIR` from whichever session started it); if it mixes accounts, run one worker per Claude home on fixed ports (`CLAUDE_MEM_WORKER_PORT`) with `CLAUDE_MEM_CLAUDE_CONFIG_DIR` set per alias, still sharing the store. Keep `~/.claude-mem/settings.json`'s portable keys in `config/claude-mem.json`, merged by `deploy.py`. Never commit the store or `.env`.
-26. Verify claude-mem: `npx claude-mem doctor`, worker health endpoint, an observation from Codex appears in a Claude session start and vice versa.
+24. [x] `.zshrc`: `cc` = `claude`; `cc1` = `CLAUDE_CONFIG_DIR=$HOME/.claude-alt claude` (in the working tree; commit with the user's other `.zshrc` edits).
+25. [x] (done 2026-11-19 via scripts/claude-mem-setup.sh, called from install.sh; v16.0.0) claude-mem: install from its marketplace for both Claude homes and for Codex; one single store `~/.claude-mem` shared by all three sessions (`cc`, `cc1`, Codex); `CLAUDE_MEM_SESSION_START_INCLUDE_ALL_SOURCES=true`; telemetry disabled. Observer provider follows the session (user decision 2026-11-19): `CLAUDE_MEM_PROVIDER_BY_SOURCE` maps Claude Code → `claude` and Codex → `codex`, so each harness spends its own plan. Verify which Claude account the shared worker bills (it likely inherits `CLAUDE_CONFIG_DIR` from whichever session started it); if it mixes accounts, run one worker per Claude home on fixed ports (`CLAUDE_MEM_WORKER_PORT`) with `CLAUDE_MEM_CLAUDE_CONFIG_DIR` set per alias, still sharing the store. Keep `~/.claude-mem/settings.json`'s portable keys in `config/claude-mem.json`, merged by `deploy.py`. Never commit the store or `.env`.
+26. [~] (doctor passes, worker healthy on 37700; cross-agent recall test pending real sessions) Verify claude-mem: `npx claude-mem doctor`, worker health endpoint, an observation from Codex appears in a Claude session start and vice versa.
 
 27. Dotfiles push identity: the active `gh` account is `gurukrithick` but the repo belongs to `guru-krithick`, so pushes return 403 unless the account is switched. Fix with an SSH remote using a host alias and key for `guru-krithick`, or a per-repo token helper. Verify: `git push --dry-run` succeeds without `gh auth switch`.
 

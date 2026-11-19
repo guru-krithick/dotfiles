@@ -1,0 +1,19 @@
+{
+  "api_paths": ["apps/api/app"],
+  "contract_paths": ["docs/api"],
+  "code_paths": ["apps"],
+  "check": "pnpm typecheck",
+  "check_timeout": 300,
+  "format": {
+    ".ts,.tsx,.js,.jsx,.mjs,.json,.css": {
+      "command": "pnpm exec biome format --write",
+      "cwd": "apps/web",
+      "paths": ["apps/web"]
+    },
+    ".py": {
+      "command": "uv run ruff format",
+      "cwd": "apps/api",
+      "paths": ["apps/api"]
+    }
+  }
+}

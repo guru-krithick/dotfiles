@@ -1,0 +1,32 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"${XDG_CONFIG_HOME:-$HOME/.config}/agent-config/scripts/hooks/format-on-edit.sh\"; [ -f \"$f\" ] || exit 0; sh \"$f\"",
+            "timeout": 90
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"${XDG_CONFIG_HOME:-$HOME/.config}/agent-config/scripts/hooks/contract-sync.sh\"; [ -f \"$f\" ] || exit 0; sh \"$f\"",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "f=\"${XDG_CONFIG_HOME:-$HOME/.config}/agent-config/scripts/hooks/quality-gate.sh\"; [ -f \"$f\" ] || exit 0; sh \"$f\"",
+            "timeout": 360
+          }
+        ]
+      }
+    ]
+  }
+}

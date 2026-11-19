@@ -69,6 +69,10 @@ Out of scope for now. When revisited: Codex CLI 0.170 has `image_generation` as 
 | Ship | `ship` skill: conventional commit, `gh pr create` | — |
 | Remember | `wiki` skill: decide / handoff / learn / lint; SessionStart hook loads handoff + decision index | `wiki lint` when asked |
 
+## Build flow ([0005](decisions/0005-project-flow.md))
+
+Contract-first, backend before UI: `project-flow` stages 0 Scaffold → 1 PRD → 2 TRD → 3 contracts → 4 backend and 5 UI per phase, pausing for approval after every stage; `/kickoff` starts it from `templates/fullstack/`. Per-project hooks from `.agents/flow.json`: `contract-sync` and `quality-gate` (Stop), `format-on-edit` (PostToolUse), all in `scripts/hooks/`, fail-open.
+
 ## Project wiki
 
 Every project follows the klyz `docs/` layout:

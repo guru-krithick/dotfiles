@@ -1,6 +1,6 @@
 # Harness build plan
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) and decisions [0001](decisions/0001-harness-architecture.md), [0002](decisions/0002-autonomy-and-committed-skills.md), [0003](decisions/0003-accounts-memory-and-sudo.md), [0004](decisions/0004-wiki-is-the-memory.md).
+See [ARCHITECTURE.md](ARCHITECTURE.md) and decisions [0001](decisions/0001-harness-architecture.md), [0002](decisions/0002-autonomy-and-committed-skills.md), [0003](decisions/0003-accounts-memory-and-sudo.md), [0004](decisions/0004-wiki-is-the-memory.md), [0005](decisions/0005-project-flow.md).
 
 **Goal:** a new Arch machine runs `git clone` → `./install.sh` → `claude` / `codex login` / `gh auth login`, and the full agent setup is ready. Re-running `install.sh` on this machine changes nothing unexpected.
 
@@ -45,7 +45,8 @@ Each step lists how it is verified. Build steps go to subagents; the main sessio
 
 19. [x] klyz: replace `ui-taste`, `motion`, `klyz-handoff` with `ui` and `wiki` via `npx skills add guru-krithick/dotfiles --skill … --copy`; update `docs/SKILLS.md` and the manifest; run `pnpm harness:check`. reckon done 2026-11-19 (`dfec0bf` on `training-ui-redesign`, pushed; keeps its single docs/DECISIONS.md). (klyz done 2026-11-19, `5b695a7`, pushed. LUPI excluded by the user: collaborator's repo.)
 20. [x] (klyz only; reckon uses docs/DECISIONS.md) Add `docs/decisions/INDEX.md` to each project wiki.
-21. Optional per project: verification hooks (formatter on edit, Stop-time typecheck + affected tests) in `.claude/settings.json`.
+21. [x] Verification hooks built (decision 0005): `contract-sync`, `quality-gate`, `format-on-edit`, configured per project by `.agents/flow.json`. Wire into klyz and reckon.
+28. Run a full `/kickoff` stage 0 scaffold end to end once and fix anything the template misses.
 
 ## Phase 5: two Claude accounts and shared memory
 

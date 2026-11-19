@@ -1,0 +1,17 @@
+{
+  "name": "__PROJECT__",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm run \"/^dev:(web|api)$/\"",
+    "dev:web": "pnpm --filter ./apps/web dev",
+    "dev:api": "uv --directory apps/api run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000",
+    "lint": "pnpm --filter ./apps/web lint && uv --directory apps/api run ruff check .",
+    "format": "pnpm --filter ./apps/web format && uv --directory apps/api run ruff format .",
+    "format:check": "pnpm --filter ./apps/web format:check && uv --directory apps/api run ruff format --check .",
+    "typecheck": "pnpm --filter ./apps/web typecheck && uv --directory apps/api run pyright",
+    "test:web": "pnpm --filter ./apps/web test",
+    "test:api": "uv --directory apps/api run pytest -q",
+    "build:web": "pnpm --filter ./apps/web build",
+    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test:web && pnpm test:api"
+  }
+}

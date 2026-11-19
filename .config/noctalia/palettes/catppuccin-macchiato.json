@@ -1,0 +1,49 @@
+{
+  "version": 2,
+  "dark": {
+    "primary": "#c6a0f6",
+    "on_primary": "#181926",
+    "secondary": "#b7bdf8",
+    "on_secondary": "#181926",
+    "tertiary": "#f5bde6",
+    "on_tertiary": "#181926",
+    "error": "#ed8796",
+    "on_error": "#181926",
+    "surface": "#24273a",
+    "on_surface": "#cad3f5",
+    "surface_container": "#363a4f",
+    "on_surface_variant": "#a5adcb",
+    "outline_variant": "#494d64",
+    "shadow": "#000000",
+    "hover": "#494d64",
+    "on_hover": "#cad3f5",
+    "terminal": {
+      "background": "#24273a",
+      "foreground": "#cad3f5",
+      "cursor": "#f4dbd6",
+      "cursor_text": "#24273a",
+      "selection_bg": "#f4dbd6",
+      "selection_fg": "#24273a",
+      "normal": {
+        "black": "#494d64",
+        "red": "#ed8796",
+        "green": "#a6da95",
+        "yellow": "#eed49f",
+        "blue": "#8aadf4",
+        "magenta": "#f5bde6",
+        "cyan": "#8bd5ca",
+        "white": "#a5adcb"
+      },
+      "bright": {
+        "black": "#5b6078",
+        "red": "#ec7486",
+        "green": "#8ccf7f",
+        "yellow": "#e1c682",
+        "blue": "#78a1f6",
+        "magenta": "#f2a9dd",
+        "cyan": "#63cbc0",
+        "white": "#b8c0e0"
+      }
+    }
+  }
+}

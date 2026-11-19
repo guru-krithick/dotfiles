@@ -7,3 +7,6 @@
 ^/LICENSE.*
 ^/install\.sh
 ^/\.stow-local-ignore
+^/docs
+^/HANDOFF\.md
+^/TODO\.md

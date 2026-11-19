@@ -1,0 +1,33 @@
+#!/bin/sh
+# pomodoro-widget [quiet]
+#
+# Runs the pomodoro waybar module (~/.config/waybar/scripts/pomodoro.sh,
+# unchanged) and prints its state as the JSON the "stdout" bar widget reads
+# (tordex/stdout with json = true): a glyph, the time left, a colour role and
+# the tooltip lines. With "quiet" the widget hides while the timer is idle.
+set -eu
+
+"$HOME/.config/waybar/scripts/pomodoro.sh" | jq -c --arg quiet "${1-}" '
+    {
+        standby: ["hourglass", null],
+        work: ["hourglass-high", "primary"],
+        break: ["coffee", "secondary"],
+        paused: ["player-pause", "on_surface_variant"]
+    }[.class // ""] as $style
+    | ($style // ["alert-triangle", "error"]) as [$glyph, $color]
+    | {
+        glyph: $glyph,
+        glyphColor: $color,
+        textColor: $color,
+        text: (.text // "" | sub("^[^ ]*[ ]?"; "")),
+        tips: [
+            [(if .class == "standby" then "Focus timer ready"
+              elif .class == "work" then "Focus time"
+              elif .class == "break" then "Break time"
+              elif .class == "paused" then "Timer paused"
+              else "Timer state unavailable" end), ""],
+            ["Left: start | Right: pause/resume", ""],
+            ["Middle: reset | Scroll: adjust while paused", ""]
+        ],
+        visible: ($quiet != "quiet" or .class != "standby")
+    }'

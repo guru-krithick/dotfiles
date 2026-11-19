@@ -1,0 +1,24 @@
+id = "guru/themes"
+name = "Themes"
+version = "2.0.0"
+plugin_api = 52
+author = "guru"
+license = "MIT"
+icon = "palette"
+description = "A carousel of every theme's wallpapers that applies the one you settle on."
+
+# Keeps the catalog and card cache warm, applies one switch at a time and
+# shows/hides the overlay: `noctalia msg plugin guru/themes:switcher all toggle`.
+[[service]]
+id = "switcher"
+entry = "service.luau"
+
+# The overlay: a full-screen, box-less band of cards on the focused output.
+[[layer]]
+id = "carousel"
+entry = "carousel.luau"
+layer = "overlay"
+anchors = ["top", "bottom", "left", "right"]
+exclusive_zone = -1
+keyboard = "exclusive"
+output = "focused"

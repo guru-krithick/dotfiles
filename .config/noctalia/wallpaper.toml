@@ -1,0 +1,14 @@
+# Wallpaper drawing. The wallpaper on screen and the folder the picker
+# (Super+Shift+W) browses are runtime state: `theme` sets them over IPC and
+# Noctalia keeps them in ~/.local/state/noctalia/settings.toml. The two paths
+# below only matter on a fresh machine. Ultra Dark starts with the quiet
+# nature wallpaper; each theme then returns to its remembered choice.
+
+[wallpaper]
+fill_mode = "crop"
+transition = ["fade"]     # one quiet transition on every theme and wallpaper change
+transition_duration = 700
+directory = "~/Pictures/wallpapers/ultra-dark"
+
+[wallpaper.default]
+path = "~/Pictures/wallpapers/ultra-dark/00-misty-pines.jpg"

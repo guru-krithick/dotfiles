@@ -2,7 +2,7 @@
 
 * {
     font-family:
-        "Maple Mono NF", "JetBrainsMono Nerd Font", "Symbols Nerd Font", monospace;
+        "Maple Mono NF", "Symbols Nerd Font", monospace;
     font-weight: 600;
     font-size: 15px;
     min-height: 0;
@@ -195,7 +195,8 @@ tooltip label {
 #network,
 #backlight,
 #custom-powerboost,
-#idle_inhibitor {
+#idle_inhibitor,
+#tray {
     margin: 6px 0;
     padding: 6px 12px;
     background-color: @background-alt;
@@ -234,7 +235,7 @@ tooltip label {
     color: @yellow;
 }
 
-#idle_inhibitor {
+#tray {
     margin-right: 10px;
     border-radius: 0 20px 20px 0;
     padding-right: 14px;

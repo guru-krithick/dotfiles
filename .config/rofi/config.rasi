@@ -2,7 +2,7 @@ configuration {
     modi: "drun,run";
     show-icons: true;
     icon-theme: "Papirus-Dark";
-    terminal: "ghostty";
+    terminal: "kitty";
     drun-display-format: "{name}";
     display-drun: " Apps";
     display-run: " Run";

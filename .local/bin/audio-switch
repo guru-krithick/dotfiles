@@ -1,0 +1,160 @@
+#!/usr/bin/env bash
+#
+# Switch the audio output between the monitor (HDMI), the analog jack
+# (laptop speakers / wired earphones) and connected Bluetooth devices.
+#
+#   audio-switch            pick from a rofi menu
+#   audio-switch monitor    HDMI speakers in the monitor
+#   audio-switch analog     laptop speakers / wired earphones
+#   audio-switch bluetooth  first connected Bluetooth sink
+#   audio-switch cycle      next available output
+#
+# The HDMI and analog outputs live on one sound card, and the card only
+# exposes one of them at a time, so switching between them means changing the
+# card profile. Bluetooth sinks are separate devices and just become default.
+
+set -euo pipefail
+
+readonly CARD="alsa_card.pci-0000_00_1f.3"
+readonly PROFILE_HDMI="output:hdmi-stereo+input:analog-stereo"
+readonly PROFILE_ANALOG="output:analog-stereo+input:analog-stereo"
+
+notify() {
+    notify-send -t 2500 -h string:x-canonical-private-synchronous:audio-switch \
+        "Audio output" "$1" 2>/dev/null || true
+}
+
+current_profile() {
+    pactl list cards | awk -v c="$CARD" '
+        $1 == "Name:" { in_card = ($2 == c) }
+        in_card && /Active Profile:/ { print $3; exit }'
+}
+
+# Wait for a sink whose name matches the pattern to show up after a profile change.
+wait_for_sink() {
+    local pattern=$1 sink
+    for _ in $(seq 1 30); do
+        sink=$(pactl list short sinks | awk -v p="$pattern" '$2 ~ p { print $2; exit }')
+        if [[ -n $sink ]]; then
+            echo "$sink"
+            return 0
+        fi
+        sleep 0.1
+    done
+    return 1
+}
+
+make_default() {
+    local sink=$1 id
+    pactl set-default-sink "$sink"
+    # Move already-playing streams so they follow without restarting.
+    while read -r id _; do
+        pactl move-sink-input "$id" "$sink" 2>/dev/null || true
+    done < <(pactl list short sink-inputs)
+}
+
+use_profile() {
+    local profile=$1 pattern=$2 label=$3 sink
+    if [[ $(current_profile) != "$profile" ]]; then
+        pactl set-card-profile "$CARD" "$profile"
+    fi
+    if ! sink=$(wait_for_sink "$pattern"); then
+        notify "$label is not available"
+        exit 1
+    fi
+    make_default "$sink"
+    notify "$label"
+}
+
+use_monitor() {
+    use_profile "$PROFILE_HDMI" '[.]hdmi-stereo' "Monitor speakers"
+}
+
+use_analog() {
+    use_profile "$PROFILE_ANALOG" '[.]analog-stereo' "Laptop speakers / earphones"
+}
+
+bluetooth_sinks() {
+    pactl list short sinks | awk '$2 ~ /^bluez_/ { print $2 }'
+}
+
+bluetooth_label() {
+    local sink=$1
+    pactl list sinks | awk -v s="$sink" '
+        $1 == "Name:" { match_sink = ($2 == s) }
+        match_sink && /Description:/ { sub(/^[ \t]*Description: /, ""); print; exit }'
+}
+
+use_bluetooth() {
+    local sink=${1:-}
+    [[ -n $sink ]] || sink=$(bluetooth_sinks | head -n1)
+    if [[ -z $sink ]]; then
+        notify "No Bluetooth audio device connected"
+        exit 1
+    fi
+    make_default "$sink"
+    notify "$(bluetooth_label "$sink")"
+}
+
+# One "label<TAB>action" line per output that can be used right now.
+list_outputs() {
+    local sink
+    printf 'Monitor speakers\tmonitor\n'
+    printf 'Laptop speakers / earphones\tanalog\n'
+    while read -r sink; do
+        [[ -n $sink ]] || continue
+        printf '%s\tbluetooth %s\n' "$(bluetooth_label "$sink")" "$sink"
+    done < <(bluetooth_sinks)
+}
+
+run_action() {
+    case $1 in
+    monitor) use_monitor ;;
+    analog) use_analog ;;
+    bluetooth) use_bluetooth "${2:-}" ;;
+    *) exit 1 ;;
+    esac
+}
+
+menu() {
+    local choice
+    choice=$(list_outputs | cut -f1 | rofi -dmenu -i -p "Audio output") || exit 0
+    [[ -n $choice ]] || exit 0
+    # shellcheck disable=SC2046
+    run_action $(list_outputs | awk -F'\t' -v c="$choice" '$1 == c { print $2; exit }')
+}
+
+cycle() {
+    local default_sink
+    local -a actions=()
+    default_sink=$(pactl get-default-sink)
+    while IFS=$'\t' read -r _ action; do
+        actions+=("$action")
+    done < <(list_outputs)
+
+    local current=analog
+    case $default_sink in
+    *hdmi*) current=monitor ;;
+    bluez_*) current="bluetooth $default_sink" ;;
+    esac
+
+    local i next=0
+    for i in "${!actions[@]}"; do
+        if [[ ${actions[i]} == "$current" ]]; then
+            next=$(((i + 1) % ${#actions[@]}))
+            break
+        fi
+    done
+    # shellcheck disable=SC2086
+    run_action ${actions[next]}
+}
+
+case ${1:-menu} in
+menu) menu ;;
+cycle) cycle ;;
+monitor | analog | bluetooth) run_action "$@" ;;
+*)
+    echo "usage: ${0##*/} [monitor|analog|bluetooth|cycle]" >&2
+    exit 2
+    ;;
+esac

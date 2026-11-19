@@ -1,0 +1,9 @@
+# Event hooks. Noctalia inherits Mango's PATH, which lacks ~/.local/bin.
+
+[hooks]
+# Recreate the generated link after a fresh checkout, or restore a deleted one.
+# This changes only the bar; Noctalia already restored its palette and wallpaper.
+started = '"$HOME/.local/bin/theme" sync-bar'
+# Each theme remembers its last wallpaper, also one picked in Noctalia's
+# wallpaper panel. Runs once per monitor; repeats are harmless.
+wallpaper_changed = '"$HOME/.local/bin/theme" remember "$NOCTALIA_WALLPAPER_PATH"'

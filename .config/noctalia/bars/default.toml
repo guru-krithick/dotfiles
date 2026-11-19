@@ -1,0 +1,149 @@
+# The default bar, for themes without a bars/<theme>.toml: a floating row of
+# islands in the shell's own material (surface fill, 1 px outline_variant
+# border, soft corners). Tags and music on the left, date, time and focus
+# timer in the middle, status on the right. Colours are roles only, so it
+# suits any palette.
+
+[bar]
+order = ["default"]
+
+[bar.default]
+position = "top"
+thickness = 40
+margin_edge = 8
+margin_ends = 8
+padding = 0
+widget_spacing = 8
+background_opacity = 0.0
+shadow = false
+scale = 1.35
+font_scale = 0.85                       # larger icons; keep labels at roughly 16 px
+font_weight = 500
+capsule = true
+capsule_thickness = 1.0
+capsule_radius = 10.4
+capsule_padding = 10.4
+capsule_fill = "surface"
+capsule_opacity = 1.0
+capsule_border = "outline_variant"
+capsule_border_width = 1.0
+
+start = ["workspaces", "media"]
+center = ["group:time"]
+end = ["tray", "privacy", "group:status"]
+
+[[bar.default.capsule_group]]
+id = "time"
+members = ["date", "clock", "pomodoro"]
+fill = "surface"
+border = "outline_variant"
+padding = 10.4
+radius = 10.4
+widget_spacing = 10
+
+[[bar.default.capsule_group]]
+id = "status"
+members = ["volume", "network", "battery", "powerboost", "caffeine", "wallpaper", "notifications"]
+fill = "surface"
+border = "outline_variant"
+foreground = "on_surface_variant"        # a step quieter than the clock
+padding = 10.4
+radius = 10.4
+widget_spacing = 14
+
+# One accent: the current tag is a primary pill, occupied tags are quiet
+# neutral pills, an urgent tag turns the error colour.
+[widget.workspaces]
+style = "regular"
+label_source = "id"
+hide_when_empty = true
+scale = 1.25
+capsule_padding = 5
+capsule_radius = 8
+font_scale = 0.9
+active_pill_size = 2.0
+focused_color = "primary"
+occupied_color = "surface_container_highest"
+empty_color = "surface_container_highest"
+urgent_color = "error"
+
+[widget.media]
+hide_when_no_media = true
+max_length = 260
+art_size = 20
+title_scroll = "on_hover"
+
+# The date and time open the dashboard; the date is quieter so the time
+# reads first.
+[widget.date]
+type = "clock"
+format = "{:%a %d %b}"
+timezone = "Asia/Kolkata"
+color = "on_surface_variant"
+tooltip_format = "{:%A, %d %B %Y}"
+
+[widget.date.actions]
+left = "panel-toggle control-center home"
+
+[widget.clock]
+format = "{:%H:%M}"
+timezone = "Asia/Kolkata"
+font_weight = 700
+tooltip_format = "{:%A, %d %B %Y}"
+
+[widget.clock.actions]
+left = "panel-toggle control-center home"
+
+[widget.pomodoro]
+type = "tordex/stdout:bar"
+cmd = "~/.config/noctalia/scripts/pomodoro-widget"
+interval = 1
+interval_units = "1"
+json = true
+
+[widget.pomodoro.actions]
+left = "exec ~/.config/waybar/scripts/pomodoro.sh start"
+right = "exec ~/.config/waybar/scripts/pomodoro.sh toggle"
+middle = "exec ~/.config/waybar/scripts/pomodoro.sh reset"
+scroll_up = "exec ~/.config/waybar/scripts/pomodoro.sh add"
+scroll_down = "exec ~/.config/waybar/scripts/pomodoro.sh sub"
+
+[widget.privacy]
+hide_inactive = true
+active_color = "error"
+
+# Status at a glance, each opening its dashboard tab: the volume shows its
+# level in the tooltip, the battery has a separate readable charge label, and
+# the bell appears only with unread notifications or Do Not Disturb.
+[widget.volume]
+show_label = false
+peek = true
+mute_color = "on_surface_variant"        # the crossed-out glyph says muted
+
+[widget.network]
+show_label = false
+
+[widget.battery]
+display_mode = "glyph"
+show_label = true
+
+[widget.notifications]
+hide_when_no_unread = true
+
+# The native indicator follows power-profiles-daemon without shell polling;
+# every profile change goes through the existing boost script.
+[widget.powerboost]
+type = "power_profile"
+
+[widget.powerboost.actions]
+left = "exec ~/.local/bin/powerboost toggle"
+right = "exec ~/.local/bin/powerboost toggle"
+scroll_up = "none"
+scroll_down = "none"
+
+# Opens the wallpaper picker (also Super+Shift+W).
+[widget.wallpaper]
+glyph = "photo"
+
+[osd]
+offset_y = 8

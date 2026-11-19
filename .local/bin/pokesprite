@@ -1,0 +1,104 @@
+#!/usr/bin/env -S python3 -S
+"""Colour-matched Pokemon sprite for fastfetch.
+
+  pokesprite sync <#rrggbb>   map accent to a PokeAPI colour, cache a few sprites
+  pokesprite pick             print a random cached sprite of the current colour
+
+Sprites are downloaded on demand from PokeAPI/sprites into
+${XDG_CACHE_HOME:-~/.cache}/pokesprite/<colour>/<id>.png (never stored in the repo).
+"""
+import os, sys
+
+CACHE = os.path.join(os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"), "pokesprite")
+TABLE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../.config/fastfetch/pokemon-colors.tsv")
+URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%d.png"
+COUNT, SCALE = 12, 3
+
+
+def category(hexcolor):
+    import colorsys
+    r, g, b = (int(hexcolor.lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    if s < 0.2 or l < 0.12 or l > 0.92:
+        return "black" if l < 0.2 else "white" if l >= 0.85 else "gray"
+    h *= 360
+    for limit, name in ((25, "red"), (70, "yellow"), (165, "green"), (255, "blue"),
+                        (300, "purple"), (340, "pink")):
+        if h < limit:
+            return name
+    return "red"
+
+
+def run(*cmd):
+    import subprocess
+    return subprocess.run(cmd, capture_output=True, stdin=subprocess.DEVNULL, timeout=20).stdout
+
+
+def process(png, out):  # png, out: Path
+    """Trim the transparent border, upscale nearest-neighbour."""
+    quiet = ["ffmpeg", "-v", "error", "-y", "-i", str(png)]
+    pgm = run(*quiet, "-vf", "format=rgba,alphaextract,format=gray", "-f", "image2pipe", "-c", "pgm", "-")
+    w, h = map(int, pgm.split(b"\n", 3)[1].split())
+    px = pgm[-w * h:]
+    xs = [i % w for i, v in enumerate(px) if v]
+    ys = [i // w for i, v in enumerate(px) if v]
+    crop = f"crop={max(xs)-min(xs)+1}:{max(ys)-min(ys)+1}:{min(xs)}:{min(ys)}," if xs else ""
+    run(*quiet, "-vf", f"format=rgba,{crop}scale=iw*{SCALE}:ih*{SCALE}:flags=neighbor", str(out))
+
+
+def sync(hexcolor):
+    import random
+    from pathlib import Path
+    import urllib.request
+    from concurrent.futures import ThreadPoolExecutor
+    cat = category(hexcolor)
+    cache = Path(CACHE)
+    d = cache / cat
+    d.mkdir(parents=True, exist_ok=True)
+    (cache / "current").write_text(cat + "\n")
+    have = {p.stem for p in d.glob("*.png")}
+    ids = [int(p[0]) for p in (l.split("\t") for l in Path(TABLE).read_text().splitlines()
+                               if not l.startswith("#")) if p[2] == cat and p[0] not in have]
+    random.shuffle(ids)
+    offline = []
+
+    def fetch(i):
+        if offline:
+            return
+        try:  # offline or bad sprite: skip it and keep what is cached
+            raw = urllib.request.urlopen(URL % i, timeout=3).read()
+            tmp = d / f".{i}.src"
+            tmp.write_bytes(raw)
+            process(tmp, d / f".{i}.png")  # same dir, so the rename is atomic
+            os.replace(d / f".{i}.png", d / f"{i}.png")
+        except Exception:
+            offline.append(i)
+        finally:
+            (d / f".{i}.src").unlink(missing_ok=True)
+
+    with ThreadPoolExecutor(6) as ex:
+        list(ex.map(fetch, ids[:max(0, COUNT - len(have))]))
+    print(cat)
+
+
+def pick():
+    try:
+        with open(os.path.join(CACHE, "current")) as f:
+            cat = f.read().strip()
+        files = os.listdir(os.path.join(CACHE, cat))
+    except OSError:
+        return 1
+    files = [f for f in files if f.endswith(".png")]
+    if not files:
+        return 1
+    print(os.path.join(CACHE, cat, files[int.from_bytes(os.urandom(4)) % len(files)]))
+    return 0
+
+
+if __name__ == "__main__":
+    if sys.argv[1:2] == ["sync"] and len(sys.argv) == 3:
+        sync(sys.argv[2])
+    elif sys.argv[1:] == ["pick"]:
+        sys.exit(pick())
+    else:
+        sys.exit("usage: pokesprite sync <#rrggbb> | pick")

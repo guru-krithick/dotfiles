@@ -12,9 +12,14 @@ export TZ="Asia/Kolkata"
 export BROWSER="zen-browser"
 export EDITOR="code --wait"
 export _JAVA_AWT_WM_NONREPARENTING=1
-export GTK_THEME=Materia-dark
 export GTK_USE_PORTAL=1
-export BAT_THEME="base16-256"
+# bat and delta use the Noctalia theme once it is rendered and built; BAT_THEME
+# overrides bat's config file, so only fall back to a stock theme before then.
+if [[ -r "$HOME/.config/bat/themes/noctalia.tmTheme" ]]; then
+    export BAT_THEME="noctalia"
+else
+    export BAT_THEME="base16-256"
+fi
 
 export PNPM_HOME="$HOME/.local/share/pnpm"
 export BUN_INSTALL="$HOME/.bun"
@@ -36,14 +41,17 @@ export FZF_DEFAULT_OPTS="
   --bind ctrl-u:preview-up,ctrl-d:preview-down
   --bind ctrl-/:toggle-preview
   --border rounded
-  --color=bg:#0a0a0a,bg+:#1c1c1c,fg:#b0b0b0,fg+:#d0d0d0
-  --color=spinner:#6a8ac0,hl:#b06a6e,hl+:#b06a6e
-  --color=header:#6a8ac0,info:#8a8a8a,prompt:#6a8ac0
-  --color=pointer:#6a8ac0,marker:#8aaa6a
+  --color=16
+  --color=fg:-1,bg:-1,bg+:114,fg+:118,selected-bg:0
+  --color=hl:130,hl+:130,header:130,info:119,prompt:119,pointer:118
+  --color=spinner:118,marker:117,border:116,label:118
   --prompt '❯ '
   --pointer '▶'
   --marker '✓'
 "
+# The colours are kitty palette slots (112-142 hold theme roles, see
+# kitty/kitty.conf; 0 is ANSI black), so open fzfs and shells started before a
+# theme switch recolour with kitty. -1 keeps kitty's translucent background.
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git --exclude node_modules'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:200 {}'"
@@ -93,7 +101,8 @@ alias t='tmux -u'
 alias tmux='tmux -u'
 alias speedtest='speedtest-cli'
 alias btop='btop --force-utf'
-alias cc='claude'
+alias cc='claude'                                   # Claude account 1 (~/.claude)
+alias cc1='CLAUDE_CONFIG_DIR=$HOME/.claude-alt claude'  # Claude account 2, same config via agent-config
 
 if command -v eza >/dev/null 2>&1; then
     alias ls='eza --icons --group-directories-first'
@@ -119,11 +128,23 @@ alias publicip='curl -s ifconfig.me'
 alias ports='ss -tulwn'
 
 alias zshconfig='nvim ~/.zshrc'
-alias ghosttyconfig='nvim ~/.config/ghostty/config'
+alias kittyconfig='nvim ~/.config/kitty/kitty.conf'
 alias nvimconfig='nvim ~/.config/nvim/'
 alias mangoconfig='nvim ~/.config/mango/config.conf'
 alias dotfiles='nvim ~/dotfiles'
 alias reload='exec zsh'
+
+# fastfetch with a colour-matched Pokemon sprite (see ~/.local/bin/pokesprite)
+fastfetch() {
+    local sprite
+    # no kitty image protocol inside tmux
+    if [[ $TERM == xterm-kitty && -z $TMUX ]] && sprite=$(pokesprite pick 2>/dev/null); then
+        command fastfetch --logo-type kitty-direct --logo "$sprite" --logo-width 22 --logo-height 11 \
+            --logo-preserve-aspect-ratio true --logo-padding-right 2 "$@"
+    else
+        command fastfetch "$@"
+    fi
+}
 
 if [[ -r ~/.zsh_local ]]; then
     source ~/.zsh_local

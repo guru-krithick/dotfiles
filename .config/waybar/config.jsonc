@@ -31,6 +31,7 @@
         "backlight",
         "custom/powerboost",
         "idle_inhibitor",
+        "tray",
     ],
     "mpris": {
         "player": "firefox",
@@ -138,6 +139,10 @@
         "format-alt": "{essid}",
         "tooltip-format": "{ifname}\n{ipaddr}/{cidr}\n{gwaddr}",
         "tooltip-format-wifi": "{essid}\n{ipaddr}/{cidr}\n󰇚 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes}",
+    },
+    "tray": {
+        "icon-size": 18,
+        "spacing": 10,
     },
     "backlight": {
         "device": "intel_backlight",

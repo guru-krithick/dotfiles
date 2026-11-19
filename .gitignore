@@ -1,0 +1,29 @@
+# Agent application state and credentials never belong in this repository.
+/.claude/
+/.codex/
+/.agents/
+/.local/share/agent-config/
+/.local/state/agent-config/
+/.config/agent-config/**/__pycache__/
+/.config/theme/**/__pycache__/
+/.config/agent-config/*.local.*
+/.config/agent-config/vendor/
+/.config/agent-config/backups/
+
+# Written by Noctalia's theme templates on every palette change; these config
+# directories are links into this checkout.
+/.config/kitty/themes/noctalia.conf
+/.config/kitty/themes/noctalia-roles.conf
+/.config/mango/noctalia.conf
+/.config/qt6ct/colors/
+/.config/nvim/colors/base16-noctalia.lua
+/.config/tmux/themes/noctalia.conf
+# yazi's flavor.toml is static and tracked; only its syntax colours are rendered.
+/.config/yazi/flavors/noctalia.yazi/tmtheme.xml
+
+# Wallpaper sets are third-party images without a stated licence; ~/Pictures
+# links into this checkout, so keep them out of the public repository.
+/Pictures/wallpapers/
+
+# Active theme bar; source layouts live under noctalia/bars/.
+/.config/noctalia/bar.toml

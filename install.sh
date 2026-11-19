@@ -18,10 +18,10 @@ readonly PACMAN_PACKAGES=(
     zsh tmux
 
     # editors and terminals
-    neovim ghostty kitty zed
+    neovim kitty zed
 
     # cli toolbelt
-    git github-cli git-delta stow man-db yazi
+    git github-cli git-delta stow man-db yazi python curl
     fzf fd ripgrep bat eza zoxide jq fastfetch btop duf
     speedtest-cli smartmontools unzip zip wget
 
@@ -34,7 +34,10 @@ readonly PACMAN_PACKAGES=(
     # execute under have to come from the system
     nodejs npm pnpm rustup go jdk21-openjdk
 
-    # wayland session: compositor bits, bar, launcher, screenshots
+    # wayland session: Noctalia is the shell (bar, launcher, notifications,
+    # wallpaper, theming); the greeter is installed but not enabled here.
+    # waybar, mako, rofi and swaybg are the old stack, kept for rollback.
+    noctalia noctalia-greeter
     waybar mako rofi swaybg swayidle
     slurp grim wl-clipboard cliphist wl-clip-persist
     wlopm playerctl polkit-gnome libnotify
@@ -42,16 +45,24 @@ readonly PACMAN_PACKAGES=(
     xdg-desktop-portal-wlr xdg-desktop-portal-gtk xdg-utils
     libinput-tools brightnessctl
 
-    # audio
-    # pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber
-    # pavucontrol libpulse sof-firmware
+    # audio — Noctalia's volume controls (and waybar's) need pipewire + wireplumber
+    pipewire pipewire-alsa pipewire-pulse wireplumber
+    pavucontrol libpulse sof-firmware
 
-    # theming — GTK_THEME in .zshrc and the gsettings calls in mango's
-    # exec-once block name these by string, so a missing one degrades to an
-    # unstyled session rather than an error
+    # networking and bluetooth; Noctalia's control center drives both, the
+    # applets belong to the old waybar stack
+    networkmanager network-manager-applet
+    bluez bluez-utils blueman
+
+    # powerboost drives powerprofilesctl
+    power-profiles-daemon
+
+    # theming — Noctalia's GTK template selects adw-gtk3 by name and its Qt
+    # template feeds qt6ct, so a missing one degrades to an unstyled app
+    # rather than an error; materia is the old stack's GTK theme
     materia-gtk-theme adw-gtk-theme papirus-icon-theme
     lxappearance qt5ct qt6ct
-    noto-fonts-emoji
+    noto-fonts-emoji ttf-nerd-fonts-symbols
 
     # file manager and thumbnailers (tumbler backs thunar's previews; yazi
     # reads poppler and ffmpegthumbnailer for pdf and video thumbs)
@@ -162,6 +173,12 @@ install_toolchains() {
         curl -fsSL https://claude.ai/install.sh | bash
     fi
 
+    if have codex; then
+        skip "codex"
+    else
+        npm install -g --prefix "$NPM_PREFIX" @openai/codex
+    fi
+
     log "installing npm globals"
     npm install -g --prefix "$NPM_PREFIX" "${NPM_GLOBALS[@]}"
 }
@@ -192,6 +209,14 @@ link_dotfiles() {
     stow -v -R -d "$DOTFILES_DIR" -t "$HOME" .
 }
 
+configure_agents() {
+    log "applying portable Claude Code and Codex preferences"
+    python3 "$DOTFILES_DIR/.config/agent-config/deploy.py" apply --bootstrap
+
+    log "setting up claude-mem (one shared memory for every Claude home and Codex)"
+    bash "$DOTFILES_DIR/.config/agent-config/scripts/claude-mem-setup.sh"
+}
+
 # powerboost writes the GPU frequency floor and vm.swappiness, both root-only.
 # It is bound to a key and to a waybar click, neither of which has a tty for
 # sudo to prompt on, so without this rule those two writes fail silently and
@@ -212,6 +237,33 @@ $USER ALL=(root) NOPASSWD: /usr/bin/sysctl -q -w vm.swappiness=[0-9]*
 EOF
     sudo chmod 0440 "$rule"
     sudo visudo -cf "$rule"
+}
+
+# Agents (Claude Code, Codex) run without approval prompts and need sudo to
+# work non-interactively, so the user gets passwordless sudo. Validated with
+# visudo before it is left in place.
+install_agent_sudoers() {
+    local rule=/etc/sudoers.d/agent-nopasswd
+
+    if sudo test -f "$rule"; then
+        skip "passwordless sudo rule"
+        return
+    fi
+
+    log "installing passwordless sudo rule for agents"
+    printf '%s ALL=(ALL:ALL) NOPASSWD: ALL\n' "$USER" | sudo tee "$rule" >/dev/null
+    sudo chmod 0440 "$rule"
+    sudo visudo -cf "$rule" || { sudo rm -f "$rule"; die "invalid sudoers rule removed"; }
+}
+
+# System services the configs rely on. Audio is socket-activated per user and
+# needs no enabling. NetworkManager conflicts with a standalone iwd or
+# systemd-networkd managing the same interface, so disable those first if the
+# base install used them.
+enable_services() {
+    log "enabling system services"
+    sudo systemctl enable --now NetworkManager.service bluetooth.service \
+        power-profiles-daemon.service fstrim.timer
 }
 
 set_login_shell() {
@@ -241,7 +293,10 @@ main() {
     install_toolchains
     install_plugin_managers
     link_dotfiles
+    configure_agents
     install_powerboost_sudoers
+    install_agent_sudoers
+    enable_services
     set_login_shell
     print_next_steps
 }

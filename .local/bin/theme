@@ -1,0 +1,480 @@
+#!/usr/bin/env python3
+"""Switch the desktop theme: a Noctalia palette plus a wallpaper folder.
+
+    theme set <id> [--wallpaper <path>]      palette, folder and the theme's last (or this) wallpaper
+    theme next | prev                        cycle through the themes
+    theme wallpaper next|prev|random|<path>  change the wallpaper within the theme
+    theme list [--json]                      available themes
+    theme choose                             open (or close) the theme carousel
+    theme current [--json]                   the active theme
+    theme catalog                            every theme's wallpapers and carousel cards, as JSON
+    theme cards                              draw missing carousel cards in ~/.cache/theme/cards
+    theme sync-bar                          restore the current palette's bar at startup
+
+A theme is a palette ~/.config/noctalia/palettes/<id>.json plus the folder
+~/Pictures/wallpapers/<id>/ that Noctalia's wallpaper picker browses while the
+theme is active, and a bar, ~/.config/noctalia/bars/<id>.toml or else
+bars/default.toml, which becomes the active bar.toml. Noctalia draws,
+transitions and persists everything; this only tells it what to show over IPC,
+links the bar and remembers each theme's last wallpaper (Noctalia's
+wallpaper_changed hook calls `theme remember <path>`).
+"""
+import argparse
+import concurrent.futures
+import contextlib
+import fcntl
+import hashlib
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import tomllib
+from pathlib import Path
+
+
+def xdg(variable, default):
+    value = os.environ.get(variable, '')
+    return Path(value) if value.startswith('/') else Path.home() / default
+
+
+CONFIG = Path(os.environ.get('NOCTALIA_CONFIG_HOME') or xdg('XDG_CONFIG_HOME', '.config')) / 'noctalia'
+STATE = xdg('XDG_STATE_HOME', '.local/state') / 'theme'
+PICTURES = xdg('XDG_PICTURES_DIR', 'Pictures')
+WALLPAPERS = PICTURES / 'wallpapers'
+FALLBACK = PICTURES / 'wallpaper.jpg'  # shown when a theme has no folder; never remembered
+IMAGES = {'.png', '.jpg', '.jpeg', '.webp', '.jxl', '.bmp', '.gif', '.heic', '.heif', '.avif'}
+# The carousel (plugin guru/themes) shows each wallpaper as a card: a 560x315
+# crop inside a parallelogram whose top edge sits 0.2 x its height (about 11
+# degrees) right of its bottom edge, with 12 px corners and a soft shadow in
+# a 28 px margin, drawn once by ffmpeg into a PNG with transparent corners.
+# Bump CARD_VERSION to redraw them all.
+CARDS = xdg('XDG_CACHE_HOME', '.cache') / 'theme' / 'cards'
+CARD_WIDTH, CARD_HEIGHT, CARD_SLANT, CARD_RADIUS, CARD_VERSION = 560, 315, 0.2, 12, 2
+CARD_PAD, SHADOW = 28, {'alpha': 0.55, 'drop': 7, 'blur': 11}
+NEUTRAL_SURFACE = '#232327'  # placeholder card colour when a palette is unreadable
+PALETTE_ROLES = ('primary', 'secondary', 'tertiary', 'surface', 'surface_container', 'on_surface',
+                 'on_surface_variant', 'outline_variant', 'error')
+
+
+class ThemeError(Exception):
+    pass
+
+
+def noctalia(*args):
+    """Run `noctalia msg ...`; its replies are one line, errors start with "error"."""
+    try:
+        result = subprocess.run(['noctalia', 'msg', *args], capture_output=True, text=True,
+                                stdin=subprocess.DEVNULL, timeout=20)
+    except FileNotFoundError:
+        raise ThemeError('noctalia is not installed')
+    except subprocess.TimeoutExpired:
+        raise ThemeError(f'noctalia msg {args[0]}: no reply')
+    reply = result.stdout.strip()
+    if result.returncode or reply.lower().startswith('error'):
+        detail = (result.stderr.strip() or reply).removeprefix('Error: ').removeprefix('error: ')
+        raise ThemeError(f"noctalia msg {' '.join(args)}: {detail}")
+    return reply
+
+
+def config_get(key):
+    """A config value; `noctalia msg config-get` prints it as TOML."""
+    try:
+        return tomllib.loads(f'value = {noctalia("config-get", key)}')['value']
+    except tomllib.TOMLDecodeError as err:
+        raise ThemeError(f'noctalia msg config-get {key}: {err}')
+
+
+def theme_ids():
+    return sorted(p.stem for p in (CONFIG / 'palettes').glob('*.json'))
+
+
+def current():
+    """The active theme id, or None when Noctalia shows a palette that is not a theme."""
+    source, _, name = noctalia('color-scheme-get').partition(' ')
+    return name if source == 'custom' and name in theme_ids() else None
+
+
+def images(folder):
+    if not folder.is_dir():
+        return []
+    return sorted((p for p in folder.iterdir() if p.suffix.lower() in IMAGES
+                   and p.is_file() and not p.name.startswith('.')), key=lambda p: p.name.lower())
+
+
+def read_memory():
+    try:
+        memory = json.loads((STATE / 'wallpapers.json').read_text())
+        return memory if isinstance(memory, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def wallpaper_for(tid):
+    saved = read_memory().get(tid)
+    if isinstance(saved, str) and Path(saved).is_file():
+        return Path(saved)
+    files = images(WALLPAPERS / tid)
+    return files[0] if files else FALLBACK if FALLBACK.is_file() else None
+
+
+@contextlib.contextmanager
+def locked(name):
+    STATE.mkdir(parents=True, exist_ok=True)
+    with open(STATE / f'.{name}.lock', 'w') as handle:
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        yield
+
+
+def link_bar(tid):
+    """Point bar.toml at the theme's bar, else at bars/default.toml.
+
+    Noctalia loads every *.toml in its config folder and reloads one about 150 ms
+    after it changes, so the new bar arrives during the palette cross-fade. The
+    link is generated (git ignores it); a regular bar.toml is the user's own and
+    stays.
+    """
+    bar = CONFIG / 'bars' / f'{tid}.toml'
+    if not bar.is_file():
+        bar = CONFIG / 'bars' / 'default.toml'
+    link = CONFIG / 'bar.toml'
+    if not bar.is_file() or (link.exists() and not link.is_symlink()):
+        return
+    target = os.path.relpath(bar, CONFIG)
+    if link.is_symlink() and os.readlink(link) == target:
+        return
+    staged = CONFIG / '.bar.toml.new'  # not *.toml: Noctalia never loads it half-way
+    staged.unlink(missing_ok=True)
+    staged.symlink_to(target)
+    os.replace(staged, link)
+
+
+def image_path(choice):
+    path = Path(choice).expanduser().absolute()
+    if not path.is_file():
+        raise ThemeError(f'no such file: {choice}')
+    if path.suffix.lower() not in IMAGES:
+        raise ThemeError(f'not an image: {choice}')
+    return path
+
+
+def apply(tid, wallpaper=None):
+    """Switch to a theme, with its remembered wallpaper or the one given."""
+    if tid not in theme_ids():
+        raise ThemeError(f"unknown theme '{tid}' (try: {', '.join(theme_ids())})")
+    wallpaper = image_path(wallpaper) if wallpaper is not None else wallpaper_for(tid)
+    noctalia('color-scheme-set', 'custom', tid)
+    link_bar(tid)
+    if wallpaper:
+        noctalia('wallpaper-set', str(wallpaper))
+    # A persisted automatic/light mode otherwise overrides theme.toml and
+    # renders bright terminal surfaces under an already-running dark TUI.
+    if tid == 'ultra-dark' and config_get('theme.mode') != 'dark':
+        noctalia('theme-mode-set', 'dark')
+    folder = WALLPAPERS / tid
+    folder = folder if folder.is_dir() else WALLPAPERS if WALLPAPERS.is_dir() else PICTURES
+    if config_get('wallpaper.directory') != str(folder):
+        noctalia('config-set', 'wallpaper.directory', json.dumps(str(folder)))
+
+
+def cycle(step):
+    ids = theme_ids()
+    tid = current()
+    index = ids.index(tid) if tid in ids else (-1 if step > 0 else 0)
+    apply(ids[(index + step) % len(ids)])
+
+
+def change_wallpaper(choice):
+    if choice in ('next', 'prev', 'random'):
+        noctalia({'next': 'wallpaper-next', 'prev': 'wallpaper-previous',
+                  'random': 'wallpaper-random'}[choice])
+        return
+    noctalia('wallpaper-set', str(image_path(choice)))
+
+
+def remember(path):
+    """Record a wallpaper for the theme whose folder holds it, else the active theme."""
+    if not path or not Path(path).is_file():
+        return
+    real, walls = Path(path).resolve(), WALLPAPERS.resolve()
+    if FALLBACK.is_file() and real == FALLBACK.resolve():
+        return
+    parts = real.relative_to(walls).parts if real.is_relative_to(walls) else ()
+    tid = parts[0] if len(parts) > 1 and parts[0] in theme_ids() else current()
+    if tid is None:
+        return
+    warm_cards(Path(path))
+    with locked('wallpapers'):
+        memory = read_memory()
+        if memory.get(tid) == path:
+            return
+        memory[tid] = path
+        fd, tmp = tempfile.mkstemp(prefix='.wallpapers.', dir=STATE)
+        with os.fdopen(fd, 'w') as handle:
+            json.dump(memory, handle, indent=2)
+            handle.write('\n')
+        os.replace(tmp, STATE / 'wallpapers.json')
+
+
+def warm_cards(path):
+    """Draw a new wallpaper's carousel card in the background, so it is ready next time."""
+    if card_path(path).is_file() or not shutil.which('ffmpeg'):
+        return
+    subprocess.Popen([sys.executable, os.path.abspath(__file__), 'cards'], stdin=subprocess.DEVNULL,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+
+
+def display_name(tid):
+    return tid.replace('-', ' ').title()
+
+
+def preview(tid):
+    """Read-only chooser data; use the same wallpaper and generator as apply()."""
+    wallpaper = wallpaper_for(tid)
+    entry = {'wallpaper': str(wallpaper) if wallpaper else None, 'colors': {}}
+    try:
+        colors = json.loads((CONFIG / 'palettes' / f'{tid}.json').read_text())['dark']
+        entry['colors'] = {role: value for role, value in colors.items()
+                           if isinstance(value, str) and re.fullmatch(r'#[0-9a-fA-F]{6}', value)}
+    except (OSError, ValueError, KeyError, AttributeError, TypeError):
+        # A missing/corrupt preview must not hide an otherwise selectable theme.
+        entry['preview_error'] = 'Colour preview unavailable'
+    return entry
+
+
+def palette_colors(tid):
+    """A theme's dark palette roles as hex, or {} when unreadable."""
+    try:
+        colors = json.loads((CONFIG / 'palettes' / f'{tid}.json').read_text())['dark']
+        return {role: colors[role] for role in PALETTE_ROLES
+                if isinstance(colors.get(role), str) and re.fullmatch(r'#[0-9a-fA-F]{6}', colors[role])}
+    except (OSError, ValueError, KeyError, TypeError):
+        return {}
+
+
+def wallpaper_name(path):
+    """`00-misty-pines.jpg` -> `misty pines`."""
+    stem = re.sub(r'^\d+[-_ ]+', '', Path(path).stem)
+    return re.sub(r'[-_]+', ' ', stem).strip() or Path(path).stem
+
+
+def card_path(path):
+    """The cached card for one picture; its name changes when the file or the look changes."""
+    try:
+        stat = Path(path).stat()
+    except OSError:
+        return CARDS / 'missing.png'
+    key = f'{CARD_VERSION}:{CARD_WIDTH}x{CARD_HEIGHT}:{path}:{stat.st_mtime_ns}:{stat.st_size}'
+    return CARDS / f'{hashlib.sha1(key.encode()).hexdigest()[:20]}.png'
+
+
+def placeholder_path(color):
+    return CARDS / f'placeholder-{CARD_VERSION}-{color.lstrip("#").lower()}.png'
+
+
+def theme_wallpapers(tid):
+    files = images(WALLPAPERS / tid)
+    return files or ([FALLBACK] if FALLBACK.is_file() else [])
+
+
+def catalog():
+    """Everything the carousel shows, read from disk only (no previews are generated)."""
+    themes, missing = [], 0
+    for tid in theme_ids():
+        colors = palette_colors(tid)
+        remembered = wallpaper_for(tid)
+        wallpapers = []
+        for picture in theme_wallpapers(tid):
+            card = card_path(picture)
+            entry = {'path': str(picture), 'name': wallpaper_name(picture), 'card': str(card),
+                     'ready': card.is_file()}
+            if not entry['ready'] and not card.with_suffix('.failed').exists():
+                missing += 1
+            wallpapers.append(entry)
+        placeholder = placeholder_path(theme_surface(tid))
+        if not placeholder.is_file() and not placeholder.with_suffix('.failed').exists():
+            missing += 1
+        themes.append({'id': tid, 'name': display_name(tid), 'colors': colors,
+                       'placeholder': str(placeholder) if placeholder.is_file() else None,
+                       'remembered': str(remembered) if remembered else None,
+                       'wallpapers': wallpapers})
+    geometry = {'width': CARD_WIDTH, 'height': CARD_HEIGHT, 'slant': round(CARD_SLANT * CARD_HEIGHT),
+                'pad': CARD_PAD}
+    print(json.dumps({'themes': themes, 'missing': missing, 'card': geometry}))
+
+
+def card_mask():
+    """ffmpeg filter: RGBA with the rounded parallelogram's alpha, for a canvas
+    CARD_WIDTH + slant wide. X - slant * (H - Y) undoes the slant, then the
+    rounded-rectangle distance gives a one-pixel anti-aliased edge."""
+    r, w, h = CARD_RADIUS, CARD_WIDTH, CARD_HEIGHT
+    x = f'(X-{CARD_SLANT}*({h}-Y))'
+    alpha = f'255*clip({r}+0.5-hypot({x}-clip({x},{r},{w - 1 - r}),Y-clip(Y,{r},{h - 1 - r})),0,1)'
+    return f"format=rgba,geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':a='{alpha}'"
+
+
+def draw_card(source, target):
+    """Render one card (a picture, or a `color:#rrggbb` placeholder) atomically."""
+    width, height = CARD_WIDTH + round(CARD_SLANT * CARD_HEIGHT), CARD_HEIGHT
+    if source.startswith('color:'):
+        inputs = ['-f', 'lavfi', '-i', f'color=c=0x{source[7:]}:s={width}x{height}']
+        chain = f'[0:v]{card_mask()}'
+    else:
+        inputs = ['-i', source]
+        chain = (f'[0:v]scale={width}:{height}:force_original_aspect_ratio=increase:flags=lanczos,'
+                 f'crop={width}:{height},{card_mask()}')
+    # The shadow: the card's own alpha, dropped, blurred and darkened, below it.
+    pad = CARD_PAD
+    chain += (f',pad=iw+{2 * pad}:ih+{2 * pad}:{pad}:{pad}:color=black@0,split[card][shade];'
+              f"[shade]geq=r=0:g=0:b=0:a='{SHADOW['alpha']}*alpha(X,Y-{SHADOW['drop']})',"
+              f"gblur=sigma={SHADOW['blur']}[shadow];[shadow][card]overlay=0:0:format=auto")
+    part = target.with_name(f'.{target.name}.{os.getpid()}.part')
+    result = subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-y', *inputs, '-frames:v', '1',
+                             '-filter_complex', chain, '-f', 'image2', '-c:v', 'png', str(part)],
+                            capture_output=True, text=True, timeout=120)
+    if result.returncode or not part.is_file():
+        part.unlink(missing_ok=True)
+        raise ThemeError(result.stderr.strip() or f'ffmpeg failed for {source}')
+    os.replace(part, target)
+
+
+def theme_surface(tid):
+    """The colour of a theme's placeholder card: its palette surface."""
+    return palette_colors(tid).get('surface', NEUTRAL_SURFACE)
+
+
+def run_jobs(jobs):
+    """Run draw jobs a few at a time; print each result, mark each failure."""
+    workers = max(1, min(4, (os.cpu_count() or 2) // 2))
+    with concurrent.futures.ThreadPoolExecutor(workers) as pool:
+        futures = {pool.submit(job[0], *job[1:]): job for job in jobs}
+        for future in concurrent.futures.as_completed(futures):
+            target = futures[future][2]
+            try:
+                future.result()
+                print(target, flush=True)
+            except (ThemeError, OSError, ValueError, subprocess.TimeoutExpired) as err:
+                target.with_suffix('.failed').write_text(f'{err}\n')
+
+
+def make_cards():
+    """Draw every missing card; print each new card.
+
+    A picture ffmpeg cannot read gets a `.failed` marker instead, so it is not
+    retried until the file changes. Cards for removed or changed pictures are
+    deleted. Runs at low priority, a few pictures at a time."""
+    if not shutil.which('ffmpeg'):
+        raise ThemeError('ffmpeg is not installed')
+    CARDS.mkdir(parents=True, exist_ok=True)
+    with contextlib.suppress(OSError):
+        os.nice(10)
+
+    def missing(target):
+        return not target.is_file() and not target.with_suffix('.failed').exists()
+
+    with locked('cards'):
+        jobs, keep = [], set()
+        for tid in theme_ids():
+            for picture in theme_wallpapers(tid):
+                card = card_path(picture)
+                keep.update({card.name, card.with_suffix('.failed').name})
+                if missing(card):
+                    jobs.append((draw_card, str(picture), card))
+        for tid in theme_ids():
+            surface = theme_surface(tid)
+            placeholder = placeholder_path(surface)
+            keep.update({placeholder.name, placeholder.with_suffix('.failed').name})
+            if missing(placeholder):
+                jobs.append((draw_card, f'color:{surface}', placeholder))
+        run_jobs(jobs)
+        for stale in CARDS.iterdir():
+            if stale.name not in keep and re.fullmatch(
+                    r'(placeholder-\d+-[0-9a-f]{6}\.(png|failed)|[0-9a-f]{20}\.(png|failed)'
+                    r'|\..+\.\d+\.part)', stale.name):
+                stale.unlink(missing_ok=True)
+
+
+def list_themes(as_json, previews=False):
+    try:
+        active = current()
+    except ThemeError:
+        active = None  # Noctalia is not running; still list what exists
+    entries = [{'id': tid, 'name': display_name(tid), 'current': tid == active,
+                'wallpapers': len(images(WALLPAPERS / tid))} for tid in theme_ids()]
+    if previews:
+        for entry in entries:
+            entry.update(preview(entry['id']))
+    if as_json:
+        print(json.dumps(entries, indent=2))
+        return
+    for entry in entries:
+        print(f"{'*' if entry['current'] else ' '} {entry['id']:<22}{entry['name']}")
+
+
+def show_current(as_json):
+    tid = current()
+    if not as_json:
+        print(tid or noctalia('color-scheme-get'))
+        return
+    print(json.dumps({'id': tid, 'palette': noctalia('color-scheme-get'),
+                      'wallpaper': noctalia('wallpaper-get'),
+                      'folder': config_get('wallpaper.directory')}, indent=2))
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(prog='theme', description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    commands = parser.add_subparsers(dest='command', required=True, metavar='command')
+    setting = commands.add_parser('set', help='apply a theme')
+    setting.add_argument('id')
+    setting.add_argument('--wallpaper', metavar='PATH',
+                         help="show this picture instead of the theme's remembered one")
+    commands.add_parser('next', help='apply the next theme')
+    commands.add_parser('prev', help='apply the previous theme')
+    commands.add_parser('wallpaper', help='change the wallpaper').add_argument(
+        'choice', metavar='path|next|prev|random')
+    listing = commands.add_parser('list', help='list themes')
+    listing.add_argument('--json', action='store_true')
+    listing.add_argument('--previews', action='store_true',
+                         help='include wallpaper paths and colours (implies --json)')
+    commands.add_parser('current', help='show the active theme').add_argument('--json', action='store_true')
+    commands.add_parser('choose', help='open or close the theme carousel')
+    commands.add_parser('catalog', help="every theme's wallpapers and carousel cards (JSON)")
+    commands.add_parser('cards', help='draw missing carousel cards')
+    commands.add_parser('remember').add_argument('path')  # for the wallpaper_changed hook
+    commands.add_parser('sync-bar', help='restore the current layout (Noctalia startup hook)')
+    args = parser.parse_args(argv)
+    try:
+        if args.command == 'list':
+            list_themes(args.json or args.previews, args.previews)
+        elif args.command == 'choose':
+            noctalia('plugin', 'guru/themes:switcher', 'all', 'toggle')
+        elif args.command == 'catalog':
+            catalog()
+        elif args.command == 'cards':
+            make_cards()
+        elif args.command == 'current':
+            show_current(args.json)
+        elif args.command == 'wallpaper':
+            change_wallpaper(args.choice)
+        elif args.command == 'remember':
+            remember(args.path)
+        elif args.command == 'sync-bar':
+            with locked('switch'):
+                link_bar(current() or 'default')
+        else:
+            with locked('switch'):  # one switch at a time, so rapid `next`s each count
+                if args.command == 'set':
+                    apply(args.id, args.wallpaper)
+                else:
+                    cycle(1 if args.command == 'next' else -1)
+    except (ThemeError, OSError) as err:
+        print(f'theme: {err}', file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

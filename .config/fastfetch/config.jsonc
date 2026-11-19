@@ -1,0 +1,24 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  // Colours are theme roles in kitty's palette (38;5;N / 48;5;N; slots 112-142
+  // in kitty/kitty.conf), so even printed output recolours on a theme switch:
+  // 119 is the accent, 137-142 its shades. Keys are one Nerd Font glyph each.
+  "display": {
+    "separator": "  ",
+    "color": { "keys": "38;5;119", "title": "38;5;119", "separator": "default" }
+  },
+  "modules": [
+    { "type": "title", "color": { "user": "38;5;119", "at": "white", "host": "default" } },
+    "break",
+    { "type": "os",       "key": "" },
+    { "type": "kernel",   "key": "" },
+    { "type": "uptime",   "key": "" },
+    { "type": "packages", "key": "" },
+    { "type": "wm",       "key": "" },
+    { "type": "shell",    "key": "" },
+    { "type": "memory",   "key": "" },
+    "break",
+    // Shade bar: the accent from dark to light.
+    { "type": "custom", "format": "{#48;5;137}    {#48;5;138}    {#48;5;139}    {#48;5;140}    {#48;5;141}    {#48;5;142}    {#}" }
+  ]
+}

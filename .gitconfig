@@ -16,6 +16,25 @@
 	navigate = true
     line-numbers = true
     dark = true
+    # Numbers are theme roles in kitty's palette (slots 112-142, see
+    # kitty/kitty.conf), so diffs recolour with the theme, even printed ones.
+    # Syntax colours come from bat's noctalia theme.
+    minus-style = normal 133
+    minus-emph-style = normal 134
+    plus-style = syntax 135
+    plus-emph-style = syntax 136
+    minus-empty-line-marker-style = normal 133
+    plus-empty-line-marker-style = normal 135
+    line-numbers-minus-style = red
+    line-numbers-plus-style = green
+    line-numbers-zero-style = 116
+    line-numbers-left-style = 115
+    line-numbers-right-style = 115
+    file-style = 119
+    file-decoration-style = 116 ul
+    hunk-header-decoration-style = 116 box
+    hunk-header-file-style = 119
+    hunk-header-line-number-style = 117
 
 [pull]
 	rebase = true
@@ -44,3 +63,9 @@
 
 [safe]
 	directory = *
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential

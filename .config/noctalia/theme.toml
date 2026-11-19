@@ -1,0 +1,72 @@
+# Colours for the shell and, through templates, for the apps. `theme`
+# (~/.local/bin/theme) switches the palette at runtime over Noctalia's IPC and
+# Noctalia keeps that choice in ~/.local/state/noctalia/settings.toml; the
+# palette chosen here is only the first-run default.
+
+[theme]
+# The theme switcher enforces dark mode for Ultra Dark against saved UI overrides.
+mode = "dark"
+source = "custom"
+custom_palette = "ultra-dark" # palettes/<id>.json; one file per theme
+terminal_colors = "standard"  # ANSI red/green/... keep their hue
+
+# One writer per app: these built-in templates own kitty's colours
+# (kitty/themes/noctalia.conf), GTK 3/4 (gtk.css imports and the adw-gtk3
+# theme), Qt (qt6ct colour scheme), btop, and a KDE colour scheme in
+# kdeglobals, which KDE apps such as Okular only use with qt6ct-kde.
+[theme.templates]
+enable_builtin_templates = true
+builtin_ids = ["kitty", "gtk3", "gtk4", "qt", "kcolorscheme", "btop"]
+# Community templates, downloaded and cached by Noctalia: bat (also used by
+# delta); its hook changes nothing in tracked files. yazi, fzf and fastfetch
+# use kitty palette slots (kitty-roles below) instead of rendered colours.
+enable_community_templates = true
+community_ids = ["bat"]
+
+# Theme roles in kitty's extended palette (kitty/themes/noctalia-roles.conf).
+# yazi's static flavor, fzf (.zshrc), fastfetch and delta (.gitconfig) name
+# these slots, so open apps and printed output recolour when kitty reloads.
+# The hook reloads kitty again in case the built-in kitty template ran first.
+[theme.templates.user.kitty-roles]
+input_path = "templates/kitty-roles.conf"
+output_path = "$XDG_CONFIG_HOME/kitty/themes/noctalia-roles.conf"
+post_hook = "pkill -USR1 -x kitty || true"
+
+# Syntax colours for yazi's previews: syntect needs hex, so this part of the
+# flavor is still rendered. yazi reads it at start.
+[theme.templates.user.yazi-syntax]
+input_path = "templates/yazi.tmTheme"
+output_path = "$XDG_CONFIG_HOME/yazi/flavors/noctalia.yazi/tmtheme.xml"
+
+# Mango's colours (mango/noctalia.conf). The built-in "mango" template also
+# writes keys this Mango version lacks, so render a trimmed copy; Mango's
+# auto_reload_config picks the file up. Once Mango knows title_message_bar_*:
+# drop this table and templates/mango.conf, add "mango" to builtin_ids, and
+# change source_optional= to source= at the end of mango/config.conf.
+[theme.templates.user.mango]
+input_path = "templates/mango.conf"
+output_path = "$XDG_CONFIG_HOME/mango/noctalia.conf"
+
+# The accent for fastfetch's Pokémon sprite; pokesprite runs in the background
+# so a first download does not hold up the theme change.
+[theme.templates.user.accent]
+input_path = "templates/accent"
+output_path = "$XDG_STATE_HOME/theme/accent"
+post_hook = 'p="$HOME/.local/bin/pokesprite"; [ ! -x "$p" ] || "$p" sync "{{ colors.primary.default.hex }}" >/dev/null 2>&1 &'
+
+# tmux colours only: the community tmux template trimmed to its palette
+# variables, so tmux/tmux.conf keeps its minimal layout. The hook re-sources
+# tmux.conf in running servers.
+[theme.templates.user.tmux]
+input_path = "templates/tmux.conf"
+output_path = "$XDG_CONFIG_HOME/tmux/themes/noctalia.conf"
+post_hook = 'bash "$HOME/.config/noctalia/templates/tmux-reload"'
+
+# Neovim follows the theme: nvim/lua/guru/theme.lua gives each of our themes
+# its own colour scheme and any other palette this generated base16 one.
+# The hook makes open Neovims re-check the theme; Neovim ignores SIGUSR1
+# unless that config is loaded, and pkill finding none is fine.
+[theme.templates.user.nvim]
+input_path = "templates/nvim.lua"
+output_path = "$XDG_CONFIG_HOME/nvim/colors/base16-noctalia.lua"
+post_hook = "pkill -USR1 -x nvim || true"

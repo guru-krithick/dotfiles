@@ -1,0 +1,121 @@
+# Shell behaviour. The bar's look is in bar.toml, colours and app templates in
+# theme.toml, the wallpaper in wallpaper.toml and event hooks in hooks.toml.
+# Changes made in Noctalia's Settings window are saved to
+# ~/.local/state/noctalia/settings.toml, which loads last and wins over these
+# files; delete a key there to fall back to the value here.
+
+[shell]
+font_family = "Maple Mono NF"
+setup_wizard_enabled = false # these files are the setup
+polkit_agent = false         # polkit-gnome, started by Mango, answers prompts
+clipboard_enabled = true     # clipboard history (Super+Shift+V); replaces cliphist
+date_format = "%A, %d %B"    # the dashboard's date, in the bar's day-month order
+corner_radius_scale = 1.0    # 12 px corners on panels, toasts and the OSD, as on the bar and windows
+card_borders = false         # cards inside panels are set apart by their fill
+
+# Panels, toasts and the OSD use translucent theme surfaces over Mango's
+# background blur. Cards stay more opaque than the panel for readable text.
+# Bar materials and per-theme layouts keep their own settings.
+[accessibility]
+ui_scale = 1.1               # panel text closer to the bar's
+
+[shell.animation]
+enabled = true
+speed = 0.9                 # slightly gentler native motion; Mango does not animate it again
+
+[shell.shadow]
+direction = "down"
+alpha = 0.32                # quiet separation from the blurred background
+
+[shell.panel]
+transparency_mode = "glass"
+control_center_placement = "floating"
+wallpaper_placement = "floating"
+session_placement = "floating"
+session_position = "center"   # power actions get the middle of the screen
+floating_offset = 8
+
+# The launcher (Super+D) keeps rofi's shape: search on top, 700 px wide.
+[shell.launcher]
+search_position = "top"
+width = 700
+
+# The dashboard (clock click, Super+C): icon-only shortcuts, no weather.
+[control_center]
+show_shortcut_labels = false
+
+[weather]
+enabled = false              # no location is ever looked up
+
+# With the external display connected, toasts and the OSD show on the focused
+# display only, not on every screen.
+[notification]
+follow_focused_output = true
+background_opacity = 0.85
+offset_x = 8
+offset_y = 8
+
+[osd]
+follow_focused_output = true
+background_opacity = 0.85
+# Vertical offsets live in each bar layout. A shared value here would load
+# after bar.toml and override Tokyo Night's clearance above its bottom bar.
+
+# Locking and idle stay with swayidle + swaylock from Mango's exec_once, so
+# there is exactly one locker and one idle manager. Noctalia must not lock,
+# not even before suspend.
+[lockscreen]
+enabled = false
+lock_before_suspend = false
+
+[idle.behavior.lock]
+action = "lock"
+enabled = false
+
+[idle.behavior.screen-off]
+action = "screen_off"
+enabled = false
+
+[idle.behavior.lock-and-suspend]
+action = "lock_and_suspend"
+enabled = false
+
+# Session menu (Super+F2): the same commands as the old rofi power menu.
+[[shell.session.actions]]
+action = "command"
+label = "Lock"
+glyph = "lock"
+command = "swaylock -f -C ~/.config/swaylock/config"
+
+[[shell.session.actions]]
+action = "command"
+label = "Suspend"
+glyph = "zzz"
+command = "swaylock -f -C ~/.config/swaylock/config && systemctl suspend"
+
+[[shell.session.actions]]
+action = "logout"
+command = "mmsg dispatch quit"
+
+[[shell.session.actions]]
+action = "reboot"
+
+[[shell.session.actions]]
+action = "shutdown"
+variant = "outline"          # set apart by an outline, not a loud red tile
+
+# The existing community stdout widget renders the pomodoro script's JSON.
+# Keep a reviewed local copy available without a first-run network fetch.
+[plugins]
+enabled = ["tordex/stdout", "guru/themes"]
+
+[[plugins.source]]
+name = "desktop-widgets"
+kind = "path"
+location = "~/.config/noctalia/plugins"
+enabled = true
+
+# Keep the bar uncluttered: left-click picks a wallpaper, right-click opens
+# the theme carousel (an in-process IPC command; no shell is started).
+[widget.wallpaper.actions]
+right = "plugin guru/themes:switcher all toggle"

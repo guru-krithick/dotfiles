@@ -67,7 +67,7 @@ Out of scope for now. When revisited: Codex CLI 0.170 has `image_generation` as 
 | Debug | `debug` skill: reproduce → isolate → fix → regression test | — |
 | Review | `reviewer` subagent checks diff against spec, skips style; `/code-review`, `/security-review` | — |
 | Ship | `ship` skill: conventional commit, `gh pr create` | — |
-| Remember | `wiki` skill: decide / handoff / lint; claude-mem for automatic recall | `wiki lint` when asked |
+| Remember | `wiki` skill: decide / handoff / learn / lint; SessionStart hook loads handoff + decision index | `wiki lint` when asked |
 
 ## Project wiki
 
@@ -79,10 +79,10 @@ Every project follows the klyz `docs/` layout:
 - `docs/handoff/current.md`: current state and evidence only; no TODO duplication.
 - `docs/TODO.md`: the single active work list.
 
-The `wiki` skill has three actions: `decide` (write a decision and index line), `handoff` (replaces project-handoff and per-project handoff skills), `lint` (decisions whose linked code changed since, broken links, TODOs duplicated in the handoff). Cross-project preferences go in `instructions/common.md`, not Claude auto-memory, which is per folder, machine-local and invisible to Codex.
+The wiki is the only memory between sessions, accounts and agents ([0004](decisions/0004-wiki-is-the-memory.md)). A Claude `SessionStart` hook (`scripts/wiki-context.sh`) loads the handoff and decision index into every new session for free; Codex reads them by instruction. The `wiki` skill has five actions: `init`, `decide` (decision + index line), `handoff` (≤ 40 lines, replaces project-handoff), `learn` (a corrected mistake becomes a one-line rule in AGENTS.md) and `lint` (stale decisions, broken links, duplicated TODOs, stale or long handoff). Repos with their own layout (e.g. one `docs/DECISIONS.md`) keep it. Cross-project preferences go in `instructions/common.md`, not Claude auto-memory, which is per folder, machine-local and invisible to Codex.
 
 ## Tools
 
-Use (free, local): `gh`, agent-browser, Claude in Chrome, shadcn's local MCP inside the web-ui pack, the built-in Learning output style for learning projects, and claude-mem as one shared memory for `cc`, `cc1` and Codex ([0003](decisions/0003-accounts-memory-and-sudo.md)).
+Use (free, local): `gh`, agent-browser, Claude in Chrome, shadcn's local MCP inside the web-ui pack, the built-in Learning output style for learning projects.
 
-Skip: LSP plugins, `/loop` and scheduled maintenance jobs, GitHub MCP (`gh` is cheaper), Context7 (rate-limited free tier; fetch docs directly), Graphify and memory/vector plugins, paid design MCPs, large agent packs.
+Skip: memory plugins such as claude-mem ([0004](decisions/0004-wiki-is-the-memory.md)), LSP plugins, `/loop` and scheduled maintenance jobs, GitHub MCP (`gh` is cheaper), Context7 (rate-limited free tier; fetch docs directly), Graphify and memory/vector plugins, paid design MCPs, large agent packs.

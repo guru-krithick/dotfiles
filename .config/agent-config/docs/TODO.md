@@ -1,6 +1,6 @@
 # Harness build plan
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) and decisions [0001](decisions/0001-harness-architecture.md), [0002](decisions/0002-autonomy-and-committed-skills.md), [0003](decisions/0003-accounts-memory-and-sudo.md).
+See [ARCHITECTURE.md](ARCHITECTURE.md) and decisions [0001](decisions/0001-harness-architecture.md), [0002](decisions/0002-autonomy-and-committed-skills.md), [0003](decisions/0003-accounts-memory-and-sudo.md), [0004](decisions/0004-wiki-is-the-memory.md).
 
 **Goal:** a new Arch machine runs `git clone` → `./install.sh` → `claude` / `codex login` / `gh auth login`, and the full agent setup is ready. Re-running `install.sh` on this machine changes nothing unexpected.
 
@@ -52,8 +52,8 @@ Each step lists how it is verified. Build steps go to subagents; the main sessio
 22. [x] `deploy.py`: a list of Claude homes (`~/.claude`, `~/.claude-alt`); apply settings, instructions, skills, agents and plugins to each. Unit test with two homes.
 23. [~] (link applied 2026-11-19; resume test pending) Link `~/.claude-alt/projects` → `~/.claude/projects` for shared history and auto-memory. Verify: a session started with `cc` resumes under `cc1`.
 24. [x] `.zshrc`: `cc` = `claude`; `cc1` = `CLAUDE_CONFIG_DIR=$HOME/.claude-alt claude` (in the working tree; commit with the user's other `.zshrc` edits).
-25. [x] (done 2026-11-19 via scripts/claude-mem-setup.sh, called from install.sh; v16.0.0) claude-mem: install from its marketplace for both Claude homes and for Codex; one single store `~/.claude-mem` shared by all three sessions (`cc`, `cc1`, Codex); `CLAUDE_MEM_SESSION_START_INCLUDE_ALL_SOURCES=true`; telemetry disabled. Observer provider follows the session (user decision 2026-11-19): `CLAUDE_MEM_PROVIDER_BY_SOURCE` maps Claude Code → `claude` and Codex → `codex`, so each harness spends its own plan. Verify which Claude account the shared worker bills (it likely inherits `CLAUDE_CONFIG_DIR` from whichever session started it); if it mixes accounts, run one worker per Claude home on fixed ports (`CLAUDE_MEM_WORKER_PORT`) with `CLAUDE_MEM_CLAUDE_CONFIG_DIR` set per alias, still sharing the store. Keep `~/.claude-mem/settings.json`'s portable keys in `config/claude-mem.json`, merged by `deploy.py`. Never commit the store or `.env`.
-26. [~] (doctor passes, worker healthy on 37700; cross-agent recall test pending real sessions) Verify claude-mem: `npx claude-mem doctor`, worker health endpoint, an observation from Codex appears in a Claude session start and vice versa.
+25. ~~claude-mem~~ installed, then removed the same day (decision 0004). The wiki is the memory: SessionStart hook `scripts/wiki-context.sh`, `wiki learn`, rules in `common.md`.
+26. ~~Verify claude-mem~~ dropped with 0004. Instead verify: a new Claude session in klyz shows the handoff from the hook.
 
 27. Dotfiles push identity: the active `gh` account is `gurukrithick` but the repo belongs to `guru-krithick`, so pushes return 403 unless the account is switched. Fix with an SSH remote using a host alias and key for `guru-krithick`, or a per-repo token helper. Verify: `git push --dry-run` succeeds without `gh auth switch`.
 

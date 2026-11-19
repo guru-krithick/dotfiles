@@ -45,6 +45,18 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${XDG_CONFIG_HOME:-$HOME/.config}/agent-config/scripts/wiki-context.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   },
   "skillOverrides": {

@@ -177,7 +177,9 @@ class DeploymentTests(unittest.TestCase):
         self.assertEqual(commands["Notification"], [notify])
         self.assertEqual(commands["PostToolUse"], [lookalike, "plugin-formatter"])
         self.assertEqual(hooks["PostToolUse"][0]["matcher"], "Edit")
-        self.assertNotIn("SessionStart", hooks)
+        shipped = [handler["command"] for group in json.loads((self.source / "config/claude.json").read_text())["hooks"].get("SessionStart", []) for handler in group["hooks"]]
+        self.assertEqual(commands.get("SessionStart", []), shipped)
+        self.assertNotIn(stale, sum(commands.values(), []))
 
     def test_claude_agents_link_into_every_home(self):
         self.runtime()

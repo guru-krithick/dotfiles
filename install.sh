@@ -212,9 +212,6 @@ link_dotfiles() {
 configure_agents() {
     log "applying portable Claude Code and Codex preferences"
     python3 "$DOTFILES_DIR/.config/agent-config/deploy.py" apply --bootstrap
-
-    log "setting up claude-mem (one shared memory for every Claude home and Codex)"
-    bash "$DOTFILES_DIR/.config/agent-config/scripts/claude-mem-setup.sh"
 }
 
 # powerboost writes the GPU frequency floor and vm.swappiness, both root-only.

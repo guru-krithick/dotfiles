@@ -1,6 +1,6 @@
 # 0003: Two Claude accounts, shared memory, agent commits and sudo
 
-Accepted 2026-11-19.
+Accepted 2026-11-19. Items 5 and 6 superseded by [0004](0004-wiki-is-the-memory.md): claude-mem removed, the wiki is the memory.
 
 **Context.** Two Claude Pro accounts and one ChatGPT Plus account. Both Claude accounts must share one configuration and one memory, and Codex should share that memory too. The user wants agents to work without approval gates.
 

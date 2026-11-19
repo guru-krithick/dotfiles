@@ -43,8 +43,8 @@ Each step lists how it is verified. Build steps go to subagents; the main sessio
 
 ## Phase 4: roll out to projects
 
-19. klyz: replace `ui-taste`, `motion`, `klyz-handoff` with `ui` and `wiki` via `npx skills add guru-krithick/dotfiles --skill … --copy`; update `docs/SKILLS.md` and the manifest; run `pnpm harness:check`. Then LUPI and reckon.
-20. Add `docs/decisions/INDEX.md` to each project wiki.
+19. [x] klyz: replace `ui-taste`, `motion`, `klyz-handoff` with `ui` and `wiki` via `npx skills add guru-krithick/dotfiles --skill … --copy`; update `docs/SKILLS.md` and the manifest; run `pnpm harness:check`. reckon done 2026-11-19 (`dfec0bf` on `training-ui-redesign`, pushed; keeps its single docs/DECISIONS.md). (klyz done 2026-11-19, `5b695a7`, pushed. LUPI excluded by the user: collaborator's repo.)
+20. [x] (klyz only; reckon uses docs/DECISIONS.md) Add `docs/decisions/INDEX.md` to each project wiki.
 21. Optional per project: verification hooks (formatter on edit, Stop-time typecheck + affected tests) in `.claude/settings.json`.
 
 ## Phase 5: two Claude accounts and shared memory

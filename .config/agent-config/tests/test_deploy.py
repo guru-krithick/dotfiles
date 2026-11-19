@@ -81,7 +81,7 @@ class DeploymentTests(unittest.TestCase):
         self.assertFalse(result["tui"]["animations"])
         current = json.loads(claude.read_text())
         self.assertEqual(current["env"], local["env"])
-        self.assertEqual(current["permissions"], local["permissions"])
+        self.assertEqual(current["permissions"], {**local["permissions"], "defaultMode": "bypassPermissions"})
         commands = [handler["command"] for group in current["hooks"]["Stop"] for handler in group["hooks"]]
         self.assertIn("local-hook", commands)
         self.assertEqual(len(commands), 2)
@@ -145,6 +145,133 @@ class DeploymentTests(unittest.TestCase):
             self.apply()
         self.assertEqual((existing / "SKILL.md").read_text(), "Different local work")
         self.assertFalse((self.home / ".claude").exists())
+
+    def test_default_mode_is_owned_and_other_permissions_are_kept(self):
+        desired = json.loads((self.source / "config/claude.json").read_text())
+        local = {"allow": ["Bash(local-check)"], "deny": ["Read(./.env)"], "additionalDirectories": ["../shared"], "defaultMode": "plan"}
+        result = deploy.merge_claude({"permissions": local}, desired)
+        self.assertEqual(result["permissions"], {**local, "defaultMode": "bypassPermissions"})
+        self.assertIs(result["skipDangerousModePermissionPrompt"], True)
+        self.assertEqual(deploy.merge_claude({}, desired)["permissions"], {"defaultMode": "bypassPermissions"})
+
+    def test_owned_hooks_are_replaced_once_and_foreign_hooks_kept(self):
+        self.runtime()
+        stale = 'python3 "$HOME/.config/agent-config/scripts/retired.py"'
+        lookalike = 'python3 "$HOME/my-agent-config/hook.py"'
+        settings = self.home / ".claude/settings.json"
+        settings.parent.mkdir(parents=True)
+        settings.write_text(json.dumps({"hooks": {
+            "Stop": [{"hooks": [{"type": "command", "command": "local-hook"}, {"type": "command", "command": stale}]}],
+            "SessionStart": [{"hooks": [{"type": "command", "command": stale}]}],
+            "PostToolUse": [{"matcher": "Edit", "hooks": [{"type": "command", "command": lookalike}, {"type": "command", "command": "plugin-formatter"}]}],
+        }}))
+        self.apply()
+        first = settings.read_text()
+        self.assertEqual(self.deployment.plan(), [])
+        self.apply()
+        self.assertEqual(settings.read_text(), first)
+        hooks = json.loads(first)["hooks"]
+        commands = {event: [handler["command"] for group in groups for handler in group["hooks"]] for event, groups in hooks.items()}
+        notify = json.loads((self.source / "config/claude.json").read_text())["hooks"]["Stop"][0]["hooks"][0]["command"]
+        self.assertEqual(commands["Stop"], ["local-hook", notify])
+        self.assertEqual(commands["Notification"], [notify])
+        self.assertEqual(commands["PostToolUse"], [lookalike, "plugin-formatter"])
+        self.assertEqual(hooks["PostToolUse"][0]["matcher"], "Edit")
+        self.assertNotIn("SessionStart", hooks)
+
+    def test_claude_agents_link_into_every_home(self):
+        self.runtime()
+        agents = self.source / "agents/claude"
+        agents.mkdir()
+        (agents / "reviewer.md").write_text("---\nname: reviewer\ndescription: Review a diff against its spec.\n---\n\nReview only.\n")
+        planned = [path for kind, path, _ in self.deployment.plan() if kind == "link"]
+        homes = [self.home / ".claude", self.home / ".claude-alt"]
+        for home in homes:
+            self.assertIn(home / "agents/reviewer.md", planned)
+        self.apply()
+        for home in homes:
+            link = home / "agents/reviewer.md"
+            self.assertFalse(os.readlink(link).startswith("/"))
+            self.assertEqual(link.resolve(), (agents / "reviewer.md").resolve())
+        self.assertTrue((self.home / ".codex/agents/repo_explorer.toml").is_symlink())
+        self.assertFalse((self.home / ".codex/agents/claude").exists())
+        (agents / "builder.md").write_text("---\nname: someone-else\ndescription: Mismatched name.\n---\n")
+        with self.assertRaisesRegex(ValueError, "Invalid agent definition: builder.md"):
+            self.deployment.plan()
+
+    def test_every_claude_home_is_configured_and_shares_projects(self):
+        self.runtime()
+        primary, alt = self.home / ".claude", self.home / ".claude-alt"
+        primary.mkdir(parents=True)
+        (primary / "settings.json").write_text(json.dumps({"env": {"LOCAL_ONLY": "1"}}))
+        self.apply()
+        for home in (primary, alt):
+            settings = json.loads((home / "settings.json").read_text())
+            self.assertEqual(settings["permissions"], {"defaultMode": "bypassPermissions"})
+            self.assertIn("Stop", settings["hooks"])
+            for name in ("CLAUDE.md", "claude-powerline.json", "skills/grilling"):
+                self.assertTrue((home / name).is_symlink(), home / name)
+        self.assertEqual(json.loads((primary / "settings.json").read_text())["env"], {"LOCAL_ONLY": "1"})
+        self.assertNotIn("env", json.loads((alt / "settings.json").read_text()))
+        self.assertTrue((primary / "projects").is_dir() and not (primary / "projects").is_symlink())
+        self.assertEqual(os.readlink(alt / "projects"), "../.claude/projects")
+        self.assertEqual(self.deployment.plan(), [])
+        for home, model in ((primary, "primary-choice"), (alt, "alt-choice")):
+            settings = json.loads((home / "settings.json").read_text())
+            settings["model"] = model
+            (home / "settings.json").write_text(json.dumps(settings))
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.deployment.capture()
+        self.assertEqual(json.loads((self.source / "config/claude.json").read_text())["model"], "primary-choice")
+
+    def test_shared_projects_never_replace_existing_history(self):
+        self.runtime()
+        projects = self.home / ".claude-alt/projects"
+        (projects / "-work").mkdir(parents=True)
+        (projects / "-work/session.jsonl").write_text("history\n")
+        with self.assertRaisesRegex(ValueError, "manual merge"):
+            self.apply()
+        self.assertEqual((projects / "-work/session.jsonl").read_text(), "history\n")
+        self.assertFalse((self.home / ".claude").exists())
+        shutil.rmtree(projects / "-work")
+        self.apply()  # An empty directory is moved into the backup and replaced by the link.
+        self.assertTrue(projects.is_symlink())
+        (self.home / ".claude/projects").rmdir()
+        (self.home / ".claude/projects").symlink_to(self.root / "unmounted-disk")
+        with self.assertRaisesRegex(ValueError, "must be a directory"):
+            self.deployment.plan()
+
+    def test_codex_autonomy_survives_merge_and_capture(self):
+        desired = tomllib.loads((self.source / "config/codex.toml").read_text())
+        live = 'approval_policy = "on-request"\nsandbox_mode = "workspace-write"\n[profiles.careful]\napproval_policy = "on-request"\n'
+        merged = deploy.merge_codex(live, desired)
+        self.assertEqual(deploy.merge_codex(merged, desired), merged)
+        result = tomllib.loads(merged)
+        self.assertEqual((result["approval_policy"], result["sandbox_mode"]), ("never", "danger-full-access"))
+        self.assertEqual(result["profiles"]["careful"]["approval_policy"], "on-request")
+        self.runtime()
+        self.apply()
+        config = self.home / ".codex/config.toml"
+        config.write_text(config.read_text().replace('approval_policy = "never"', 'approval_policy = "on-request"'))
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.deployment.capture()
+        source = tomllib.loads((self.source / "config/codex.toml").read_text())
+        self.assertEqual((source["approval_policy"], source["sandbox_mode"]), ("never", "danger-full-access"))
+        claude = json.loads((self.source / "config/claude.json").read_text())
+        self.assertEqual(claude["permissions"], {"defaultMode": "bypassPermissions"})
+        self.assertIs(claude["skipDangerousModePermissionPrompt"], True)
+
+    def test_claude_config_dir_replaces_only_an_unlisted_primary(self):
+        home = self.deployment.home
+
+        def homes(value):
+            with patch.dict(os.environ, {"CLAUDE_CONFIG_DIR": str(value)}, clear=True):
+                return deploy.Deployment(self.home, self.source).claude_homes
+        self.assertEqual(homes(home / ".claude-alt"), [home / ".claude", home / ".claude-alt"])
+        self.assertEqual(homes(home / "custom"), [home / "custom", home / ".claude-alt"])
+        (self.source / "config/claude-homes.json").write_text('["~/.claude", "~/.claude/"]')
+        with self.assertRaisesRegex(ValueError, "distinct"):
+            deploy.Deployment(self.home, self.source, use_environment=False)
 
     @unittest.skipUnless(shutil.which("stow"), "GNU Stow unavailable")
     def test_stow_accepts_deployment_links(self):

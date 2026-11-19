@@ -112,17 +112,22 @@ def merge_codex(source, desired):
 
 
 def merge_claude(current, desired):
+    """Deploy owns the keys it ships (inside permissions, only the keys it ships) and owned hooks in every event."""
     result = copy.deepcopy(current)
     for key, value in desired.items():
         if key == "hooks":
-            hooks = result.setdefault("hooks", {})
-            for event, entries in value.items():
-                kept = []
-                for group in hooks.get(event, []):
-                    handlers = [handler for handler in group.get("hooks", []) if not owned_notification(handler)]
+            hooks = {}
+            for event, groups in result.get("hooks", {}).items():
+                hooks[event] = []
+                for group in groups:
+                    handlers = [handler for handler in group.get("hooks", []) if not owned_hook(handler)]
                     if handlers:
-                        kept.append({**group, "hooks": handlers})
-                hooks[event] = kept + copy.deepcopy(entries)
+                        hooks[event].append({**group, "hooks": handlers})
+            for event, entries in value.items():
+                hooks[event] = hooks.get(event, []) + copy.deepcopy(entries)
+            result[key] = {event: groups for event, groups in hooks.items() if groups}
+        elif key == "permissions":
+            result[key] = {**result.get(key, {}), **copy.deepcopy(value)}
         elif key == "modelSettings":
             result[key] = copy.deepcopy(result.get(key, {}))
             for model, settings in value.items():
@@ -132,10 +137,20 @@ def merge_claude(current, desired):
     return result
 
 
-def owned_notification(handler):
+def owned_hook(handler):
+    """Hooks that run something under agent-config/ belong to deploy, as does the legacy agent-setup notifier."""
     command = handler.get("command", "")
-    return ("/agent-config/scripts/notify.py" in command or
+    return ("/agent-config/" in command or
             (command.startswith("python3 ") and command.endswith("/.config/agent-setup/scripts/notify.py")))
+
+
+def claude_agent(path):
+    """Return a Claude subagent file after checking that its frontmatter names it like the file."""
+    front = re.match(r"---\n(.*?)\n---(?:\n|$)", path.read_text(), re.S)
+    name = front and re.search(r"^name:\s*[\"']?([\w-]+)", front.group(1), re.M)
+    if not name or name.group(1) != path.stem or not re.search(r"^description:\s*\S", front.group(1), re.M):
+        raise ValueError(f"Invalid agent definition: {path.name}")
+    return path
 
 
 def atomic_write(path, content):
@@ -174,9 +189,24 @@ class Deployment:
         self.data_root = Path(env.get("XDG_DATA_HOME", self.home / ".local/share"))
         self.state_root = Path(env.get("XDG_STATE_HOME", self.home / ".local/state"))
         self.codex = Path(env.get("CODEX_HOME", self.home / ".codex"))
-        self.claude = Path(env.get("CLAUDE_CONFIG_DIR", self.home / ".claude"))
+        self.claude_homes = self.read_claude_homes(env)
+        self.claude = self.claude_homes[0]
         self.lock = json.loads((self.source / "powerline.lock.json").read_text())
         self.runtime = self.data_root / "agent-config/powerline" / self.lock["version"]
+
+    def read_claude_homes(self, env):
+        """Listed Claude homes, primary first. CLAUDE_CONFIG_DIR replaces the primary unless it names a listed
+        home, so an apply started inside a session of another listed home (e.g. cc1) acts as from a plain shell."""
+        entries = json.loads((self.source / "config/claude-homes.json").read_text())
+        if not entries or not all(isinstance(entry, str) and entry.startswith("~/") for entry in entries):
+            raise ValueError('config/claude-homes.json must be a list of "~/..." paths.')
+        homes = [self.home / entry[2:] for entry in entries]
+        override = env.get("CLAUDE_CONFIG_DIR")
+        if override and Path(override).resolve() not in [home.resolve() for home in homes]:
+            homes[0] = Path(override)
+        if len({home.resolve() for home in homes}) < len(homes):
+            raise ValueError("Claude homes must be distinct directories.")
+        return homes
 
     def bootstrap(self):
         entry = self.runtime / "package/dist/index.mjs"
@@ -205,17 +235,24 @@ class Deployment:
         print(f"Installed verified Powerline {self.lock['version']} outside dotfiles.")
 
     def plan(self):
-        files, links = [], []
+        files, directories, links = [], [], []
         links.append((self.config_root / "agent-config", self.source))
         links.append((self.home / ".local/bin/agent-config", self.source.parents[1] / ".local/bin/agent-config"))
         personal = (self.source / "instructions/common.md").read_text()
         skills = sorted((self.source / "skills").iterdir())
         if self.only in ("both", "claude"):
-            current = json.loads((self.claude / "settings.json").read_text()) if (self.claude / "settings.json").exists() else {}
             desired = json.loads((self.source / "config/claude.json").read_text())
-            files.append((self.claude / "settings.json", json_text(merge_claude(current, desired))))
-            links.extend([(self.claude / "CLAUDE.md", self.source / "instructions/common.md"), (self.claude / "claude-powerline.json", self.source / "config/powerline.json")])
-            links.extend((self.claude / "skills" / skill.name, skill) for skill in skills)
+            agents = [claude_agent(path) for path in sorted((self.source / "agents/claude").glob("*.md"))]
+            for home in self.claude_homes:
+                current = json.loads((home / "settings.json").read_text()) if (home / "settings.json").exists() else {}
+                files.append((home / "settings.json", json_text(merge_claude(current, desired))))
+                links.extend([(home / "CLAUDE.md", self.source / "instructions/common.md"), (home / "claude-powerline.json", self.source / "config/powerline.json")])
+                links.extend((home / "skills" / skill.name, skill) for skill in skills)
+                links.extend((home / "agents" / agent.name, agent) for agent in agents)
+            if len(self.claude_homes) > 1:
+                # Other homes share the primary's history, /resume and auto-memory; never link to a missing target.
+                directories.append(self.claude / "projects")
+                links.extend((home / "projects", self.claude / "projects") for home in self.claude_homes[1:])
         if self.only in ("both", "codex"):
             config = self.codex / "config.toml"
             desired = tomllib.loads((self.source / "config/codex.toml").read_text())
@@ -236,9 +273,15 @@ class Deployment:
         for path, content in files:
             if not path.is_file() or path.is_symlink() or path.read_text() != content:
                 changes.append(("write", path, content))
+        for path in directories:
+            if not path.is_dir():
+                if path.exists() or path.is_symlink():
+                    raise ValueError(f"{path} must be a directory; it will not be replaced.")
+                changes.append(("mkdir", path, None))
         for path, source in links:
             if not path.is_symlink() or path.resolve() != source.resolve():
-                if path.is_dir() and not path.is_symlink():
+                # An empty directory holds nothing to merge; apply moves it into the backup like any other.
+                if path.is_dir() and not path.is_symlink() and any(path.iterdir()):
                     if not source.is_dir() or not same_tree(path, source):
                         raise ValueError(f"Existing directory {path} needs a manual merge; it will not be replaced.")
                 changes.append(("link", path, source))
@@ -285,6 +328,8 @@ class Deployment:
         for index, (kind, path, value) in enumerate(changes):
             if kind == "write":
                 atomic_write(path, value)
+            elif kind == "mkdir":
+                path.mkdir(mode=0o700, parents=True)
             else:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 temporary = path.with_name(path.name + ".agent-config-link")

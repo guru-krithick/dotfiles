@@ -1,5 +1,75 @@
 # Dots
 
+Claude Code and Codex share a portable setup under
+`.config/agent-config/`: personal instructions, Claude subagents, Codex
+coordination and role definitions, reusable skills, notification scripts, and
+the Rosé Pine Powerline configuration. No personal worker cap is configured.
+
+On a new Linux or macOS machine, install Python 3.11.8+, Node.js, curl, and the
+Claude/Codex clients. Clone this repository anywhere, then run:
+
+```sh
+./.local/bin/agent-config plan
+./.local/bin/agent-config apply --bootstrap
+```
+
+The command links its own launcher and configuration source, so it also works
+before running Stow. `install.sh` includes this setup in the full Arch bootstrap.
+Add `~/.local/bin` to your PATH when using the agent setup alone. Sign in to each
+client separately and restart it after applying.
+
+Day to day:
+
+```sh
+agent-config capture   # copy model/display preferences back into dotfiles
+git diff              # review before committing/syncing
+agent-config apply    # apply the checkout's current preferences
+agent-config check    # exit nonzero when another apply is needed
+```
+
+Transport changes through this Git repository: capture or edit the source,
+commit/push as usual, then pull and apply on the other machine. Edit instructions,
+skills, roles, and Powerline theme files in the checkout, then run `apply`.
+Instructions, skills, subagents, roles, and the theme link to the source; Codex's
+global instructions are generated from the shared and Codex-specific files.
+`capture` handles model/display preferences changed in the clients. It
+deliberately does not export authentication, providers, MCP
+credentials, permissions, plugins, project trust, or conversations.
+
+Only selected preferences are merged into local `settings.json` and
+`config.toml`; local-only settings remain on each machine. Whole `.claude` and
+`.codex` directories are never linked into Git. Powerline is pinned and verified
+against its lock file, then installed under `~/.local/share/agent-config/`.
+Backups and manifests live under `~/.local/state/agent-config/backups/`, outside
+the checkout. XDG config/data/state roots and custom Claude/Codex home variables
+are respected. `--only claude` or `--only codex` applies one client; `--home`
+supports a migration preview or isolated test home. `plan` and `check` do not
+write files or download anything. Desktop toasts use `notify-send` when available;
+Codex terminal alerts continue to work without it.
+
+Both clients run without approval prompts. Claude defaults to `bypassPermissions`
+and skips its startup confirmation (`skipDangerousModePermissionPrompt`); Codex
+uses `approval_policy = "never"` and `sandbox_mode = "danger-full-access"`.
+`apply` owns `permissions.defaultMode` and every hook whose command points into
+`agent-config/`; other permission rules and hooks stay local.
+
+Two Claude accounts share this setup: `cc` runs `claude` with the default
+`~/.claude`, and `cc1` runs `CLAUDE_CONFIG_DIR=$HOME/.claude-alt claude`. Each
+home keeps its own login. `config/claude-homes.json` lists the homes, primary
+first: `plan`, `apply` and `check` cover every home, while `capture` reads only
+the primary. `~/.claude-alt/projects` links to `~/.claude/projects`, so `/resume`,
+transcripts and auto-memory are shared; if a non-empty `projects` directory is
+already there, `apply` stops for a manual merge. A `CLAUDE_CONFIG_DIR` that names
+a listed home (as inside `cc1`) changes nothing; any other value replaces the
+primary. Claude subagents in `agents/claude/*.md` link into each home's
+`agents/`; Codex roles stay in `agents/*.toml`.
+
+The Codex footer includes model/effort, working directory, branch, context and
+five-hour limit. `repo_explorer` investigates code and `change_reviewer` reviews
+changes; neither has a separate sandbox or an imposed worker-count setting.
+The main thread owns implementation and integration. The tool's own runtime
+limits still apply.
+
 Zsh uses Oh My Zsh with its bundled `robbyrussell` theme and `git`, `extract`, and `sudo` plugins,
 plus zsh-completions, zsh-autosuggestions, and zsh-syntax-highlighting.
 `install.sh` installs Oh My Zsh and the extra plugins under `~/.oh-my-zsh`

@@ -14,11 +14,11 @@ Each step lists how it is verified. Build steps go to subagents; the main sessio
 
 ## Phase 1: make `deploy.py` carry the whole setup
 
-4. Portable autonomy: add `permissions.defaultMode: "bypassPermissions"` to `config/claude.json` (plus the key that skips the startup confirmation, name to be confirmed in the settings reference); Codex `approval_policy = "never"`, `sandbox_mode = "danger-full-access"` in `config/codex.toml`. Extend `merge_claude` to own `permissions.defaultMode`.
-5. Hooks: generalise `owned_notification` so `deploy.py` owns any hook whose command points into `agent-config/`, not only `notify.py`. Verify: unit test that a second `apply` does not duplicate hooks and keeps foreign hooks.
-6. Claude agents: add `agents/claude/*.md` and link them into `~/.claude/agents/`. Codex roles stay in `agents/*.toml`. Verify: `plan` lists the links; unit test.
+4. [x] Portable autonomy: add `permissions.defaultMode: "bypassPermissions"` to `config/claude.json` (plus the key that skips the startup confirmation, name to be confirmed in the settings reference); Codex `approval_policy = "never"`, `sandbox_mode = "danger-full-access"` in `config/codex.toml`. Extend `merge_claude` to own `permissions.defaultMode`.
+5. [x] Hooks: generalise `owned_notification` so `deploy.py` owns any hook whose command points into `agent-config/`, not only `notify.py`. Verify: unit test that a second `apply` does not duplicate hooks and keeps foreign hooks.
+6. [x] Claude agents: add `agents/claude/*.md` and link them into `~/.claude/agents/`. Codex roles stay in `agents/*.toml`. Verify: `plan` lists the links; unit test.
 7. [x] Fix the Codex re-apply drift (worker cap, legacy `AGENTS.md`). Verify: `agent-config check` exits 0 after `apply`.
-8. Tests: extend `tests/test_deploy.py` for 4–7 with an isolated `--home`. Verify: `python3 -m unittest discover -s tests` passes.
+8. [x] Tests: extend `tests/test_deploy.py` for 4–7 with an isolated `--home`. Verify: `python3 -m unittest discover -s tests` passes.
 
 ## Phase 2: skills and agents (all committed)
 
@@ -49,11 +49,13 @@ Each step lists how it is verified. Build steps go to subagents; the main sessio
 
 ## Phase 5: two Claude accounts and shared memory
 
-22. `deploy.py`: a list of Claude homes (`~/.claude`, `~/.claude-alt`); apply settings, instructions, skills, agents and plugins to each. Unit test with two homes.
-23. Link `~/.claude-alt/projects` → `~/.claude/projects` for shared history and auto-memory. Verify: a session started with `cc` resumes under `cc1`.
+22. [x] `deploy.py`: a list of Claude homes (`~/.claude`, `~/.claude-alt`); apply settings, instructions, skills, agents and plugins to each. Unit test with two homes.
+23. [~] (link applied 2026-11-19; resume test pending) Link `~/.claude-alt/projects` → `~/.claude/projects` for shared history and auto-memory. Verify: a session started with `cc` resumes under `cc1`.
 24. `.zshrc`: `cc` = `claude`; `cc1` = `CLAUDE_CONFIG_DIR=$HOME/.claude-alt claude`. `print_next_steps` lists both logins.
-25. claude-mem: install from its marketplace for both Claude homes and for Codex; one store `~/.claude-mem`; `CLAUDE_MEM_SESSION_START_INCLUDE_ALL_SOURCES=true`; telemetry disabled; the observer provider chosen at review. Keep `~/.claude-mem/settings.json`'s portable keys in `config/claude-mem.json`, merged by `deploy.py`. Never commit the store or `.env`.
+25. claude-mem: install from its marketplace for both Claude homes and for Codex; one store `~/.claude-mem`; `CLAUDE_MEM_SESSION_START_INCLUDE_ALL_SOURCES=true`; telemetry disabled. Observer provider follows the session (user decision 2026-11-19): `CLAUDE_MEM_PROVIDER_BY_SOURCE` maps Claude Code → `claude` and Codex → `codex`, so each harness spends its own plan. Verify which Claude account the shared worker bills (it likely inherits `CLAUDE_CONFIG_DIR` from whichever session started it); if it mixes accounts, run one worker per Claude home on fixed ports (`CLAUDE_MEM_WORKER_PORT`) with `CLAUDE_MEM_CLAUDE_CONFIG_DIR` set per alias, still sharing the store. Keep `~/.claude-mem/settings.json`'s portable keys in `config/claude-mem.json`, merged by `deploy.py`. Never commit the store or `.env`.
 26. Verify claude-mem: `npx claude-mem doctor`, worker health endpoint, an observation from Codex appears in a Claude session start and vice versa.
+
+27. Dotfiles push identity: the active `gh` account is `gurukrithick` but the repo belongs to `guru-krithick`, so pushes return 403 unless the account is switched. Fix with an SSH remote using a host alias and key for `guru-krithick`, or a per-repo token helper. Verify: `git push --dry-run` succeeds without `gh auth switch`.
 
 ## Resolved at review (2026-11-19)
 

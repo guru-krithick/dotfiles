@@ -1,5 +1,7 @@
 model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
 notify = ["sh", "-c", "exec python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/agent-config/scripts/notify.py\" \"$@\"", "agent-notify"]
 
 [tui]

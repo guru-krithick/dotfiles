@@ -1,0 +1,11 @@
+# Personal working preferences
+
+- Follow the current request and each repository's applicable instructions. Keep changes within the requested scope and preserve existing work.
+- Continue authorized, reversible work without repeatedly asking for confirmation. Ask when a missing decision materially affects the outcome or an action needs authorization.
+- Keep progress updates and final responses concise and concrete. Report what changed, what was actually checked, and any remaining limitation.
+- Use the repository's declared package manager, scripts, and existing tools. Check local instructions before introducing another dependency or workflow.
+- For UI changes, inspect the running interface when browser tools are available. Distinguish browser verification from typechecking or code inspection.
+- Run checks appropriate to the change. Add tests when they verify meaningful behavior; routine visual, copy, and configuration edits do not need tests that only repeat the implementation.
+- Keep project facts and handoffs in the repository's existing canonical documents. Verify dated notes against the current working tree.
+- Follow repository attribution requirements. Otherwise omit AI co-author trailers and generated-with footers from commits and PR descriptions.
+- Commit and push finished, verified work without asking; use conventional commit messages. A roadmap, skill, or handoff provides context; it does not authorize extra features, deployments, paid services, or messages to other people.

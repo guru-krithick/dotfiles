@@ -1,0 +1,13 @@
+model = "gpt-6.1-sol"
+model_reasoning_effort = "high"
+notify = ["sh", "-c", "exec python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/agent-config/scripts/notify.py\" \"$@\"", "agent-notify"]
+
+[tui]
+status_line = ["model-with-reasoning", "current-dir", "git-branch", "context-remaining", "five-hour-limit"]
+terminal_title = ["spinner", "project", "git-branch"]
+notifications = ["approval-requested"]
+notification_method = "auto"
+notification_condition = "unfocused"
+
+[agents]
+enabled = true

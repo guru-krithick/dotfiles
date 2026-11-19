@@ -1,0 +1,43 @@
+{
+  "theme": "rose-pine",
+  "display": {
+    "style": "powerline",
+    "charset": "unicode",
+    "colorCompatibility": "auto",
+    "autoWrap": true,
+    "padding": 1,
+    "showIcons": true,
+    "lines": [
+      {
+        "segments": {
+          "model": {
+            "enabled": true
+          },
+          "directory": {
+            "enabled": true,
+            "style": "basename"
+          },
+          "git": {
+            "enabled": true,
+            "showSha": false,
+            "showAheadBehind": false,
+            "showWorkingTree": false,
+            "showWorktree": false
+          },
+          "context": {
+            "enabled": true,
+            "showPercentageOnly": true,
+            "displayStyle": "text",
+            "percentageMode": "used",
+            "autocompactBuffer": 0
+          },
+          "block": {
+            "enabled": true,
+            "displayStyle": "text",
+            "showPace": false
+          }
+        }
+      }
+    ]
+  }
+}

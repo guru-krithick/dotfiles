@@ -1,0 +1,46 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
+  "model": "opus",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    },
+    "claude-fable-5-2": {
+      "effortLevel": "high"
+    }
+  },
+  "theme": "dark",
+  "statusLine": {
+    "type": "command",
+    "command": "sh \"${XDG_CONFIG_HOME:-$HOME/.config}/agent-config/scripts/powerline.sh\""
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/agent-config/scripts/notify.py\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/agent-config/scripts/notify.py\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
